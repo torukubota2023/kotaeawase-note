@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<!-- 答え合わせノート（仮称） — POCUS による身体診察の較正支援。
+<!-- 答え合わせノート — POCUS による身体診察の較正支援。
      医学文言の正本は data/content.yaml。build.py が CONTENT 区間へ注入する（手で編集しない）。
      データは端末内 localStorage のみ・外部送信ゼロ・外部リソース読み込みゼロ。 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -692,7 +692,7 @@ function caseIsBlank(c) {
 
 /* ---------------------------------------------------------------- 共通部品 */
 function pageHeader(sub) {
-  return '<header class="top"><div class="eyebrow">Kotaeawase Note ／ 仮称・公開前</div>' +
+  return '<header class="top"><div class="eyebrow">Kotaeawase Note ／ ' + esc(APP_VERSION) + "</div>" +
     "<h1>答え合わせノート" + '<span class="sub">' + esc(sub || "画像を開く前に書く") + "</span></h1></header>";
 }
 function fieldText(o) {
