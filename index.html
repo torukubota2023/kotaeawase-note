@@ -418,6 +418,19 @@ function fmtSite(site) {
   return parts && free ? parts + "／" + free : (parts || free);
 }
 function matchScore(m) { return m === "yes" ? 100 : m === "partial" ? 50 : m === "no" ? 0 : null; }
+/* POCUS 前後の確信度移動（プラン§6: 絶対値平均＋上下件数）。
+   基準は snapshot の確信度（未ロックなら現行値）。pocus.conf 入力済みの記録のみ対象。
+   符号付き平均だと ± が打ち消し合い「動かなかった」ように読めるので使わない。±0 は件数に数えない */
+function statsMove(cases) {
+  const moves = cases.filter(c => c.pocus && c.pocus.conf != null)
+    .map(c => c.pocus.conf - snapOf(c).pre.conf);
+  return {
+    n: moves.length,
+    absMean: moves.length ? moves.reduce((s, m) => s + Math.abs(m), 0) / moves.length : null,
+    up: moves.filter(m => m > 0).length,
+    down: moves.filter(m => m < 0).length
+  };
+}
 function isUnfinished(c) { return c.status !== "reviewed"; }
 function statusBadge(c) {
   if (c.status === "draft") return '<span class="badge b-draft">下書き（S' + (c.wizardStep || 1) + '）</span>';
@@ -1293,18 +1306,18 @@ function renderStats() {
     const rows = done.map(c => {
       const conf = snapOf(c).pre.conf;
       const score = matchScore(c.outcome.match);
-      return { conf: conf, score: score, gap: conf - score,
-        move: (c.pocus.conf != null ? c.pocus.conf : conf) - conf,
-        prim: c.compare.missPrimary || "" };
+      return { conf: conf, score: score, gap: conf - score, prim: c.compare.missPrimary || "" };
     });
+    const mv = statsMove(done);
     const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
     const f1 = x => (x >= 0 ? "+" : "") + x.toFixed(1);
     html += '<div class="stat3">' +
       "<div><b>" + f1(mean(rows.map(r => r.gap))) + "</b><span>平均外れ幅<br>（確信度−的中）</span></div>" +
       "<div><b>" + mean(rows.map(r => Math.abs(r.gap))).toFixed(1) + "</b><span>平均絶対外れ幅</span></div>" +
-      "<div><b>" + f1(mean(rows.map(r => r.move))) + "</b><span>POCUS 前後の<br>確信度移動（平均）</span></div>" +
+      "<div><b>" + (mv.n ? mv.absMean.toFixed(1) : "―") + "</b><span>POCUS 前後の確信度移動<br>（絶対値平均）　↑" + mv.up + "件・↓" + mv.down + "件</span></div>" +
       "</div>" +
-      '<p class="subnote">的中スコア：はい=100／部分=50／いいえ=0。外れ幅＝ロック時の確信度−的中スコア（＋は自信過剰方向）。</p>';
+      '<p class="subnote">的中スコア：はい=100／部分=50／いいえ=0。外れ幅＝ロック時の確信度−的中スコア（＋は自信過剰方向）。' +
+      '確信度移動＝POCUS 後の確信度−ロック時の確信度（POCUS 後の確信度を入力した記録のみ・±0 は件数に数えない）。</p>';
     /* 5ビン較正表 */
     const bins = [[0, 20], [21, 40], [41, 60], [61, 80], [81, 100]];
     html += "<h2>確信度と的中の較正表</h2>" +
