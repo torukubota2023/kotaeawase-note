@@ -32,7 +32,8 @@ AB = "/* ==== APPVER:BEGIN ==== */"
 AE = "/* ==== APPVER:END ==== */"
 
 UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
-                "anon_placeholder", "small_n_note", "teaching_point_label"]
+                "anon_placeholder", "small_n_note", "teaching_point_label",
+                "quick_hint", "addendum_note"]
 
 
 def validate(content: dict) -> list[str]:
@@ -117,6 +118,28 @@ def validate(content: dict) -> list[str]:
             n = len(it.get("subfields") or [])
             need(n == expected_sub[no],
                  f"export_template no={no} の subfields は {expected_sub[no]} 本のはず（実際 {n} 本）")
+
+    # --- quick_templates（ワンハンド入力の組み立て規則） ----------------
+    qt = content.get("quick_templates") or {}
+    slot = qt.get("side_slot")
+    need(isinstance(slot, str) and len(slot) == 1, "quick_templates.side_slot は1文字の文字列のはず")
+    did_set = set(dids)
+    questions = qt.get("questions") or {}
+    for k, v in questions.items():
+        need(k in did_set, f"quick_templates.questions の疾患id '{k}' が diseases に無い")
+        ok_list = isinstance(v, list) and 1 <= len(v) <= 2 and all(
+            isinstance(t, str) and t.strip() for t in v)
+        need(ok_list, f"quick_templates.questions.{k} は 1〜2 本の非空文字列リストのはず")
+        if ok_list and isinstance(slot, str):
+            for t in v:
+                need(t.count(slot) <= 1,
+                     f"quick_templates.questions.{k}: 側スロット '{slot}' は最大1個のはず（実際 {t.count(slot)} 個）")
+    pats = qt.get("first_dx_patterns") or []
+    need(bool(pats) and all(isinstance(p, str) and "{label}" in p for p in pats),
+         "quick_templates.first_dx_patterns は {label} を含む文字列のリストのはず")
+    for p in pats:
+        bad_ph = sorted(set(re.findall(r"\{(\w+)\}", p)) - {"side", "label"})
+        need(not bad_ph, f"first_dx_patterns '{p}' に未知のプレースホルダ: {bad_ph}")
 
     # --- quick_note / ui_copy / links ----------------------------------
     qn = content.get("quick_note") or {}
