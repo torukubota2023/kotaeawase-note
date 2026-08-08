@@ -62,8 +62,10 @@ input::placeholder,textarea::placeholder{color:#A9B5AB;font-size:12px}
   font-size:13px;padding:8px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .chip:disabled{opacity:.55;cursor:default}
-/* 診察中の親指向け: タップ標的は 48px（2026-08-08 片手入力対応） */
-@media(pointer:coarse){.chip{min-height:48px;padding:12px 15px}.btn{min-height:48px}}
+/* 診察中の親指向け: タップ標的は 48px（2026-08-08 片手入力対応）。
+   .btn の 48px 規則はここではなく基底 .btn 群の直後に置く ── メディア規則は特異度を上げないので、
+   基底より前に書くと同特異度の後勝ちで 44px に戻る（差分検収 C3.4 で実測発覚） */
+@media(pointer:coarse){.chip{min-height:48px;padding:12px 15px}}
 .confrow{display:grid;grid-template-columns:1fr 84px;gap:10px;align-items:center}
 input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;border:0;-webkit-appearance:auto;appearance:auto}
 .fnd{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dotted var(--rule-2)}
@@ -90,6 +92,9 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;b
 .btn.danger{background:transparent;color:var(--pos);border-color:var(--pos)}
 .btn.small{font-size:12px;padding:6px 10px;min-height:36px}
 .btn:disabled{opacity:.45;cursor:default}
+/* 診察中動線の .btn（ウィザード操作バー・ロックボタン等）は 48px。基底 44px の後ろに置いて有効化。
+   副次操作の .btn.small（一覧へ戻る・訂正する等、診察外）は特異度が上のため 36px のまま */
+@media(pointer:coarse){.btn{min-height:48px}}
 .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .btnrow.split{justify-content:space-between}
 .lockbox{border:2px solid var(--accent);background:var(--accent-weak);padding:14px;margin:12px 0}
@@ -675,7 +680,12 @@ function updateBottomNav(h) {
     b.setAttribute("aria-current", on ? "true" : "false");
   });
 }
-$$("#bottomnav button").forEach(b => b.addEventListener("click", () => nav(b.dataset.nav)));
+$$("#bottomnav button").forEach(b => b.addEventListener("click", () => {
+  /* ＋新規は常に新規作成。直前に詳細画面の「訂正する/編集する」でウィザードに入っていても、
+     その症例の編集を引きずらない（訂正中の入力は逐次保存済みなので失われない） */
+  if (b.dataset.nav === "#new") wizardIntent = { fresh: true };
+  nav(b.dataset.nav);
+}));
 function caseIsBlank(c) {
   return !c.question && !c.disease && !c.pre.firstDx && Object.keys(c.exam.checks).length === 0;
 }
@@ -807,7 +817,7 @@ function renderList() {
     nav("#new");
   });
   const gb = $("#goBackup"); if (gb) gb.addEventListener("click", () => nav("#settings"));
-  $("#newBtn").addEventListener("click", () => nav("#new"));
+  $("#newBtn").addEventListener("click", () => { wizardIntent = { fresh: true }; nav("#new"); });
   $("#quickBtn").addEventListener("click", openQuickModal);
   $$("[data-case]").forEach(b => b.addEventListener("click", () => {
     const c = loadCaseById(b.dataset.case);
@@ -844,6 +854,15 @@ function openQuickModal() {
 
 /* ================================================================ #new（ウィザード S1〜S7） */
 function renderWizard() {
+  if (wizardIntent && wizardIntent.fresh) {
+    /* ＋新規（下部ナビ・一覧ボタン）: 常に新しい記録から。下書きの再開は #list の再開バナー・
+       一覧の行タップ・（直接 #new を開いたときの）チューザーが従来どおり担う */
+    wizardIntent = null;
+    wizCase = newCase();
+    wizStep = 1;
+    drawWizardStep();
+    return;
+  }
   if (wizardIntent) {
     const c = loadCaseById(wizardIntent.caseId);
     if (c) { wizCase = c; wizStep = wizardIntent.step || c.wizardStep || 1; }
