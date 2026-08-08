@@ -187,6 +187,19 @@ body.wizard nav.bottom{display:none}
 .wizbar .btn.next{flex:1;min-width:0}
 body.wizard .wrap{padding-bottom:170px}
 .quickbox{border:1px dashed var(--rule);background:#fff;padding:2px 10px 10px;margin:12px 0}
+/* 位置ピッカー（面別語彙・基準線+肋間 / ランドマークから cm の2モード・組み立てプレビュー） */
+.sitepicker{border:1px dashed var(--rule);background:#fff;padding:4px 10px 10px;margin:6px 0}
+.sitepv{font-family:var(--mono);font-size:12px;background:var(--accent-weak);border-left:3px solid var(--accent);
+  padding:7px 9px;margin:8px 0 6px;overflow-wrap:break-word;line-height:1.7}
+.steprow{display:grid;grid-template-columns:56px 76px 56px 1fr;gap:8px;align-items:center;margin:6px 0}
+.steprow .btn{padding:6px 0;text-align:center}
+.steprow input[type=number]{text-align:center}
+.siterow{border:1px solid var(--rule);background:#fff;padding:8px 10px;margin:8px 0}
+.siterow .hd{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.siterow .opentxt{background:none;border:0;padding:4px 0;text-align:left;cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;color:var(--ink);min-width:0;overflow-wrap:break-word;line-height:1.6;flex:1}
+.siterow .x{border:1px solid var(--rule);background:#fff;color:var(--ink-3);cursor:pointer;font-size:11px;padding:6px 10px;flex:none}
+@media(pointer:coarse){.siterow .x{min-height:44px}.siterow .opentxt{min-height:44px}}
 .toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:#fff;
   font-size:13px;padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
 .toast.on{opacity:1}
@@ -278,6 +291,21 @@ function initMeta() {
   else if ((m.schemaVersion || 1) > 1) { toast("新しい版で作られたデータです。アプリを更新してください。"); }
 }
 
+/* 位置1件の形（S2 予測=1件・S5 POCUS=複数件で共用）。composed は保存せず表示・書き出し時に導出 */
+function newSite(init) {
+  const s = { sides: [], aspects: [], mode: "grid", lines: [], ics: [], cm: null, free: "" };
+  if (init) Object.keys(init).forEach(k => { s[k] = init[k]; });
+  return s;
+}
+function migrateSite(s) {
+  if (!s || typeof s !== "object") return null;
+  ["sides", "aspects", "lines", "ics"].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
+  if (!s.mode) s.mode = "grid";
+  if (s.cm === undefined) s.cm = null;
+  if (s.cm && !Array.isArray(s.cm.offsets)) s.cm.offsets = [];
+  if (typeof s.free !== "string") s.free = s.free == null ? "" : String(s.free);
+  return s;
+}
 /* schema: 1症例1キー。checks は 1=あり / -1=なし / キー欠落=未評価 */
 function newCase() {
   const t = nowISO();
@@ -289,10 +317,10 @@ function newCase() {
     status: "draft",            // draft → locked → reviewed
     wizardStep: 1,
     question: "", disease: "", age: "", sex: "",
-    pre: { firstDx: "", conf: 50, altDx: "", site: { sides: [], aspects: [], ics: [], free: "" }, rationale: "" },
+    pre: { firstDx: "", conf: 50, altDx: "", site: newSite(), rationale: "" },
     exam: { checks: {}, freeText: "", missingExpectedManual: [], limitations: "" },
     lock: null,                 // {lockedAt, snapshot:{question,disease,age,sex,pre,exam}}
-    pocus: { checks: {}, findings: "", confirmed: "", refuted: "", conf: null, newSuspicion: "" },
+    pocus: { checks: {}, findings: "", confirmed: "", refuted: "", conf: null, newSuspicion: "", sites: [] },
     compare: { hit: "", miss: "", missPrimary: "", missSecondary: "", nextAction: "", teachingPoint: "" },
     outcome: { ct: "", tests: "", finalDx: "", gapHours: "", match: "pending" },
     addenda: [],               // 補記（画像後・append-only）: [{at, text}]
@@ -311,13 +339,21 @@ function migrateCase(c) {
   if (!c.status) c.status = "draft";
   if (!c.pre) c.pre = { firstDx: "", conf: 50, altDx: "", site: null, rationale: "" };
   if (typeof c.pre.conf !== "number") c.pre.conf = 50;
-  if (!c.pre.site) c.pre.site = { sides: [], aspects: [], ics: [], free: "" };
-  ["sides", "aspects", "ics"].forEach(k => { if (!Array.isArray(c.pre.site[k])) c.pre.site[k] = []; });
+  if (!c.pre.site) c.pre.site = newSite();
+  migrateSite(c.pre.site);   // 旧形（mode/lines/cm なし）へ additive に補完
   if (!c.exam) c.exam = {};
   if (!c.exam.checks) c.exam.checks = {};
   if (!Array.isArray(c.exam.missingExpectedManual)) c.exam.missingExpectedManual = [];
   if (!c.pocus) c.pocus = {};
   if (!c.pocus.checks) c.pocus.checks = {};
+  if (!Array.isArray(c.pocus.sites)) {
+    c.pocus.sites = [];
+    /* 旧レコードの pocus.site（自由文字列）は位置1件の free へ移す（元フィールドは温存） */
+    if (typeof c.pocus.site === "string" && c.pocus.site.trim()) {
+      c.pocus.sites.push(newSite({ free: c.pocus.site.trim() }));
+    }
+  }
+  c.pocus.sites = c.pocus.sites.map(migrateSite).filter(Boolean);
   if (!c.compare) c.compare = {};
   if (!c.outcome) c.outcome = {};
   if (!c.outcome.match) c.outcome.match = "pending";
@@ -441,11 +477,39 @@ function confMove(c) {
   const arrow = d > 0 ? ("↑" + d) : d < 0 ? ("↓" + (-d)) : "±0";
   return { from: a, to: b, diff: d, arrow: arrow, text: a + "% → " + b + "%（" + arrow + "）" };
 }
-function fmtSite(site) {
+/* 位置の組み立て（ガイド 06.5 の記載順）。保存せず表示・書き出し時に導出する。
+   grid: 右・背面・脊柱寄り・第8肋間 ／ cm: 右・背面・肩甲骨下角から尾側3cm・外側4cm */
+function composeSite(site) {
   if (!site) return "";
-  const parts = [].concat(site.sides || [], site.aspects || [], site.ics || []).join("・");
+  let parts = [].concat(site.sides || [], site.aspects || []);
+  if ((site.mode || "grid") === "cm" && site.cm && site.cm.landmark) {
+    const offs = (site.cm.offsets || []).filter(o => o && o.dir && o.cm > 0);
+    parts.push(offs.length
+      ? site.cm.landmark + "から" + offs.map(o => o.dir + o.cm + "cm").join("・")
+      : site.cm.landmark);
+  } else {
+    parts = parts.concat(site.lines || [], site.ics || []);
+  }
+  const main = parts.join("・");
   const free = (site.free || "").trim();
-  return parts && free ? parts + "／" + free : (parts || free);
+  return main && free ? main + "／" + free : (main || free);
+}
+/* BLUE プリセット → 位置値。チップ値はすべて site_options の語彙で、対応は各 preset の desc の
+   記載から固定（upper=「第2肋間・鎖骨中線あたり」／lower=「第4〜5肋間」／PLAPS=「後腋窩線との交点」）。
+   「あたり」「同じ高さ」などの曖昧さは free に入る label＋desc 全文が保持する。側（右/左）は使う人が足す */
+const POCUS_PRESET_SITES = {
+  upper_blue: { aspects: ["前面"], lines: ["鎖骨中線"], ics: ["第2肋間"] },
+  lower_blue: { aspects: ["前面"], lines: [], ics: ["第4肋間", "第5肋間"] },
+  plaps: { aspects: ["側面"], lines: ["後腋窩線"], ics: [] }
+};
+function presetSite(p) {
+  const base = POCUS_PRESET_SITES[p.id] || {};
+  return newSite({
+    aspects: (base.aspects || []).slice(),
+    lines: (base.lines || []).slice(),
+    ics: (base.ics || []).slice(),
+    free: p.label + "（" + p.desc + "）"
+  });
 }
 function matchScore(m) { return m === "yes" ? 100 : m === "partial" ? 50 : m === "no" ? 0 : null; }
 /* ---- ワンハンド入力の組み立て（規則の正本は content.yaml の quick_templates） ---- */
@@ -545,7 +609,7 @@ function buildExportText(c) {
       L.push("  - " + sf[0] + ": " + indentML(snap.pre.firstDx));
       L.push("  - " + sf[1] + ": " + snap.pre.conf + "%");
       L.push("  - " + sf[2] + ": " + indentML(snap.pre.altDx));
-      L.push("  - " + sf[3] + ": " + indentML(fmtSite(snap.pre.site)));
+      L.push("  - " + sf[3] + ": " + indentML(composeSite(snap.pre.site)));
       L.push("  - " + sf[4] + ": " + indentML(snap.pre.rationale));
     } else if (no === 3) {
       const sf = item.subfields;
@@ -554,7 +618,9 @@ function buildExportText(c) {
       const missing = derivedMissing(snap.exam, snap.disease).concat(snap.exam.missingExpectedManual || []);
       L.push("  - " + sf[0] + ": " + valOr(pos.join("、")));
       L.push("  - " + sf[1] + ": " + valOr(missing.join("、")));
-      L.push("  - " + sf[2] + ": " + indentML(snap.exam.freeText));
+      /* 位置は composed（予測位置＝ロック時点）＋自由記載を併記する */
+      const anat = [composeSite(snap.pre.site), (snap.exam.freeText || "").trim()].filter(Boolean).join("／");
+      L.push("  - " + sf[2] + ": " + indentML(anat));
       L.push("  - " + sf[3] + ": " + indentML(snap.exam.limitations));
     } else if (no === 4) {
       const sf = item.subfields;
@@ -563,6 +629,8 @@ function buildExportText(c) {
       const neg = checkedLabels(items, c.pocus.checks, -1);
       let f = pos.length ? "あり：" + pos.join("、") : "";
       if (neg.length) f += (f ? "／" : "") + "なし：" + neg.join("、");
+      const sitesTxt = (c.pocus.sites || []).map(composeSite).filter(Boolean).join("／");
+      if (sitesTxt) f += (f ? "\n" : "") + "位置：" + sitesTxt;
       const free = (c.pocus.findings || "").trim();
       if (free) f += (f ? "\n" : "") + free;
       L.push("  - " + sf[0] + ": " + indentML(f));
@@ -654,7 +722,8 @@ function openTreeModal(onPick) {
 let prevRoute = null;
 let wizCase = null;      // ウィザードが現在編集している case（メモリ上の正）
 let wizStep = 1;
-let wizardIntent = null; // {caseId, step} 一覧・詳細からの遷移指定
+let wizardIntent = null; // {caseId, step} 一覧・詳細からの遷移指定（{fresh:true}=常に新規）
+let s5OpenIdx = -1;      // S5 位置リストで開いている行（-1=全閉）
 function nav(hash) {
   if (location.hash === hash) route();
   else location.hash = hash;
@@ -759,6 +828,110 @@ function kvRow(k, v) {
   const s = String(v == null ? "" : v).trim();
   return '<div class="kv"><div class="k">' + esc(k) + '</div><div class="v">' +
     (s ? esc(s) : '<span class="none">（未記入）</span>') + "</div></div>";
+}
+
+/* ---------------- 位置ピッカー（S2=1位置・S5=複数位置で共用の部品） ----------------
+   ctx = { getSite(), write(mutate)->bool, disabled, onWrote? }
+   面を選ぶとその面の語彙だけを出す。構造タップは再マウント、free と cm 数値は入力のままプレビューだけ更新 */
+function uniqArr(arr) { const o = []; arr.forEach(v => { if (o.indexOf(v) < 0) o.push(v); }); return o; }
+function pickerVocab(site) {
+  const asel = site.aspects || [];
+  const flat = (m) => uniqArr([].concat.apply([], asel.map(a => (m || {})[a] || [])));
+  return { lines: flat(SITE.lines_by_aspect), marks: flat(SITE.cm_landmarks_by_aspect) };
+}
+function pkChips(opts, selected, attr, dis) {
+  return '<div class="chips" style="margin:4px 0 8px">' + opts.map(v =>
+    '<button type="button" class="chip" ' + attr + '="' + esc(v) + '" aria-pressed="' +
+    (selected.indexOf(v) >= 0) + '"' + (dis ? " disabled" : "") + ">" + esc(v) + "</button>").join("") + "</div>";
+}
+function sitePickerHTML(ctx) {
+  const s = ctx.getSite();
+  if (!s) return "";
+  const dis = !!ctx.disabled;
+  const disA = dis ? " disabled" : "";
+  const mode = s.mode || "grid";
+  const v = pickerVocab(s);
+  let h = '<p class="subnote" style="margin:6px 0 0">側</p>' + pkChips(SITE.sides, s.sides || [], "data-pk-side", dis) +
+    '<p class="subnote" style="margin:6px 0 0">面</p>' + pkChips(SITE.aspects, s.aspects || [], "data-pk-aspect", dis);
+  if (!(s.aspects || []).length) {
+    h += '<p class="subnote">面（前面/側面/背面）を選ぶと、その面の基準線・起点だけが出ます</p>';
+  } else {
+    h += '<div class="chips" style="margin:8px 0">' +
+      '<button type="button" class="chip" data-pk-mode="grid" aria-pressed="' + (mode === "grid") + '"' + disA + ' style="flex:1">基準線＋肋間</button>' +
+      '<button type="button" class="chip" data-pk-mode="cm" aria-pressed="' + (mode === "cm") + '"' + disA + ' style="flex:1">ランドマークから cm</button></div>';
+    if (mode === "grid") {
+      h += '<p class="subnote" style="margin:6px 0 0">基準線</p>' + pkChips(v.lines, s.lines || [], "data-pk-line", dis) +
+        '<p class="subnote" style="margin:6px 0 0">肋間</p>' + pkChips(SITE.ics_chips, s.ics || [], "data-pk-ics", dis);
+    } else {
+      const cm = s.cm || { landmark: "", offsets: [] };
+      h += '<p class="subnote" style="margin:6px 0 0">起点</p>' + pkChips(v.marks, cm.landmark ? [cm.landmark] : [], "data-pk-mark", dis);
+      (cm.offsets || []).forEach((o, i) => {
+        h += '<p class="subnote" style="margin:6px 0 0">方向' + ((cm.offsets.length > 1) ? "（" + (i + 1) + "軸目）" : "") + "</p>" +
+          '<div class="chips" style="margin:4px 0 8px">' + SITE.cm_directions.map(d =>
+            '<button type="button" class="chip" data-pk-dir="' + i + '" data-v="' + esc(d) + '" aria-pressed="' + (o.dir === d) + '"' + disA + ">" + esc(d) + "</button>").join("") + "</div>" +
+          '<div class="steprow">' +
+          '<button type="button" class="btn ghost" data-pk-dec="' + i + '"' + disA + ">−</button>" +
+          '<input type="number" min="1" max="15" step="1" inputmode="numeric" value="' + clampInt(o.cm || 1, 1, 15) + '" data-pk-cm="' + i + '"' + disA + ">" +
+          '<button type="button" class="btn ghost" data-pk-inc="' + i + '"' + disA + ">＋</button>" +
+          '<span class="subnote">cm（1〜15）</span>' +
+          (i > 0 ? '<button type="button" class="btn ghost small" data-pk-deloff="' + i + '" style="grid-column:1/-1;justify-self:start"' + disA + ">この軸を外す</button>" : "") +
+          "</div>";
+      });
+      if ((cm.offsets || []).length < 2 && !dis) {
+        h += '<div class="btnrow"><button type="button" class="btn ghost small" data-pk-addoff>＋ 方向を追加（2軸目）</button></div>';
+      }
+    }
+  }
+  h += '<div class="sitepv" data-pk-pv>' + esc(composeSite(s) || "（未入力）") + "</div>" +
+    '<input type="text" data-pk-free placeholder="自由記載（メモ）" value="' + esc(s.free || "") + '"' + disA + ">";
+  return h;
+}
+function mountSitePicker(container, ctx) {
+  if (!container || !ctx.getSite()) { if (container) container.innerHTML = ""; return; }
+  container.innerHTML = sitePickerHTML(ctx);
+  const wrote = () => { if (ctx.onWrote) ctx.onWrote(); else mountSitePicker(container, ctx); };
+  const W = (fn) => { if (ctx.write(fn)) wrote(); };
+  const toggle = (arr, v) => { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); };
+  const ensureCm = (s) => { if (!s.cm) s.cm = { landmark: "", offsets: [{ dir: "", cm: 1 }] }; if (!s.cm.offsets.length) s.cm.offsets.push({ dir: "", cm: 1 }); };
+  $$("[data-pk-side]", container).forEach(b => b.addEventListener("click", () => W(s => toggle(s.sides, b.dataset.pkSide))));
+  $$("[data-pk-aspect]", container).forEach(b => b.addEventListener("click", () => W(s => {
+    toggle(s.aspects, b.dataset.pkAspect);
+    const v2 = pickerVocab(s);   // 面が変わったら、その面に無い基準線・起点は落とす
+    s.lines = (s.lines || []).filter(x => v2.lines.indexOf(x) >= 0);
+    if (s.cm && v2.marks.indexOf(s.cm.landmark) < 0) s.cm.landmark = "";
+  })));
+  $$("[data-pk-mode]", container).forEach(b => b.addEventListener("click", () => W(s => {
+    s.mode = b.dataset.pkMode;
+    if (s.mode === "cm") ensureCm(s);
+  })));
+  $$("[data-pk-line]", container).forEach(b => b.addEventListener("click", () => W(s => toggle(s.lines, b.dataset.pkLine))));
+  $$("[data-pk-ics]", container).forEach(b => b.addEventListener("click", () => W(s => toggle(s.ics, b.dataset.pkIcs))));
+  $$("[data-pk-mark]", container).forEach(b => b.addEventListener("click", () => W(s => {
+    ensureCm(s);
+    s.cm.landmark = (s.cm.landmark === b.dataset.pkMark ? "" : b.dataset.pkMark);
+  })));
+  $$("[data-pk-dir]", container).forEach(b => b.addEventListener("click", () => W(s => {
+    const o = s.cm && s.cm.offsets[+b.dataset.pkDir];
+    if (o) o.dir = (o.dir === b.dataset.v ? "" : b.dataset.v);
+  })));
+  const step = (i, d) => W(s => { const o = s.cm && s.cm.offsets[i]; if (o) o.cm = clampInt((o.cm || 1) + d, 1, 15); });
+  $$("[data-pk-dec]", container).forEach(b => b.addEventListener("click", () => step(+b.dataset.pkDec, -1)));
+  $$("[data-pk-inc]", container).forEach(b => b.addEventListener("click", () => step(+b.dataset.pkInc, 1)));
+  const pvUpdate = () => { const pv = $("[data-pk-pv]", container); if (pv) pv.textContent = composeSite(ctx.getSite()) || "（未入力）"; };
+  $$("[data-pk-cm]", container).forEach(inp => inp.addEventListener("input", () => {
+    if (inp.value === "") return;
+    const i = +inp.dataset.pkCm, val = clampInt(inp.value, 1, 15);
+    if (ctx.write(s => { const o = s.cm && s.cm.offsets[i]; if (o) o.cm = val; })) pvUpdate();
+  }));
+  const addoff = $("[data-pk-addoff]", container);
+  if (addoff && addoff.dataset && addoff.dataset.pkAddoff !== undefined) {
+    addoff.addEventListener("click", () => W(s => { ensureCm(s); if (s.cm.offsets.length < 2) s.cm.offsets.push({ dir: "", cm: 1 }); }));
+  }
+  $$("[data-pk-deloff]", container).forEach(b => b.addEventListener("click", () => W(s => { if (s.cm) s.cm.offsets.splice(+b.dataset.pkDeloff, 1); })));
+  const free = $("[data-pk-free]", container);
+  if (free && !free.disabled) free.addEventListener("input", () => {
+    if (ctx.write(s => { s.free = free.value; })) pvUpdate();
+  });
 }
 
 /* ================================================================ #list */
@@ -1048,11 +1221,7 @@ function stepS2(c) {
       CONF_PRESETS.map(p => '<button type="button" class="chip" data-p="' + p + '" aria-pressed="' + (c.pre.conf === p) + '">' +
         p + "</button>").join("") + "</div>") +
     fieldText({ id: "f_alt", label: sf[2], value: c.pre.altDx, ph: "", disabled: dis }) +
-    '<div class="field"><label>' + esc(sf[3]) + "</label></div>" +
-    chipsField({ label: "左右", name: "sides", options: SITE.sides, selected: c.pre.site.sides, disabled: dis }) +
-    chipsField({ label: "面", name: "aspects", options: SITE.aspects, selected: c.pre.site.aspects, disabled: dis }) +
-    chipsField({ label: "高さ（肋間）", name: "ics", options: SITE.ics_chips, selected: c.pre.site.ics, disabled: dis }) +
-    fieldText({ id: "f_sitefree", label: "部位の自由記載", value: c.pre.site.free, ph: "", disabled: dis }) +
+    '<div class="field"><label>' + esc(sf[3]) + '</label><div class="sitepicker" id="sp-pre"></div></div>' +
     fieldText({ id: "f_rat", label: sf[4], value: c.pre.rationale, multiline: true, rows: 3, disabled: dis });
   return [html, function bind() {
     bindUnlock(c);
@@ -1074,14 +1243,14 @@ function stepS2(c) {
       syncPresets(p);
     }));
     bindText("#f_alt", c, "pre", (cc, v) => { cc.pre.altDx = v; });
-    bindChips("sides", c, "pre", (cc, v) => { toggleArr(cc.pre.site.sides, v); });
-    bindChips("aspects", c, "pre", (cc, v) => { toggleArr(cc.pre.site.aspects, v); });
-    bindChips("ics", c, "pre", (cc, v) => { toggleArr(cc.pre.site.ics, v); });
-    bindText("#f_sitefree", c, "pre", (cc, v) => { cc.pre.site.free = v; });
+    mountSitePicker($("#sp-pre"), {
+      getSite: () => c.pre.site,
+      write: fn => writeCase(c, "pre", cc => fn(cc.pre.site)),
+      disabled: dis
+    });
     bindText("#f_rat", c, "pre", (cc, v) => { cc.pre.rationale = v; });
   }];
 }
-function toggleArr(arr, v) { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
 
 /* ---- S3 身体診察 ---- */
 function groupedExamItems(d) {
@@ -1197,7 +1366,7 @@ function stepS4(c) {
     kvRow(stripNo(ET[1].heading), c.question) +
     kvRow("病態", diseaseLabel(c.disease)) +
     kvRow(ET[2].subfields[0] + "／" + ET[2].subfields[1], (c.pre.firstDx || "（未記入）") + "／" + c.pre.conf + "%") +
-    kvRow(ET[2].subfields[3], fmtSite(c.pre.site)) +
+    kvRow(ET[2].subfields[3], composeSite(c.pre.site)) +
     kvRow("あり と判定", pos.join("、")) +
     kvRow("なし と判定", neg.join("、")) +
     kvRow(ET[3].subfields[3], c.exam.limitations);
@@ -1227,7 +1396,14 @@ function stepS5(c) {
   } else if (d) {
     html += '<p class="note">「' + esc(d.label) + "」は所見リストなし。自由記載で記録します。</p>";
   }
-  html += fieldText({ id: "f_pofind", label: sf[0] + "と位置（自由記載）", value: c.pocus.findings, multiline: true, rows: 3 }) +
+  html += '<div class="field"><label>位置（POCUS を当てた場所・複数可）</label>' +
+    '<div class="chips" id="poPresets" style="margin:4px 0 8px">' +
+    (SITE.pocus_presets || []).map((p, i) =>
+      '<button type="button" class="chip" data-preset="' + i + '" title="' + esc(p.desc) + '">' + esc(p.label) + "</button>").join("") +
+    "</div>" +
+    '<div id="poSites"></div>' +
+    '<div class="btnrow"><button type="button" class="btn ghost small" id="poAddSite">＋ 位置を追加</button></div></div>' +
+    fieldText({ id: "f_pofind", label: sf[0] + "（自由記載）", value: c.pocus.findings, multiline: true, rows: 3 }) +
     fieldText({ id: "f_poconf", label: sf[1], value: c.pocus.confirmed, multiline: true, rows: 2 }) +
     fieldText({ id: "f_poref", label: sf[2], value: c.pocus.refuted, multiline: true, rows: 2 }) +
     confField({ idBase: "cf2", label: "POCUS 後の確信度（%）", value: c.pocus.conf != null ? c.pocus.conf : snapOf(c).pre.conf }) +
@@ -1235,12 +1411,64 @@ function stepS5(c) {
     fieldText({ id: "f_ponew", label: sf[4], value: c.pocus.newSuspicion, multiline: true, rows: 2 });
   return [html, function bind() {
     bindTriList("#app", c, "pocus", cc => cc.pocus.checks, null);
+    $$("#poPresets .chip").forEach(b => b.addEventListener("click", () => {
+      const p = (SITE.pocus_presets || [])[+b.dataset.preset];
+      if (!p) return;
+      writeCase(c, "pocus", cc => { cc.pocus.sites.push(presetSite(p)); });
+      s5OpenIdx = c.pocus.sites.length - 1;   // 側（右/左）を足せるよう開いておく
+      mountPocusSites(c);
+    }));
+    const addBtn = $("#poAddSite");
+    if (addBtn) addBtn.addEventListener("click", () => {
+      writeCase(c, "pocus", cc => { cc.pocus.sites.push(newSite()); });
+      s5OpenIdx = c.pocus.sites.length - 1;
+      mountPocusSites(c);
+    });
+    mountPocusSites(c);
     bindText("#f_pofind", c, "pocus", (cc, v) => { cc.pocus.findings = v; });
     bindText("#f_poconf", c, "pocus", (cc, v) => { cc.pocus.confirmed = v; });
     bindText("#f_poref", c, "pocus", (cc, v) => { cc.pocus.refuted = v; });
     bindConf("cf2", c, "pocus", (cc, v) => { cc.pocus.conf = v; }, () => { $("#moveBox").textContent = confMove(c).text; });
     bindText("#f_ponew", c, "pocus", (cc, v) => { cc.pocus.newSuspicion = v; });
   }];
+}
+
+/* S5 の位置リスト（行＝組み立て文＋削除。開いた行にピッカーを差し込む） */
+function mountPocusSites(c) {
+  const box = $("#poSites");
+  if (!box) return;
+  const sites = c.pocus.sites || [];
+  if (s5OpenIdx >= sites.length) s5OpenIdx = -1;
+  box.innerHTML = sites.length ? sites.map((s, i) => {
+    const open = i === s5OpenIdx;
+    return '<div class="siterow"><div class="hd">' +
+      '<button type="button" class="opentxt" data-site-open="' + i + '">' +
+      (open ? "▾ " : "▸ ") + esc(composeSite(s) || "（未入力・タップして編集）") + "</button>" +
+      '<button type="button" class="x" data-site-del="' + i + '">削除</button></div>' +
+      (open ? '<div class="sitepicker" data-site-picker="' + i + '"></div>' : "") +
+      "</div>";
+  }).join("") : '<p class="subnote">BLUE プリセットか「＋ 位置を追加」で、当てた場所を記録できます</p>';
+  $$("[data-site-open]", box).forEach(b => b.addEventListener("click", () => {
+    const i = +b.dataset.siteOpen;
+    s5OpenIdx = (s5OpenIdx === i ? -1 : i);
+    mountPocusSites(c);
+  }));
+  $$("[data-site-del]", box).forEach(b => b.addEventListener("click", () => {
+    const i = +b.dataset.siteDel;
+    writeCase(c, "pocus", cc => { cc.pocus.sites.splice(i, 1); });
+    if (s5OpenIdx === i) s5OpenIdx = -1; else if (s5OpenIdx > i) s5OpenIdx--;
+    mountPocusSites(c);
+  }));
+  const pk = $("[data-site-picker]", box);
+  if (pk && pk.dataset && pk.dataset.sitePicker !== undefined) {
+    const idx = +pk.dataset.sitePicker;
+    mountSitePicker(pk, {
+      getSite: () => (c.pocus.sites || [])[idx],
+      write: fn => writeCase(c, "pocus", cc => { const s = cc.pocus.sites[idx]; if (s) fn(s); }),
+      disabled: false,
+      onWrote: () => mountPocusSites(c)   // 行の組み立て文も追随させる
+    });
+  }
 }
 
 /* ---- S6 対比と外れ方 ---- */
@@ -1255,13 +1483,15 @@ function compareHTML(c) {
     const s = String(v == null ? "" : v).trim();
     return "<div><span class='k'>" + esc(k) + "</span>" + (s ? esc(s) : "<span class='k'>―</span>") + "</div>";
   }
+  const poSites = (c.pocus.sites || []).map(composeSite).filter(Boolean).join("\n");
   return '<div class="cmp">' +
     '<div class="h">画像前（ロック時点）</div><div class="h">POCUS 後</div>' +
     cell(ET[2].subfields[0], snap.pre.firstDx) + cell(ET[4].subfields[0], posPo.join("、") + (negPo.length ? (posPo.length ? "／" : "") + "なし：" + negPo.join("、") : "") + (c.pocus.findings ? "\n" + c.pocus.findings : "")) +
     cell(ET[2].subfields[1], snap.pre.conf + "%") + cell(ET[4].subfields[3], confMove(c).text) +
-    cell(ET[2].subfields[3], fmtSite(snap.pre.site)) + cell(ET[4].subfields[1], c.pocus.confirmed) +
-    cell(ET[3].subfields[0], posPre.join("、")) + cell(ET[4].subfields[2], c.pocus.refuted) +
-    cell(ET[3].subfields[1], missing.join("、")) + cell(ET[4].subfields[4], c.pocus.newSuspicion) +
+    cell(ET[2].subfields[3], composeSite(snap.pre.site)) + cell("位置（POCUS）", poSites) +
+    cell(ET[3].subfields[0], posPre.join("、")) + cell(ET[4].subfields[1], c.pocus.confirmed) +
+    cell(ET[3].subfields[1], missing.join("、")) + cell(ET[4].subfields[2], c.pocus.refuted) +
+    cell(ET[2].subfields[4], snap.pre.rationale) + cell(ET[4].subfields[4], c.pocus.newSuspicion) +
     "</div>";
 }
 function catCardsHTML(sel, dataAttr) {
@@ -1394,15 +1624,17 @@ function renderDetail(id) {
     '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="s1" data-step="1">訂正する</button></div></div>';
   html += '<div class="panel"><h2>' + esc(ET[2].heading) + "</h2>" +
     kvRow(sf2[0], c.pre.firstDx) + kvRow(sf2[1], c.pre.conf + "%") + kvRow(sf2[2], c.pre.altDx) +
-    kvRow(sf2[3], fmtSite(c.pre.site)) + kvRow(sf2[4], c.pre.rationale) +
+    kvRow(sf2[3], composeSite(c.pre.site)) + kvRow(sf2[4], c.pre.rationale) +
     '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="pre" data-step="2">訂正する</button></div></div>';
   html += '<div class="panel"><h2>' + esc(ET[3].heading) + "</h2>" +
     kvRow(sf3[0], d ? checkedLabels(d.exam_items, c.exam.checks, 1).join("、") : "") +
     kvRow(sf3[1], derivedMissing(c.exam, c.disease).concat(c.exam.missingExpectedManual || []).join("、")) +
     kvRow(sf3[2], c.exam.freeText) + kvRow(sf3[3], c.exam.limitations) +
     '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="exam" data-step="3">訂正する</button></div></div>';
+  const dSitesTxt = (c.pocus.sites || []).map(composeSite).filter(Boolean).join("／");
   html += '<div class="panel"><h2>' + esc(ET[4].heading) + "</h2>" +
-    kvRow(sf4[0], (d ? checkedLabels(d.pocus_items, c.pocus.checks, 1).join("、") : "") + (c.pocus.findings ? "\n" + c.pocus.findings : "")) +
+    kvRow(sf4[0], (d ? checkedLabels(d.pocus_items, c.pocus.checks, 1).join("、") : "") +
+      (dSitesTxt ? "\n位置：" + dSitesTxt : "") + (c.pocus.findings ? "\n" + c.pocus.findings : "")) +
     kvRow(sf4[1], c.pocus.confirmed) + kvRow(sf4[2], c.pocus.refuted) +
     kvRow(sf4[3], c.lock ? confMove(c).text : "") + kvRow(sf4[4], c.pocus.newSuspicion) +
     '<div class="btnrow"><button type="button" class="btn ghost small" data-edit-step="5">編集する</button></div></div>';
