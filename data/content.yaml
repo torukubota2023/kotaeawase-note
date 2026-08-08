@@ -16,12 +16,14 @@ meta:
         - "tables[56]：外れ方8分類（9行2列）"
         - "段落1211〜1238：第10章 06.5「症例で較正する」（決定木=para[1229]、一行記録=para[1230]、次の一手を一つ=para[1232]、一例から法則を作らない=para[1233]）"
         - "tables[66]：巻末「症例記録テンプレート」（9行2列）"
+        - "位置ピッカー語彙（site_options.lines_by_aspect／cm_landmarks_by_aspect／cm_directions）：para[181]（頭側・尾側・一肋間ずつ）／para[199]（前腋窩線・鎖骨中線・中腋窩線）／para[215]（胸骨外縁・中腋窩線・内側）／para[287]（肩甲骨下角）／para[296]（脊柱）／para[301]（脊柱寄り・中央・後腋窩線寄り・最下肋骨・外側）／para[484]（胸骨角からの垂直距離を cm で）／para[763]（中腋窩線・腋窩）／para[1019]（第4–5肋間前〜中腋窩線・第2肋間鎖骨中線）／para[1221]（左右・面・基準線・肋間の順、肩甲骨下角の尾側）／para[1232]（尾側から頭側へ一肋間ずつ）"
     - file: "docs/education/肺エコー図譜_2026.docx"
       parts:
         - "tables[2]：ずれ方4分類＋次の一手（観察／手技／解釈／統合の4行）"
         - "tables[3]：入口→まず当てる場所→見る所見（6入口）"
     - file: "scripts/build_lung_us_figures.py"
       parts:
+        - "L683〜L694：BLUE 点の凡例（upper BLUE／lower BLUE／PLAPS point の位置記述）── site_options.pocus_presets に使用"
         - "L713〜L719：BLUE profile 対応表（A／A′／B／B′／A/B／C／PLAPS → 病態）"
         - "L735〜L742：同図の注記（profileは型・A′→lung point確認・原法の下肢静脈エコー分岐）"
 
@@ -529,7 +531,26 @@ diseases:
 site_options:
   sides: [右, 左, 両側]
   aspects: [前面, 側面, 背面]
-  ics_chips: [第2肋間, 第4肋間, 第6肋間, 第8肋間, 第10肋間, 肩甲骨下角の高さ]
+  # 肋間チップは第2〜第10の全段へ拡張（親エージェント指示。既存チップの文言は不変。
+  # 一肋間刻みの記録はガイド para181/1232「尾側から頭側へ一肋間ずつ打診し…肋間レベルで記録」による）
+  ics_chips: [第2肋間, 第3肋間, 第4肋間, 第5肋間, 第6肋間, 第7肋間, 第8肋間, 第9肋間, 第10肋間, 肩甲骨下角の高さ]
+  # 面ごとの垂直基準線（ガイド本文の用語どおり。背面はガイド3.3 聴打診法第2法の
+  # 「脊柱寄り・中央・後腋窩線寄りの縦の平行線」方式＝para301）
+  lines_by_aspect:
+    前面: [胸骨外縁, 鎖骨中線]
+    側面: [前腋窩線, 中腋窩線, 後腋窩線]
+    背面: [脊柱寄り, 中央, 後腋窩線寄り]
+  # cm 方式の起点ランドマーク（面ごと。すべてガイド本文に実在する語）
+  cm_landmarks_by_aspect:
+    前面: [鎖骨, 胸骨角]
+    側面: [腋窩, 最下肋骨]
+    背面: [肩甲骨下角, 脊柱, 最下肋骨]
+  cm_directions: [頭側, 尾側, 内側, 外側]
+  # S5 のワンタップ位置（build_lung_us_figures.py L683〜L694 の凡例より）
+  pocus_presets:
+    - {id: upper_blue, label: "upper BLUE点", desc: "上の手の中央。第2肋間・鎖骨中線あたり"}
+    - {id: lower_blue, label: "lower BLUE点", desc: "下の手掌の中央。第4〜5肋間、やや外側"}
+    - {id: plaps, label: "PLAPS点", desc: "lower BLUE と同じ高さで、後腋窩線との交点。体を起こすか側臥位にして背側へ回り込む"}
 
 export_template:
   items:
