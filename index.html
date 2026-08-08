@@ -285,6 +285,7 @@ function newCase() {
     pocus: { checks: {}, findings: "", confirmed: "", refuted: "", conf: null, newSuspicion: "" },
     compare: { hit: "", miss: "", missPrimary: "", missSecondary: "", nextAction: "", teachingPoint: "" },
     outcome: { ct: "", tests: "", finalDx: "", gapHours: "", match: "pending" },
+    addenda: [],               // 補記（画像後・append-only）: [{at, text}]
     editedAfterLock: false,
     editLog: []
   };
@@ -310,6 +311,7 @@ function migrateCase(c) {
   if (!c.compare) c.compare = {};
   if (!c.outcome) c.outcome = {};
   if (!c.outcome.match) c.outcome.match = "pending";
+  if (!Array.isArray(c.addenda)) c.addenda = [];   // additive（schemaVersion 1 のまま）
   if (!Array.isArray(c.editLog)) c.editLog = [];
   return c;
 }
@@ -382,6 +384,16 @@ function editAfterLock(c, section) {
   c.editLog.push({ at: nowISO(), section: section });
   if (!editSession[c.id]) editSession[c.id] = new Set();
   editSession[c.id].add(section);
+  c.updatedAt = nowISO();
+  persistCase(c);
+  return true;
+}
+/* 補記（画像後）: append-only。追記の関数しか存在せず、編集・削除の経路を作らない。
+   snapshot・採点・集計・「画像後修正あり」バッジには一切影響しない */
+function addAddendum(c, text) {
+  const t = String(text == null ? "" : text).trim();
+  if (!t) return false;
+  c.addenda.push({ at: nowISO(), text: t });
   c.updatedAt = nowISO();
   persistCase(c);
   return true;
@@ -553,6 +565,12 @@ function buildExportText(c) {
     }
     L.push("");
   });
+  /* 補記（画像後）は末尾に別ブロックで。ヘッダの「画像後修正」とは独立（採点に使わない文章） */
+  if ((c.addenda || []).length) {
+    L.push("■ 補記（画像後）");
+    c.addenda.forEach(a => { L.push("  - " + fmtDT(a.at) + ": " + indentML(a.text)); });
+    L.push("");
+  }
   return L.join("\n").replace(/\n+$/, "\n");
 }
 async function copyText(text) {
@@ -1345,6 +1363,13 @@ function renderDetail(id) {
     '<input type="number" id="o_gap" min="0" step="1" inputmode="numeric" value="' + esc(c.outcome.gapHours) + '"></div>' +
     chipsField({ label: "一致判定（予測と最終診断）", name: "match", options: ["はい", "部分", "いいえ", "未確定"], selected: [MATCH_LABEL[c.outcome.match] || "未確定"], single: true }) +
     '<p class="subnote">「はい／部分／いいえ」を選ぶと集計の対象になります。</p></div>';
+  /* 補記（画像後・append-only。タップ今・文章あとで） */
+  html += '<div class="panel"><h2>補記（画像後）</h2>' +
+    '<p class="subnote">' + esc(UI.addendum_note) + "</p>" +
+    ((c.addenda || []).length
+      ? c.addenda.map(a => '<div class="kv"><div class="k">' + esc(fmtDT(a.at)) + '</div><div class="v">' + esc(a.text) + "</div></div>").join("")
+      : '<p class="note">（まだありません）</p>') +
+    '<div class="btnrow"><button type="button" class="btn line" id="addAdx">補記を足す</button></div></div>';
   /* 書き出し */
   html += '<div class="panel"><h2>テキスト書き出し</h2>' +
     '<pre class="export">' + esc(buildExportText(c)) + "</pre>" +
@@ -1378,7 +1403,20 @@ function renderDetail(id) {
   gap.addEventListener("input", () => writeCase(c, "outcome", cc => { cc.outcome.gapHours = gap.value; }));
   const M_REV = { "はい": "yes", "部分": "partial", "いいえ": "no", "未確定": "pending" };
   bindChips("match", c, "outcome", (cc, label) => { cc.outcome.match = M_REV[label] || "pending"; });
+  $("#addAdx").addEventListener("click", () => openAddendumModal(c));
   $("#dCopy").addEventListener("click", () => copyText(buildExportText(c)));
+}
+/* 補記モーダル（append-only: 保存後の編集・削除UIは意図的に無い） */
+function openAddendumModal(c) {
+  const root = openModal('<div class="sheet-h">補記を足す（画像後）</div>' +
+    '<p class="subnote">' + esc(UI.addendum_note) + "　保存後の編集・削除はできません。</p>" +
+    '<textarea id="adxText" rows="4" placeholder="' + esc(UI.anon_placeholder) + '"></textarea>' +
+    '<div class="btnrow split"><button type="button" class="btn ghost" data-close>閉じる</button>' +
+    '<button type="button" class="btn" id="adxSave">保存する</button></div>');
+  $("#adxSave", root).addEventListener("click", () => {
+    if (addAddendum(c, $("#adxText").value)) { closeModal(); toast("補記を足しました"); renderDetail(c.id); }
+    else toast("本文を入力してください");
+  });
 }
 
 /* ================================================================ #stats */
@@ -1392,7 +1430,9 @@ function renderStats() {
     '<option value="">すべての病態</option>' +
     DISEASES.map(d => '<option value="' + d.id + '"' + (filter === d.id ? " selected" : "") + ">" + esc(d.label) + "</option>").join("") +
     "</select></div>" +
-    '<p class="note">対象：' + done.length + " 件（一致判定が確定した記録）</p>";
+    '<p class="note">対象：' + done.length + " 件（一致判定が確定した記録）</p>" +
+    '<p class="subnote">うち「' + esc(UI.edited_after_lock_badge) + "」 " +
+    done.filter(c => c.editedAfterLock).length + " 件</p>";
 
   if (done.length < 5) {
     html += '<div class="hintbox">' + esc(UI.small_n_note) + "</div></div>";
