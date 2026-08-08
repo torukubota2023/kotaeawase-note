@@ -33,7 +33,7 @@ AE = "/* ==== APPVER:END ==== */"
 
 UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
                 "anon_placeholder", "small_n_note", "teaching_point_label",
-                "quick_hint", "addendum_note"]
+                "quick_hint", "addendum_note", "no_miss_label"]
 
 
 def validate(content: dict) -> list[str]:
