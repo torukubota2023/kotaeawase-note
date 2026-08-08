@@ -60,6 +60,28 @@ def validate(content: dict) -> list[str]:
     site = content.get("site_options") or {}
     for k in ("sides", "aspects", "ics_chips"):
         need(bool(site.get(k)), f"site_options.{k} が空")
+    # 位置ピッカー語彙（2026-08-09 追加）
+    aspects = site.get("aspects") or []
+    for key in ("lines_by_aspect", "cm_landmarks_by_aspect"):
+        m = site.get(key) or {}
+        need(sorted(m.keys()) == sorted(aspects),
+             f"site_options.{key} の面キーが aspects と一致しない（実際 {sorted(m.keys())}）")
+        for a, vals in m.items():
+            ok = isinstance(vals, list) and vals and all(isinstance(x, str) and x.strip() for x in vals)
+            need(ok, f"site_options.{key}.{a} は非空文字列のリストのはず")
+            if ok:
+                need(len(set(vals)) == len(vals), f"site_options.{key}.{a} に重複がある")
+    dirs = site.get("cm_directions") or []
+    need(len(dirs) == 4 and len(set(dirs)) == 4, f"site_options.cm_directions は一意な4件のはず（実際 {len(dirs)} 件）")
+    ics = site.get("ics_chips") or []
+    need(len(set(ics)) == len(ics), f"site_options.ics_chips に重複がある: {ics}")
+    presets = site.get("pocus_presets") or []
+    need(bool(presets), "site_options.pocus_presets が空")
+    pids = [p.get("id") for p in presets]
+    need(len(set(pids)) == len(pids), f"pocus_presets の id に重複がある: {pids}")
+    for p in presets:
+        need(bool(p.get("id")) and bool(p.get("label")) and bool(p.get("desc")),
+             f"pocus_presets の項目に id/label/desc が揃っていない: {p}")
 
     # --- miss_classification -------------------------------------------
     mc = content.get("miss_classification") or {}
