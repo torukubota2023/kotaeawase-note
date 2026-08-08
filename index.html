@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<!-- 答え合わせノート（仮称） — POCUS による身体診察の較正支援。
+     医学文言の正本は data/content.yaml。build.py が CONTENT 区間へ注入する（手で編集しない）。
+     データは端末内 localStorage のみ・外部送信ゼロ・外部リソース読み込みゼロ。 -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答え合わせノート ── 画像を開く前に書く</title>
+<meta name="description" content="画像を開く前に予測と確信度を書いてロックし、POCUS で答え合わせして外れ方を分類する較正ノート。データは端末内のみ、外部送信ゼロ。">
+<meta name="author" content="久保田 徹 / Toru Kubota, MD">
+<meta name="theme-color" content="#1F5C3A">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="答え合わせ">
+<style>
+:root{
+  --ground:#EBF0EB; --panel:#FCFDFC; --rule:#C2CFC4; --rule-2:#DCE4DD;
+  --ink:#17251C; --ink-2:#48594E; --ink-3:#5F7064;
+  --accent:#1F5C3A; --accent-weak:#E7F0E9;
+  --pos:#9C2A3B; --neg:#2A5C8A; --warn:#C08A1A; --warn-ink:#8A5A00; --warn-bg:#FAF3E3;
+  --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+  --sans:"Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,-apple-system,sans-serif;
+  --mono:"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ground); color:var(--ink); font-family:var(--sans);
+  font-size:14px; line-height:1.7;
+  background-image:linear-gradient(var(--rule-2) 1px,transparent 1px),linear-gradient(90deg,var(--rule-2) 1px,transparent 1px);
+  background-size:28px 28px; background-position:-1px -1px;
+  overflow-x:hidden;
+}
+.wrap{max-width:640px;margin:0 auto;padding:14px 14px 96px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink-2);text-transform:uppercase}
+h1{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.35;margin:4px 0 2px;letter-spacing:.02em}
+h1 .sub{display:block;font-size:12px;font-family:var(--sans);font-weight:400;color:var(--ink-2);letter-spacing:0;margin-top:4px}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:14px;margin-bottom:12px}
+.panel h2{font-family:var(--serif);font-size:15px;margin:0 0 10px;font-weight:600;
+  display:flex;align-items:baseline;gap:8px;border-bottom:1px solid var(--rule-2);padding-bottom:7px}
+.panel h2 small{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--ink-3);font-weight:400}
+.note{font-size:12px;color:var(--ink-2);line-height:1.75}
+.subnote{font-size:11px;color:var(--ink-3);line-height:1.7}
+.field{margin:12px 0}
+.field>label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.field>label b{font-family:var(--mono);font-size:14px;color:var(--ink)}
+input[type=text],input[type=number],input[type=date],textarea,select{
+  width:100%;font-family:var(--sans);font-size:16px;padding:10px;border:1px solid var(--rule);
+  background:#fff;color:var(--ink);border-radius:0;-webkit-appearance:none;appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink-2) 50%),linear-gradient(135deg,var(--ink-2) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+textarea{resize:vertical;line-height:1.7}
+input:disabled,textarea:disabled,select:disabled{background:#F2F5F2;color:var(--ink-3)}
+input::placeholder,textarea::placeholder{color:#A9B5AB;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--rule);background:#fff;color:var(--ink-2);font-family:var(--sans);
+  font-size:13px;padding:8px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip:disabled{opacity:.55;cursor:default}
+@media(pointer:coarse){.chip{min-height:44px;padding:10px 14px}}
+.confrow{display:grid;grid-template-columns:1fr 84px;gap:10px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;border:0;-webkit-appearance:auto;appearance:auto}
+.fnd{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dotted var(--rule-2)}
+.fnd .nm{font-size:13px;line-height:1.5;min-width:0;overflow-wrap:break-word}
+.fnd .meta{font-size:10.5px;color:var(--ink-3);line-height:1.5}
+.pri{color:var(--accent);margin-right:2px}
+.cat{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-3);
+  border-bottom:1px solid var(--rule-2);padding:12px 0 3px;margin-bottom:4px}
+.cat:first-of-type{padding-top:0}
+.tri{display:flex;border:1px solid var(--rule);background:#fff;flex:none}
+.tri button{border:0;background:transparent;font-family:var(--mono);font-size:11px;padding:5px 8px;
+  cursor:pointer;color:var(--ink-2);border-right:1px solid var(--rule-2)}
+@media(pointer:coarse){.tri button{font-size:12px;padding:12px 9px;min-height:44px}}
+.tri button:last-child{border-right:0}
+.tri button:disabled{cursor:default;opacity:.6}
+.tri button[aria-pressed="true"]{color:#fff;opacity:1}
+.tri button.pos[aria-pressed="true"]{background:var(--pos)}
+.tri button.neg[aria-pressed="true"]{background:var(--neg)}
+.tri button.non[aria-pressed="true"]{background:var(--ink-3)}
+.btn{font-family:var(--sans);font-size:13px;padding:10px 14px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;cursor:pointer;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule)}
+.btn.line{background:transparent;color:var(--accent);border-color:var(--accent)}
+.btn.danger{background:transparent;color:var(--pos);border-color:var(--pos)}
+.btn.small{font-size:12px;padding:6px 10px;min-height:36px}
+.btn:disabled{opacity:.45;cursor:default}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btnrow.split{justify-content:space-between}
+.lockbox{border:2px solid var(--accent);background:var(--accent-weak);padding:14px;margin:12px 0}
+.lockbox .big{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--accent);margin-bottom:6px}
+.lockbtn{width:100%;font-family:var(--serif);font-size:15px;letter-spacing:.05em;padding:16px;margin-top:8px}
+.badge{display:inline-block;font-size:10.5px;padding:1px 6px;border:1px solid;margin:0 4px 2px 0;vertical-align:1px;white-space:nowrap}
+.b-edit{color:var(--warn-ink);border-color:var(--warn);background:var(--warn-bg);font-weight:700}
+.b-draft{color:var(--ink-3);border-color:var(--rule)}
+.b-locked{color:var(--accent);border-color:var(--accent)}
+.b-rev{color:#fff;border-color:var(--accent);background:var(--accent)}
+.b-out{color:var(--neg);border-color:var(--neg)}
+.card{display:block;width:100%;text-align:left;border:1px solid var(--rule);background:var(--panel);
+  padding:10px 12px;margin-bottom:8px;cursor:pointer;font-family:var(--sans);color:var(--ink)}
+.card:hover{background:var(--accent-weak)}
+.card .t{font-family:var(--serif);font-size:14px;font-weight:600;margin:2px 0;overflow-wrap:break-word}
+.card .d{font-size:11px;color:var(--ink-3)}
+.qcard{border:1px dashed var(--rule);background:transparent;padding:7px 12px;margin-bottom:8px;
+  font-size:12px;color:var(--ink-2);overflow-wrap:break-word}
+.qcard .d{font-size:10.5px;color:var(--ink-3)}
+.banner{border:1px solid var(--accent);background:var(--accent-weak);padding:10px 12px;margin-bottom:10px;
+  font-size:12.5px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner.warn{border-color:var(--warn);background:var(--warn-bg)}
+.banner .bx{min-width:0;overflow-wrap:break-word}
+.wsteps{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;color:var(--ink-3);flex-wrap:wrap}
+.wsteps .st{width:27px;height:27px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;background:#fff}
+.wsteps .st.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.wsteps .st.done{border-color:var(--accent);color:var(--accent)}
+.wsteps .lk{margin:0 1px}
+.wtitle{font-family:var(--serif);font-size:17px;font-weight:600;margin:8px 0 2px}
+.wnote{font-size:11.5px;color:var(--ink-2);margin-bottom:6px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:10px 0}
+.cmp>div{background:var(--panel);padding:8px 9px;font-size:12px;line-height:1.65;min-width:0;overflow-wrap:break-word;white-space:pre-wrap}
+.cmp .h{background:var(--accent-weak);font-weight:700;white-space:normal}
+.cmp .k{color:var(--ink-3);font-size:10.5px;display:block;white-space:normal}
+.catgrid{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0}
+@media(min-width:520px){.catgrid{grid-template-columns:1fr 1fr}}
+.catcard{border:1px solid var(--rule);background:#fff;padding:9px 10px;text-align:left;cursor:pointer;font-family:var(--sans);color:var(--ink)}
+.catcard b{display:block;font-size:13px}
+.catcard span{font-size:11px;color:var(--ink-2);line-height:1.5;display:block}
+.catcard[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-weak);box-shadow:inset 0 0 0 1px var(--accent)}
+.hintbox{border-left:3px solid var(--accent);background:var(--accent-weak);padding:8px 10px;font-size:12.5px;margin:8px 0}
+.kv{margin:7px 0;border-bottom:1px dotted var(--rule-2);padding-bottom:6px}
+.kv:last-child{border-bottom:none}
+.kv .k{font-size:10.5px;color:var(--ink-3)}
+.kv .v{font-size:13px;white-space:pre-wrap;overflow-wrap:break-word}
+.kv .v .none{color:var(--ink-3)}
+pre.export{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--rule);
+  padding:12px;font-family:var(--mono);font-size:11.5px;line-height:1.7;max-height:55vh;overflow-y:auto;margin:8px 0}
+.srow{display:grid;grid-template-columns:66px 40px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dotted var(--rule-2);font-size:12px}
+.srow .bin{font-family:var(--mono);font-size:11px}
+.srow .n{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.bars{display:grid;gap:3px}
+.bar{height:9px;background:#E7ECE7;position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent)}
+.bar.conf i{background:var(--ink-3)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:8px 0}
+.stat3>div{background:var(--panel);padding:8px 4px;text-align:center}
+.stat3 b{font-family:var(--mono);font-size:16px;display:block}
+.stat3 span{font-size:9.5px;color:var(--ink-2);line-height:1.4;display:block}
+.mrow{display:grid;grid-template-columns:9em 28px 1fr;gap:6px;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px dotted var(--rule-2)}
+.mrow .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right}
+.addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:6px}
+.mmlist{margin:4px 0 0;padding:0;list-style:none}
+.mmlist li{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0;border-bottom:1px dotted var(--rule-2);font-size:12.5px}
+.mmlist li .x{border:1px solid var(--rule);background:#fff;color:var(--ink-3);cursor:pointer;font-size:11px;padding:4px 8px}
+.derived{border:1px dashed var(--rule);background:#fff;padding:8px 10px;font-size:12.5px;min-height:20px}
+.derived .none{color:var(--ink-3)}
+.overlay{position:fixed;inset:0;background:rgba(23,37,28,.45);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+@media(min-width:520px){.overlay{align-items:center;padding:20px}}
+.sheet{background:var(--panel);border:1px solid var(--rule);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;padding:16px 16px 20px}
+.sheet-h{font-family:var(--serif);font-size:15px;font-weight:600;border-bottom:1px solid var(--rule-2);padding-bottom:8px;margin-bottom:10px}
+.treeq{font-size:13.5px;line-height:1.8;margin:8px 0}
+.treeopts{display:grid;gap:8px;margin:10px 0}
+.treeopts .btn{text-align:left;background:#fff;color:var(--ink);border-color:var(--rule);line-height:1.6}
+.treeopts .btn:hover{border-color:var(--accent);background:var(--accent-weak)}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--panel);
+  border-top:2px solid var(--ink);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom button{flex:1;border:0;background:transparent;font-family:var(--sans);font-size:13px;
+  color:var(--ink-2);padding:8px 4px;min-height:56px;cursor:pointer}
+nav.bottom button[aria-current="true"]{color:var(--accent);font-weight:700;box-shadow:inset 0 3px 0 var(--accent)}
+body.wizard nav.bottom{display:none}
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:#fff;
+  font-size:13px;padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
+.toast.on{opacity:1}
+.linkline{overflow-wrap:anywhere;font-size:12.5px}
+.editlog{font-size:11px;color:var(--ink-3);margin:4px 0 0;padding-left:1.2em}
+footer{font-size:11px;color:var(--ink-3);border-top:1px solid var(--rule);padding-top:10px;margin-top:20px;line-height:1.8;overflow-wrap:break-word}
+:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+noscript{display:block;padding:14px;border:1px solid var(--pos);color:var(--pos);background:#fff;margin:14px}
+</style>
+</head>
+<body>
+<noscript>このアプリは記録と集計をすべて端末内の JavaScript で行います。JavaScript を有効にしてください。</noscript>
+<div class="wrap" id="app"></div>
+<nav class="bottom" id="bottomnav" aria-label="画面切り替え">
+  <button data-nav="#list">一覧</button>
+  <button data-nav="#new">＋ 新規</button>
+  <button data-nav="#stats">集計</button>
+  <button data-nav="#settings">設定</button>
+</nav>
+<div id="modal-root"></div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ==== CONTENT:BEGIN ==== */
+const CONTENT = {"meta":{"transcribed_at":"2026-08-08","sources":[{"file":"docs/education/呼吸器身体診察実践ガイド_2026_統合版.docx","parts":["tables[17]〜[22]：第4章 疾患カード表（肺炎・胸水・気胸・COPD増悪・喘息発作・心不全（心原性肺水腫））。直前の見出し段落（para510/533/552/570/589/605）と最終行「統合の読み方」の内容（肺実質化セット／胸水セット／気胸セット／過膨張・気流閉塞セット／呼気気流制限／うっ血セット）の両方で疾患を同定済み","🚑 30秒ルート「まず探すN所見」段落：para[515]（肺炎）／para[538]（胸水）／para[557]＋⚠para[559]（気胸）／para[575]（COPD増悪）／para[594]（喘息発作）／para[610]（心不全）","第4章 🩻ベッドサイド統合段落（補遺1参照）：para[526]（肺炎）／para[547]（胸水）／para[563]〜[564]（気胸）／para[619]（心不全）── pocus_items の文言に使用","tables[56]：外れ方8分類（9行2列）","段落1211〜1238：第10章 06.5「症例で較正する」（決定木=para[1229]、一行記録=para[1230]、次の一手を一つ=para[1232]、一例から法則を作らない=para[1233]）","tables[66]：巻末「症例記録テンプレート」（9行2列）"]},{"file":"docs/education/肺エコー図譜_2026.docx","parts":["tables[2]：ずれ方4分類＋次の一手（観察／手技／解釈／統合の4行）","tables[3]：入口→まず当てる場所→見る所見（6入口）"]},{"file":"scripts/build_lung_us_figures.py","parts":["L713〜L719：BLUE profile 対応表（A／A′／B／B′／A/B／C／PLAPS → 病態）","L735〜L742：同図の注記（profileは型・A′→lung point確認・原法の下肢静脈エコー分岐）"]}]},"diseases":[{"id":"pneumonia","label":"肺炎","exam_items":[{"id":"pn_fever_chills","label":"発熱、悪寒","group":"視診","priority":false,"note":"高齢者では典型的症状に乏しい"},{"id":"pn_dyspnea_mild","label":"軽度の呼吸困難","group":"視診","priority":false,"note":""},{"id":"pn_cough_purulent","label":"咳嗽、膿性痰","group":"視診","priority":false,"note":""},{"id":"pn_fremitus_inc","label":"声音振盪増強","group":"触診","priority":false,"note":"肥満例では判定困難"},{"id":"pn_expansion_mild_limit","label":"胸郭運動軽度制限","group":"触診","priority":false,"note":""},{"id":"pn_dullness","label":"局在性濁音","group":"打診","priority":true,"note":"小さな病変では検出困難"},{"id":"pn_border_clear","label":"境界比較的明瞭","group":"打診","priority":false,"note":""},{"id":"pn_bronchial_breath","label":"気管支呼吸音","group":"聴診","priority":true,"note":"肺野で気管の音が聴こえたら異常"},{"id":"pn_crackles","label":"限局性のcrackles（吸気）","group":"聴診","priority":true,"note":"初期はcoarse/mid-inspiratory、改善とともに短くなり吸気後半へ移動しfine寄り／初期では副雑音が目立たない"},{"id":"pn_voice_test","label":"声音テスト陽性","group":"聴診","priority":true,"note":"ヤギ音／気管支声"}],"pocus_items":[{"id":"pn_us_consol","label":"実質化","note":"hepatization（肝様変化）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（③）／ガイド第4章 肺炎🩻段落（補遺1）"},{"id":"pn_us_air_bronchogram","label":"air bronchogram が動くか","note":"dynamic air bronchogram","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑨）／ガイド第4章 肺炎🩻段落（補遺1）"},{"id":"pn_us_plaps","label":"PLAPS（背側に胸水＋実質化）","note":"肺炎（背側に寄った型）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑩）／profile表 PLAPS行"},{"id":"pn_us_b_prime","label":"B′ profile：lung sliding なし ＋ B-line 多数","note":"肺炎を疑う","src":"profile表 B′行"},{"id":"pn_us_ab","label":"A/B profile：片側 A・対側 B と左右差","note":"肺炎を疑う","src":"profile表 A/B行"},{"id":"pn_us_c","label":"C profile：前方に実質化がある","note":"肺炎（前方に及ぶ型）","src":"profile表 C行"}],"integration_note":"肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。","next_step_note":"陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。"},{"id":"effusion","label":"胸水","exam_items":[{"id":"ef_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"少量では症状軽微"},{"id":"ef_lateral_decubitus","label":"患側臥位を好む","group":"視診","priority":false,"note":""},{"id":"ef_tracheal_dev_visible","label":"大量では気管偏位","group":"視診","priority":true,"note":""},{"id":"ef_fremitus_dec","label":"声音振盪著明な低下","group":"触診","priority":true,"note":"液面上では正常のことも"},{"id":"ef_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"ef_tracheal_dev_palp","label":"大量では気管健側偏位","group":"触診","priority":true,"note":""},{"id":"ef_stony_dullness","label":"石様濁音（stony dull）","group":"打診","priority":true,"note":"500mL以上で検出可能"},{"id":"ef_border_sharp","label":"境界明瞭","group":"打診","priority":false,"note":""},{"id":"ef_shift_with_position","label":"体位変換で移動","group":"打診","priority":false,"note":""},{"id":"ef_bs_diminished","label":"呼吸音著明な減弱","group":"聴診","priority":true,"note":"液面上では気管支呼吸音も"},{"id":"ef_voice_test_neg","label":"濁音域では声音テスト陰性（伝導低下）","group":"聴診","priority":false,"note":""},{"id":"ef_egophony_upper","label":"濁音上縁でのみヤギ音（Egophony）陽性（圧迫肺による）","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"ef_us_effusion","label":"胸水","note":"","src":"別冊表3「片側の呼吸音が弱い」行（④）"},{"id":"ef_us_curtain","label":"curtain sign","note":"量の半定量と穿刺の安全域決定に直結する","src":"ガイド第4章 胸水🩻段落（補遺1）"},{"id":"ef_us_anechoic","label":"横隔膜上のanechoic帯","note":"","src":"ガイド第4章 胸水🩻段落（補遺1）"}],"integration_note":"胸水セット：石様濁音、呼吸音減弱、声音振盪低下、上縁のヤギ音。（数値はガイド第6章／bedside-bayes 参照）ただし濁音は検者間一致が高く、境界を追いやすい。上縁を同じ体位で定点化すると量の変化を追える。","next_step_note":"少量・仰臥位では見逃すため、手技前は超音波で量と安全域を確認する（BTS 2023）。"},{"id":"pneumothorax","label":"気胸","exam_items":[{"id":"px_sudden_pain","label":"突然の胸痛","group":"視診","priority":false,"note":"小気胸では症状軽微"},{"id":"px_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":""},{"id":"px_chest_motion_dec","label":"患側胸郭運動低下","group":"視診","priority":false,"note":""},{"id":"px_jvd","label":"頸静脈怒張","group":"視診","priority":true,"note":"緊張性では気管が健側へ偏位＋頸静脈怒張＋血行動態不安定"},{"id":"px_fremitus_dec","label":"声音振盪低下","group":"触診","priority":true,"note":""},{"id":"px_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"px_tracheal_dev","label":"緊張性では気管偏位","group":"触診","priority":true,"note":"緊張性気胸では緊急対応要／⚠ 緊張性気胸を疑う（片側呼吸音消失＋進行する低酸素または循環不全。気管偏位は無くても否定しない）なら、画像確認前に直ちに脱気（第7章）"},{"id":"px_hyperresonance","label":"過共鳴","group":"打診","priority":true,"note":"小気胸では判定困難"},{"id":"px_asymmetry","label":"軽度〜中等度の左右差","group":"打診","priority":false,"note":""},{"id":"px_bs_dim_absent","label":"呼吸音減弱〜消失","group":"聴診","priority":true,"note":"完全虚脱では呼吸音消失"},{"id":"px_no_adventitious","label":"副雑音なし","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"px_us_sliding_loss","label":"lung sliding 消失","note":"気胸を強く示唆","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑥）／ガイド第4章 気胸🩻段落（補遺1）"},{"id":"px_us_lung_point","label":"lung point","note":"見つかれば気胸を強く支持","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑧）"},{"id":"px_us_a_prime","label":"A′ profile：lung sliding なし ＋ A-line","note":"気胸を疑う／気腫肺・無呼吸・胸膜癒着でも sliding は落ちるため、A′ から気胸へ進むときは lung point（⑧）を探して確かめる","src":"profile表 A′行＋同図の注記"}],"integration_note":"気胸セット：突然発症、片側呼吸音低下、過共鳴、声音振盪低下。陽性なら強く疑うが、小気胸では身体所見が乏しい。","next_step_note":"緊張性なら画像を待たず、安定例・外傷・仰臥位ではPOCUS（lung sliding/lung point）で確認する。"},{"id":"copd","label":"COPD増悪","exam_items":[{"id":"cp_barrel_chest","label":"樽状胸","group":"視診","priority":true,"note":"慢性変化と急性増悪の鑑別"},{"id":"cp_exp_prolong_insp","label":"呼気延長","group":"視診","priority":true,"note":""},{"id":"cp_pursed_lip","label":"口すぼめ呼吸","group":"視診","priority":true,"note":""},{"id":"cp_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"cp_hoover","label":"Hoover徴候","group":"視診","priority":true,"note":"吸気時に下位肋骨が奇異性に内方移動"},{"id":"cp_accessory_muscle","label":"呼吸補助筋使用","group":"視診","priority":true,"note":"増悪では呼吸補助筋使用・会話困難"},{"id":"cp_speech_difficulty","label":"会話困難","group":"視診","priority":true,"note":""},{"id":"cp_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":"両側性の変化"},{"id":"cp_fremitus_mild_dec","label":"声音振盪軽度低下","group":"触診","priority":false,"note":""},{"id":"cp_hyperresonance","label":"軽度過共鳴","group":"打診","priority":true,"note":"過膨張による変化／30秒ルートでは「両側の過共鳴（打診）」"},{"id":"cp_lung_base_low","label":"肺下縁低下","group":"打診","priority":false,"note":""},{"id":"cp_bs_global_dim","label":"呼吸音全体的に減弱","group":"聴診","priority":false,"note":""},{"id":"cp_exp_prolong_ausc","label":"呼気延長（＞4秒）","group":"聴診","priority":true,"note":""},{"id":"cp_wheeze_rhonchi","label":"散在性 wheeze/rhonchi","group":"聴診","priority":true,"note":""},{"id":"cp_silent_chest","label":"Silent chest（重症）","group":"聴診","priority":false,"note":"Silent chestは危険所見"}],"pocus_items":[{"id":"cp_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"}],"integration_note":"過膨張・気流閉塞セット：FET延長、Hoover徴候、過共鳴、呼吸音減弱。FETは6秒以上を疑う入口、8〜9秒超をより強い支持所見として段階的に読む。身体診察はCOPDを疑い、増悪の重症度と治療反応を追う道具。","next_step_note":"GOLD 2026でも診断確定はスパイロメトリー（FEV1/FVC<0.7）。"},{"id":"asthma","label":"喘息発作","exam_items":[{"id":"as_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"重症度の迅速評価が重要"},{"id":"as_sitting","label":"起座位","group":"視診","priority":true,"note":"tripod位"},{"id":"as_accessory_muscle","label":"補助呼吸筋使用","group":"視診","priority":true,"note":""},{"id":"as_sweating","label":"発汗","group":"視診","priority":false,"note":""},{"id":"as_word_by_word","label":"会話が単語単位","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_cyanosis","label":"チアノーゼ","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_expansion_slight","label":"胸郭拡張やや制限","group":"触診","priority":false,"note":""},{"id":"as_pulsus_paradoxus","label":"奇脈（重症時）","group":"触診","priority":true,"note":"奇脈は重症度の指標／>15mmHg（重症化サイン）"},{"id":"as_hyperres_mild","label":"軽度過共鳴","group":"打診","priority":false,"note":"発作時のみ検出／診断的価値は限定的"},{"id":"as_wheeze","label":"両側性高調wheeze","group":"聴診","priority":true,"note":""},{"id":"as_exp_dominant","label":"呼気優位","group":"聴診","priority":true,"note":""},{"id":"as_exp_prolong","label":"呼気延長","group":"聴診","priority":true,"note":""},{"id":"as_silent_chest","label":"Silent chest（重症時）","group":"聴診","priority":true,"note":"Silent chestは最重症／重症化サイン＝wheezeの消失"}],"pocus_items":[{"id":"as_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"}],"integration_note":"呼気気流制限の手がかり：呼気延長、wheeze、air entry低下、呼吸仕事量増加。これらは原因を特定しない。","next_step_note":"身体診察は重症度とT0からの変化を追い、喘息診断は変動する症状＋客観的な可変性気流制限で確認する（GINA 2026）。"},{"id":"hf","label":"心不全（心原性肺水腫）","exam_items":[{"id":"hf_orthopnea_forced","label":"起座位強制","group":"視診","priority":true,"note":"急性と慢性の鑑別／30秒ルートでは「起座呼吸・発作性夜間呼吸困難（PND）」"},{"id":"hf_jvd","label":"頸静脈怒張（JVD）","group":"視診","priority":true,"note":""},{"id":"hf_leg_edema","label":"下腿浮腫","group":"視診","priority":true,"note":""},{"id":"hf_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"hf_pnd","label":"発作性夜間呼吸困難（PND）","group":"視診","priority":true,"note":""},{"id":"hf_apex_palpable","label":"心尖拍動触知","group":"触診","priority":false,"note":"右心不全の徴候も重要"},{"id":"hf_hepatomegaly","label":"肝腫大","group":"触診","priority":false,"note":""},{"id":"hf_edema_pitting","label":"下腿浮腫の圧痕","group":"触診","priority":false,"note":""},{"id":"hf_cardiac_dullness_wide","label":"心濁音拡大","group":"打診","priority":false,"note":""},{"id":"hf_basal_dullness","label":"下肺野濁音（胸水合併時）","group":"打診","priority":false,"note":"胸水の合併に注意"},{"id":"hf_fine_crackles","label":"両側下肺野fine crackles","group":"聴診","priority":true,"note":"cracklesは重力依存性"},{"id":"hf_s3","label":"S3ギャロップ","group":"聴診","priority":true,"note":""},{"id":"hf_murmur","label":"心雑音","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"hf_us_b_profile","label":"B profile：lung sliding あり ＋ B-line 多数","note":"心原性肺水腫が代表","src":"profile表 B行"},{"id":"hf_us_bilat_bline","label":"両側性B-line（3本以上）","note":"間質性肺水腫を示す","src":"ガイド第4章 心不全🩻段落（補遺1）"},{"id":"hf_us_bline_dist","label":"B-line の分布","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（②⑫）"},{"id":"hf_us_ivc","label":"IVC の変動","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑮）"},{"id":"hf_us_pleural_line","label":"胸膜線の性状","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑬⑭）"}],"integration_note":"うっ血セット：起座呼吸、JVD、S3、両側下肺野crackles、浮腫。S3とJVDは陽性なら強力（数値はガイド第6章／bedside-bayes 参照）。","next_step_note":"crackles単独は非特異的で、BNP/NT-proBNP、心エコー、LUS B-linesで統合し、治療反応は定点で追う。"},{"id":"other","label":"その他（自由枠）","exam_items":[],"pocus_items":[]}],"site_options":{"sides":["右","左","両側"],"aspects":["前面","側面","背面"],"ics_chips":["第2肋間","第4肋間","第6肋間","第8肋間","第10肋間","肩甲骨下角の高さ"]},"export_template":{"items":[{"no":0,"heading":"症例番号 / 主な臨床問題"},{"no":1,"heading":"1. 検証する問い（一つだけ）","example":"例：右下肺の濁音は胸水か、実質化か"},{"no":2,"heading":"2. 画像前の予測","subfields":["第一候補","確信度（%）","代替診断","予測する部位・左右・広がり","その根拠となった所見"]},{"no":3,"heading":"3. 身体診察","subfields":["仮説を支持する所見","あるはずなのに無かった所見","所見の解剖学的位置（肋間・線・体表図）","診察を制限した条件"]},{"no":4,"heading":"4. POCUS 後の更新","subfields":["所見","確かめられたこと","否定的になったこと","確信度の動き（→上・→下）","新たに疑ったこと"]},{"no":5,"heading":"5. 画像・検査・経過","subfields":["CT などの画像所見（解剖）","その他の検査","最終診断（菌・病理・治療反応・経過を含む）","診察から検査までの時間差"]},{"no":6,"heading":"6. 振り返り","subfields":["当たった部分","外れた部分","外れ方の分類（第10章 06.5 の8区分）","次の症例で実行する行動（一つだけ）"]},{"no":7,"heading":"7. 暫定 Teaching point","subfields":["次の類似症例で確かめることを一文で（一例から法則を作らない）"]}]},"miss_classification":{"categories":[{"id":"observation","label":"観察の誤り","desc":"出ていた所見を拾えなかった。左右を比べていない、聴く場所が足りない"},{"id":"technique","label":"手技の誤り","desc":"取り方が違った。打診が強すぎる、体位が合っていない、声を止めさせて比べた"},{"id":"interpretation","label":"解釈の誤り","desc":"所見は取れたが、意味を取り違えた。濁音を胸水と読んで、無気肺を考えなかった"},{"id":"integration","label":"統合の誤り","desc":"個々は合っていたが、束ね方を誤った。相関する所見を独立に数えて確信を上げすぎた"},{"id":"anatomy","label":"解剖の理解不足","desc":"所見の場所と肺葉の対応がずれた。後胸部だけで中葉・舌区を探した"},{"id":"conditions","label":"診察条件の制約","desc":"肥満・胸壁の厚み・体位・騒音・小さく深い病変。腕ではなく条件の問題"},{"id":"timecourse","label":"病態の時間的変化","desc":"診察と画像のあいだに病態が動いた。所見が正しく、画像も正しいことがある"},{"id":"reference","label":"比較基準の不確実性","desc":"画像や最終診断のほうが確定していない。読影者間でも判定が割れる領域がある"}],"tree":{"root":"q0","nodes":[{"id":"q0","text":"その前にひとつ外す ── どちらかが「測れていなかっただけ」ではないか。その場合は自分のずれではない。","options":[{"label":"測れていなかっただけ","next":"q0b"},{"label":"測れていた（自分のずれを分ける）","next":"qa"}]},{"id":"q0b","text":"「測れていなかった」の中身はどれか（表の下3行がこれにあたる）。","options":[{"label":"肥満・胸壁の厚み・体位・騒音・小さく深い病変","result":"conditions"},{"label":"診察と画像のあいだに病態が動いた","result":"timecourse"},{"label":"画像や最終診断のほうが確定していない","result":"reference"}]},{"id":"qa","text":"所見の場所と肺葉の対応はずれていなかったか（解剖の理解不足は、取る側にも読む側にも根として現れる）。","options":[{"label":"対応がずれていた","result":"anatomy"},{"label":"ずれていない","next":"q1"}]},{"id":"q1","text":"問い1 ── 答えに照らして、所見そのものは合っていたか。","options":[{"label":"違っていた（「取るとき」のずれ）","next":"q2take"},{"label":"合っていた（「読むとき」のずれ）","next":"q2read"}]},{"id":"q2take","text":"体位や当て方を変えれば取れたか、ただ拾い損ねたか。","options":[{"label":"体位や当て方を変えれば取れた","result":"technique"},{"label":"ただ拾い損ねた","result":"observation"}]},{"id":"q2read","text":"一つの所見の意味を取り違えたか、組み合わせか。","options":[{"label":"一つの所見の意味を取り違えた","result":"interpretation"},{"label":"組み合わせ（束ね方）","result":"integration"}]}]},"next_hints":[{"category":"observation","hint":"次はそこを意識して取りにいく"},{"category":"technique","hint":"体位を変える。座位か側臥位へ"},{"category":"interpretation","hint":"その所見が本当は何を見ているか調べ直す"},{"category":"integration","hint":"文脈を一つ足して読み直す（分布・体位・重力）"}]},"quick_note":{"zure_label":"ずれ：どれ（何と読んだ → 実際は）","next_label":"次：一手"},"ui_copy":{"lock_button":"ここまでをエコーの前に書いた","lock_confirm":"ここまでの記録を固定します。腕の採点は、画像の前に書いた記録だけで行います。固定後に手を入れた項目には「画像後修正あり」が付きます。","edited_after_lock_badge":"画像後修正あり","anon_placeholder":"氏名・患者ID・病室番号・生年月日など、個人を特定できる情報は書かない（症例は「70代男性」のように匿名化する）","small_n_note":"同じずれ方の症例はまだ5例未満。一例から法則を作らず、次の類似症例で確かめる仮説として扱う","teaching_point_label":"次の類似症例で確かめることを一文で（一例から法則を作らない）"},"links":{"bedside_bayes":"https://torukubota2023.github.io/bedside-bayes/","bedside_bayes_note":"尤度比・情報量の数値はこちら","guide_ref":"呼吸器身体診察実践ガイド 2026（第4章・第10章06.5・巻末テンプレート）","nejm_ref":"Garibaldi BT, Russell SW. N Engl J Med 2025;393:2142-2150 (PMID 41223363)"}};
+/* ==== CONTENT:END ==== */
+/* ==== APPVER:BEGIN ==== */
+const APP_VERSION = "v1.0.0";
+/* ==== APPVER:END ==== */
+
+/* ---------------------------------------------------------------- guard */
+if (!CONTENT) {
+  document.getElementById("app").innerHTML =
+    "<p style='padding:20px'>build.py が未実行です。data/content.yaml から CONTENT を注入してください。</p>";
+  throw new Error("CONTENT not built");
+}
+
+/* ---------------------------------------------------------------- utils */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function nowISO() { return new Date().toISOString(); }
+function p2(n) { return String(n).padStart(2, "0"); }
+function todayStr() { const d = new Date(); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
+function fmtDT(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return String(iso);
+  return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()) + " " + p2(d.getHours()) + ":" + p2(d.getMinutes());
+}
+function fmtD(iso) { return fmtDT(iso).slice(0, 10); }
+function uid() { return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function deepCopy(o) { return JSON.parse(JSON.stringify(o)); }
+function clampInt(v, a, b) { v = Math.round(Number(v) || 0); return Math.max(a, Math.min(b, v)); }
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2400);
+}
+
+/* ------------------------------------------------- content 由来の定数（医学文言の単一ソース） */
+const DISEASES = CONTENT.diseases;
+const D_BY_ID = {}; DISEASES.forEach(d => { D_BY_ID[d.id] = d; });
+const ET_ITEMS = CONTENT.export_template.items;
+const ET = {}; ET_ITEMS.forEach(it => { ET[it["no"]] = it; });
+const CATS = CONTENT.miss_classification.categories;
+const CAT_BY_ID = {}; CATS.forEach(c => { CAT_BY_ID[c.id] = c; });
+const HINTS = {}; (CONTENT.miss_classification.next_hints || []).forEach(h => { HINTS[h.category] = h.hint; });
+const UI = CONTENT.ui_copy;
+const SITE = CONTENT.site_options;
+function stripNo(h) { return String(h).replace(/^\d+\.\s*/, ""); }
+function diseaseLabel(id) { return D_BY_ID[id] ? D_BY_ID[id].label : (id || ""); }
+const AGES = ["30代以下", "40代", "50代", "60代", "70代", "80代", "90代以上"];
+const SEXES = ["男性", "女性"];
+const MATCH_LABEL = { yes: "はい", partial: "部分", no: "いいえ", pending: "未確定" };
+
+/* ---------------------------------------------------------------- storage */
+const K_META = "awn.meta", K_QUICK = "awn.quick", K_DRAFT = "awn.draft", K_SETTINGS = "awn.settings", K_CASE = "awn.case.";
+function lsGet(k, fb) { try { const s = localStorage.getItem(k); return s == null ? fb : JSON.parse(s); } catch (e) { return fb; } }
+function lsSet(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+function initMeta() {
+  const m = lsGet(K_META, null);
+  if (!m) { try { lsSet(K_META, { schemaVersion: 1 }); } catch (e) {} }
+  else if ((m.schemaVersion || 1) > 1) { toast("新しい版で作られたデータです。アプリを更新してください。"); }
+}
+
+/* schema: 1症例1キー。checks は 1=あり / -1=なし / キー欠落=未評価 */
+function newCase() {
+  const t = nowISO();
+  return {
+    id: uid(),
+    schemaVersion: 1,
+    createdAt: t,
+    updatedAt: t,
+    status: "draft",            // draft → locked → reviewed
+    wizardStep: 1,
+    question: "", disease: "", age: "", sex: "",
+    pre: { firstDx: "", conf: 50, altDx: "", site: { sides: [], aspects: [], ics: [], free: "" }, rationale: "" },
+    exam: { checks: {}, freeText: "", missingExpectedManual: [], limitations: "" },
+    lock: null,                 // {lockedAt, snapshot:{question,disease,age,sex,pre,exam}}
+    pocus: { checks: {}, findings: "", confirmed: "", refuted: "", conf: null, newSuspicion: "" },
+    compare: { hit: "", miss: "", missPrimary: "", missSecondary: "", nextAction: "", teachingPoint: "" },
+    outcome: { ct: "", tests: "", finalDx: "", gapHours: "", match: "pending" },
+    editedAfterLock: false,
+    editLog: []
+  };
+}
+function newQuickNote(date, zure, next) {
+  return { id: "q" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    date: date || todayStr(), zure: zure || "", next: next || "", createdAt: nowISO() };
+}
+/* migrate chain（v1 が現行。未知フィールドは触らず温存する） */
+function migrateCase(c) {
+  if (!c || typeof c !== "object" || !c.id) return null;
+  if (!c.schemaVersion) c.schemaVersion = 1;
+  if (!c.status) c.status = "draft";
+  if (!c.pre) c.pre = { firstDx: "", conf: 50, altDx: "", site: null, rationale: "" };
+  if (typeof c.pre.conf !== "number") c.pre.conf = 50;
+  if (!c.pre.site) c.pre.site = { sides: [], aspects: [], ics: [], free: "" };
+  ["sides", "aspects", "ics"].forEach(k => { if (!Array.isArray(c.pre.site[k])) c.pre.site[k] = []; });
+  if (!c.exam) c.exam = {};
+  if (!c.exam.checks) c.exam.checks = {};
+  if (!Array.isArray(c.exam.missingExpectedManual)) c.exam.missingExpectedManual = [];
+  if (!c.pocus) c.pocus = {};
+  if (!c.pocus.checks) c.pocus.checks = {};
+  if (!c.compare) c.compare = {};
+  if (!c.outcome) c.outcome = {};
+  if (!c.outcome.match) c.outcome.match = "pending";
+  if (!Array.isArray(c.editLog)) c.editLog = [];
+  return c;
+}
+function loadCaseById(id) { const c = lsGet(K_CASE + id, null); return c ? migrateCase(c) : null; }
+function allCases() {
+  const out = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.indexOf(K_CASE) === 0) {
+      const c = lsGet(k, null);
+      const m = c && migrateCase(c);
+      if (m) out.push(m);
+    }
+  }
+  return out;
+}
+
+/* debounce 300ms 保存 + pagehide/画面遷移で flush */
+let saveTimer = null, pendingCase = null;
+function scheduleSave(c) {
+  pendingCase = c;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, 300);
+}
+function flushSave() {
+  clearTimeout(saveTimer); saveTimer = null;
+  if (pendingCase) { const c = pendingCase; pendingCase = null; persistCase(c); }
+}
+function persistCase(c) {
+  try {
+    localStorage.setItem(K_CASE + c.id, JSON.stringify(c));
+    if (c === wizCase) {
+      const ptr = lsGet(K_DRAFT, null);
+      if (c.status !== "reviewed") lsSet(K_DRAFT, { caseId: c.id });
+      else if (ptr && ptr.caseId === c.id) localStorage.removeItem(K_DRAFT);
+    }
+  } catch (e) {
+    toast("保存に失敗しました（端末の空き容量を確認してください）");
+  }
+}
+addEventListener("pagehide", flushSave);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushSave(); });
+
+/* ------------------------------------------------- ロック規律（本アプリの核心） */
+/* locked 以降、S1（問い・病態・年代・性別）/ pre / exam への書き込みは editAfterLock 経由のみ */
+const LOCK_PROTECTED = ["s1", "pre", "exam"];
+const editSession = Object.create(null);   // caseId -> Set(section) このセッションで訂正解錠済み
+function sectionUnlocked(id, section) { return !!(editSession[id] && editSession[id].has(section)); }
+function canWriteSection(c, section) {
+  if (LOCK_PROTECTED.indexOf(section) < 0) return true;
+  if (c.status === "draft") return true;
+  return sectionUnlocked(c.id, section);
+}
+function writeCase(c, section, mutate) {
+  if (!canWriteSection(c, section)) {
+    toast("ロック済みの項目です。「訂正する」から開いてください。");
+    return false;
+  }
+  mutate(c);
+  c.updatedAt = nowISO();
+  scheduleSave(c);
+  return true;
+}
+function editAfterLock(c, section) {
+  const names = { s1: "問い・病態", pre: stripNo(ET[2].heading), exam: stripNo(ET[3].heading) };
+  const ok = confirm("ロック後の訂正です（対象：" + (names[section] || section) + "）。\n「" +
+    UI.edited_after_lock_badge + "」の表示がこの記録に付き、外せません。訂正を始めますか？");
+  if (!ok) return false;
+  c.editedAfterLock = true;   // 不可逆
+  c.editLog.push({ at: nowISO(), section: section });
+  if (!editSession[c.id]) editSession[c.id] = new Set();
+  editSession[c.id].add(section);
+  c.updatedAt = nowISO();
+  persistCase(c);
+  return true;
+}
+function lockCase(c) {
+  if (c.status !== "draft" || c.lock) return false;
+  c.lock = {
+    lockedAt: nowISO(),
+    snapshot: deepCopy({ question: c.question, disease: c.disease, age: c.age, sex: c.sex, pre: c.pre, exam: c.exam })
+  };
+  c.status = "locked";
+  if (c.pocus.conf == null) c.pocus.conf = c.pre.conf;
+  c.updatedAt = nowISO();
+  persistCase(c);
+  return true;
+}
+
+/* ---------------------------------------------------------------- 導出 */
+function derivedMissing(exam, diseaseId) {
+  const d = D_BY_ID[diseaseId];
+  if (!d) return [];
+  return (d.exam_items || []).filter(it => exam.checks[it.id] === -1).map(it => it.label);
+}
+function checkedLabels(items, checks, val) {
+  return (items || []).filter(it => checks[it.id] === val).map(it => it.label);
+}
+function snapOf(c) {
+  return c.lock ? c.lock.snapshot :
+    { question: c.question, disease: c.disease, age: c.age, sex: c.sex, pre: c.pre, exam: c.exam };
+}
+function confMove(c) {
+  const a = snapOf(c).pre.conf;
+  const b = (c.pocus && c.pocus.conf != null) ? c.pocus.conf : a;
+  const d = b - a;
+  const arrow = d > 0 ? ("↑" + d) : d < 0 ? ("↓" + (-d)) : "±0";
+  return { from: a, to: b, diff: d, arrow: arrow, text: a + "% → " + b + "%（" + arrow + "）" };
+}
+function fmtSite(site) {
+  if (!site) return "";
+  const parts = [].concat(site.sides || [], site.aspects || [], site.ics || []).join("・");
+  const free = (site.free || "").trim();
+  return parts && free ? parts + "／" + free : (parts || free);
+}
+function matchScore(m) { return m === "yes" ? 100 : m === "partial" ? 50 : m === "no" ? 0 : null; }
+function isUnfinished(c) { return c.status !== "reviewed"; }
+function statusBadge(c) {
+  if (c.status === "draft") return '<span class="badge b-draft">下書き（S' + (c.wizardStep || 1) + '）</span>';
+  if (c.status === "locked") return '<span class="badge b-locked">ロック済み（S' + (c.wizardStep || 5) + '）</span>';
+  return '<span class="badge b-rev">振り返り済み</span>';
+}
+function editedBadge(c) {
+  return c.editedAfterLock ? '<span class="badge b-edit">' + esc(UI.edited_after_lock_badge) + "</span>" : "";
+}
+function matchBadge(c) {
+  const m = c.outcome && c.outcome.match;
+  if (!m || m === "pending") return "";
+  return '<span class="badge b-out">一致判定：' + esc(MATCH_LABEL[m] || m) + "</span>";
+}
+
+/* ---------------------------------------------------------------- 書き出し */
+function valOr(v) { const s = String(v == null ? "" : v).trim(); return s || "（未記入）"; }
+function indentML(v) { return valOr(v).replace(/\n/g, "\n  "); }
+function buildExportText(c) {
+  const snap = snapOf(c);
+  const d = D_BY_ID[snap.disease];
+  const L = [];
+  L.push("※ " + UI.anon_placeholder);
+  L.push("");
+  L.push("記録ID: " + c.id);
+  L.push("ロック時刻: " + (c.lock ? fmtDT(c.lock.lockedAt) : "（未ロック）"));
+  L.push("画像後修正: " + (c.editedAfterLock ? "あり（" + UI.edited_after_lock_badge + "）" : "なし"));
+  L.push("");
+  ET_ITEMS.forEach(item => {
+    const no = item["no"];
+    L.push("■ " + item.heading);
+    if (no === 0) {
+      const who = [diseaseLabel(snap.disease) || "（病態未選択）", snap.age, snap.sex].filter(Boolean).join("・");
+      L.push("  " + c.id + " / " + who);
+    } else if (no === 1) {
+      L.push("  " + indentML(snap.question));
+    } else if (no === 2) {
+      const sf = item.subfields;
+      L.push("  - " + sf[0] + ": " + indentML(snap.pre.firstDx));
+      L.push("  - " + sf[1] + ": " + snap.pre.conf + "%");
+      L.push("  - " + sf[2] + ": " + indentML(snap.pre.altDx));
+      L.push("  - " + sf[3] + ": " + indentML(fmtSite(snap.pre.site)));
+      L.push("  - " + sf[4] + ": " + indentML(snap.pre.rationale));
+    } else if (no === 3) {
+      const sf = item.subfields;
+      const items = d ? d.exam_items : [];
+      const pos = checkedLabels(items, snap.exam.checks, 1);
+      const missing = derivedMissing(snap.exam, snap.disease).concat(snap.exam.missingExpectedManual || []);
+      L.push("  - " + sf[0] + ": " + valOr(pos.join("、")));
+      L.push("  - " + sf[1] + ": " + valOr(missing.join("、")));
+      L.push("  - " + sf[2] + ": " + indentML(snap.exam.freeText));
+      L.push("  - " + sf[3] + ": " + indentML(snap.exam.limitations));
+    } else if (no === 4) {
+      const sf = item.subfields;
+      const items = d ? d.pocus_items : [];
+      const pos = checkedLabels(items, c.pocus.checks, 1);
+      const neg = checkedLabels(items, c.pocus.checks, -1);
+      let f = pos.length ? "あり：" + pos.join("、") : "";
+      if (neg.length) f += (f ? "／" : "") + "なし：" + neg.join("、");
+      const free = (c.pocus.findings || "").trim();
+      if (free) f += (f ? "\n" : "") + free;
+      L.push("  - " + sf[0] + ": " + indentML(f));
+      L.push("  - " + sf[1] + ": " + indentML(c.pocus.confirmed));
+      L.push("  - " + sf[2] + ": " + indentML(c.pocus.refuted));
+      L.push("  - " + sf[3] + ": " + (c.lock ? confMove(c).text : "（未ロック）"));
+      L.push("  - " + sf[4] + ": " + indentML(c.pocus.newSuspicion));
+    } else if (no === 5) {
+      const sf = item.subfields;
+      L.push("  - " + sf[0] + ": " + indentML(c.outcome.ct));
+      L.push("  - " + sf[1] + ": " + indentML(c.outcome.tests));
+      L.push("  - " + sf[2] + ": " + indentML(c.outcome.finalDx));
+      L.push("  - " + sf[3] + ": " + (String(c.outcome.gapHours || "").trim() ? c.outcome.gapHours + "時間" : "（未記入）"));
+      L.push("  - 一致判定: " + (MATCH_LABEL[c.outcome.match] || "未確定"));
+    } else if (no === 6) {
+      const sf = item.subfields;
+      L.push("  - " + sf[0] + ": " + indentML(c.compare.hit));
+      L.push("  - " + sf[1] + ": " + indentML(c.compare.miss));
+      let cl = c.compare.missPrimary ? "主：" + (CAT_BY_ID[c.compare.missPrimary] || {}).label : "";
+      if (c.compare.missSecondary) cl += (cl ? "／" : "") + "副：" + (CAT_BY_ID[c.compare.missSecondary] || {}).label;
+      L.push("  - " + sf[2] + ": " + valOr(cl));
+      L.push("  - " + sf[3] + ": " + indentML(c.compare.nextAction));
+    } else if (no === 7) {
+      const sf = item.subfields;
+      L.push("  - " + sf[0] + ": " + indentML(c.compare.teachingPoint));
+    }
+    L.push("");
+  });
+  return L.join("\n").replace(/\n+$/, "\n");
+}
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("コピーしました");
+  } catch (e) {
+    /* iOS 等で失敗したら readonly textarea 全選択のフォールバック */
+    openModal('<div class="sheet-h">コピーできない環境のため、全選択しました</div>' +
+      '<p class="note">長押し（または Cmd+C）でコピーしてください。</p>' +
+      '<textarea id="cpFallback" readonly rows="10" style="font-family:var(--mono);font-size:11px"></textarea>' +
+      '<div class="btnrow"><button class="btn ghost" data-close>閉じる</button></div>');
+    const ta = $("#cpFallback");
+    ta.value = text;
+    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+  }
+}
+
+/* ---------------------------------------------------------------- modal */
+function openModal(innerHTML) {
+  const root = $("#modal-root");
+  root.innerHTML = '<div class="overlay"><div class="sheet" role="dialog" aria-modal="true">' + innerHTML + "</div></div>";
+  $$("[data-close]", root).forEach(b => b.addEventListener("click", closeModal));
+  root.firstChild.addEventListener("click", e => { if (e.target === root.firstChild) closeModal(); });
+  return root;
+}
+function closeModal() { $("#modal-root").innerHTML = ""; }
+
+/* 決定木モーダル（CONTENT.miss_classification.tree の汎用レンダラ） */
+function openTreeModal(onPick) {
+  const tree = CONTENT.miss_classification.tree;
+  const nodes = {}; tree.nodes.forEach(n => { nodes[n.id] = n; });
+  let cur = tree.root;
+  const hist = [];
+  function draw() {
+    const n = nodes[cur];
+    if (!n) { closeModal(); return; }
+    const root = openModal('<div class="sheet-h">分類に迷ったら、順に答える</div>' +
+      '<p class="treeq">' + esc(n.text) + "</p>" +
+      '<div class="treeopts">' + n.options.map((o, i) =>
+        '<button type="button" class="btn opt" data-i="' + i + '">' + esc(o.label) + "</button>").join("") + "</div>" +
+      '<div class="btnrow split"><span>' +
+      (hist.length ? '<button type="button" class="btn ghost small" id="treeBack">ひとつ戻る</button>' : "") +
+      '</span><button type="button" class="btn ghost small" data-close>閉じる</button></div>');
+    $$(".opt", root).forEach(b => b.addEventListener("click", () => {
+      const o = n.options[+b.dataset.i];
+      if (o.next) { hist.push(cur); cur = o.next; draw(); }
+      else if (o.result) { closeModal(); onPick(o.result); }
+    }));
+    const bk = $("#treeBack", root);
+    if (bk) bk.addEventListener("click", () => { cur = hist.pop(); draw(); });
+  }
+  draw();
+}
+
+/* ---------------------------------------------------------------- router */
+let prevRoute = null;
+let wizCase = null;      // ウィザードが現在編集している case（メモリ上の正）
+let wizStep = 1;
+let wizardIntent = null; // {caseId, step} 一覧・詳細からの遷移指定
+function nav(hash) {
+  if (location.hash === hash) route();
+  else location.hash = hash;
+}
+function route() {
+  flushSave();
+  const h = location.hash || "#list";
+  if (prevRoute === "#new" && h !== "#new" && wizCase && caseIsBlank(wizCase)) wizCase = null;
+  const m = h.match(/^#case\/(.+)$/);
+  document.body.classList.toggle("wizard", h === "#new");
+  if (h === "#new") renderWizard();
+  else if (m) renderDetail(m[1]);
+  else if (h === "#stats") renderStats();
+  else if (h === "#settings") renderSettings();
+  else renderList();
+  updateBottomNav(h);
+  prevRoute = h;
+  window.scrollTo(0, 0);
+}
+function updateBottomNav(h) {
+  $$("#bottomnav button").forEach(b => {
+    const on = b.dataset.nav === h || (b.dataset.nav === "#list" && h.indexOf("#case/") === 0);
+    b.setAttribute("aria-current", on ? "true" : "false");
+  });
+}
+$$("#bottomnav button").forEach(b => b.addEventListener("click", () => nav(b.dataset.nav)));
+function caseIsBlank(c) {
+  return !c.question && !c.disease && !c.pre.firstDx && Object.keys(c.exam.checks).length === 0;
+}
+
+/* ---------------------------------------------------------------- 共通部品 */
+function pageHeader(sub) {
+  return '<header class="top"><div class="eyebrow">Kotaeawase Note ／ 仮称・公開前</div>' +
+    "<h1>答え合わせノート" + '<span class="sub">' + esc(sub || "画像を開く前に書く") + "</span></h1></header>";
+}
+function fieldText(o) {
+  const dis = o.disabled ? " disabled" : "";
+  const ph = esc(o.ph == null ? UI.anon_placeholder : o.ph);
+  const inner = o.multiline
+    ? "<textarea id=\"" + o.id + "\" rows=\"" + (o.rows || 3) + "\" placeholder=\"" + ph + "\"" + dis + ">" + esc(o.value || "") + "</textarea>"
+    : "<input type=\"text\" id=\"" + o.id + "\" placeholder=\"" + ph + "\" value=\"" + esc(o.value || "") + "\"" + dis + ">";
+  return '<div class="field"><label for="' + o.id + '">' + esc(o.label) + "</label>" + inner + "</div>";
+}
+function bindText(sel, c, section, apply) {
+  const el = $(sel);
+  if (!el || el.disabled) return;
+  el.addEventListener("input", () => { writeCase(c, section, cc => apply(cc, el.value)); });
+}
+function chipsField(o) {
+  /* o: {label, name, options, selected(array), single, disabled} */
+  const dis = o.disabled ? " disabled" : "";
+  return '<div class="field"><label>' + esc(o.label) + '</label><div class="chips" data-name="' + o.name + '"' +
+    (o.single ? ' data-single="1"' : "") + ">" +
+    o.options.map(op => '<button type="button" class="chip" data-v="' + esc(op) + '" aria-pressed="' +
+      (o.selected.indexOf(op) >= 0 ? "true" : "false") + '"' + dis + ">" + esc(op) + "</button>").join("") +
+    "</div></div>";
+}
+function bindChips(name, c, section, apply) {
+  const box = $('.chips[data-name="' + name + '"]');
+  if (!box) return;
+  box.addEventListener("click", e => {
+    const b = e.target.closest(".chip");
+    if (!b || b.disabled) return;
+    const single = box.dataset.single === "1";
+    const v = b.dataset.v;
+    const ok = writeCase(c, section, cc => apply(cc, v, b.getAttribute("aria-pressed") !== "true"));
+    if (!ok) return;
+    if (single) $$(".chip", box).forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    else b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    if (box._after) box._after();
+  });
+  return box;
+}
+function confField(o) {
+  /* o: {idBase, label, value, disabled} */
+  const dis = o.disabled ? " disabled" : "";
+  const v = clampInt(o.value, 0, 100);
+  return '<div class="field"><label for="' + o.idBase + 'r">' + esc(o.label) +
+    ' <b id="' + o.idBase + 'v">' + v + "%</b></label>" +
+    '<div class="confrow"><input type="range" id="' + o.idBase + 'r" min="0" max="100" step="5" value="' + v + '"' + dis + ">" +
+    '<input type="number" id="' + o.idBase + 'n" min="0" max="100" step="1" inputmode="numeric" value="' + v + '"' + dis + "></div></div>";
+}
+function bindConf(idBase, c, section, apply, onChange) {
+  const r = $("#" + idBase + "r"), n = $("#" + idBase + "n"), v = $("#" + idBase + "v");
+  if (!r || r.disabled) return;
+  function set(val) {
+    const x = clampInt(val, 0, 100);
+    const ok = writeCase(c, section, cc => apply(cc, x));
+    if (!ok) return;
+    r.value = x; n.value = x; v.textContent = x + "%";
+    if (onChange) onChange(x);
+  }
+  r.addEventListener("input", () => set(r.value));
+  n.addEventListener("input", () => { if (n.value !== "") set(n.value); });
+}
+function kvRow(k, v) {
+  const s = String(v == null ? "" : v).trim();
+  return '<div class="kv"><div class="k">' + esc(k) + '</div><div class="v">' +
+    (s ? esc(s) : '<span class="none">（未記入）</span>') + "</div></div>";
+}
+
+/* ================================================================ #list */
+function renderList() {
+  const cases = allCases();
+  const quick = lsGet(K_QUICK, []);
+  const unfinished = cases.filter(isUnfinished).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+  let html = pageHeader("画像を開く前に書く ── 予測と確信度を固定し、POCUS で答え合わせして、外れ方から次の一手を決める。");
+
+  if (unfinished.length) {
+    const u = unfinished[0];
+    html += '<div class="banner"><span class="bx">書きかけの記録：' +
+      esc(diseaseLabel(u.disease) || u.question || "（未入力）") + "（S" + (u.wizardStep || 1) + "）</span>" +
+      '<button type="button" class="btn small" id="resumeBtn">続きから</button></div>';
+  }
+  const ub = unbackedCount();
+  if (ub >= 5) {
+    html += '<div class="banner warn"><span class="bx">バックアップされていない記録が ' + ub +
+      " 件あります。データはこの端末の中にしかありません。</span>" +
+      '<button type="button" class="btn small line" id="goBackup">設定でバックアップ</button></div>';
+  }
+  html += '<div class="btnrow"><button type="button" class="btn" id="newBtn" style="flex:1">＋ 新しい記録（画像の前に）</button>' +
+    '<button type="button" class="btn ghost" id="quickBtn">一行記録</button></div>';
+
+  const entries = [];
+  cases.forEach(c => entries.push({ k: c.createdAt || "", type: "case", o: c }));
+  quick.forEach(q => entries.push({ k: (q.date || "") + "T12:00:00_" + (q.createdAt || ""), type: "quick", o: q }));
+  entries.sort((a, b) => b.k.localeCompare(a.k));
+
+  if (!entries.length) {
+    html += '<div class="panel"><p class="note">まだ記録がありません。エコーを当てる前に「＋ 新しい記録」で予測と確信度を書き、' +
+      "ロックしてから画像を開きます。月1〜2例で十分です。</p></div>";
+  } else {
+    html += '<div style="margin-top:12px">' + entries.map(e => {
+      if (e.type === "case") {
+        const c = e.o;
+        return '<button type="button" class="card" data-case="' + esc(c.id) + '">' +
+          '<div class="d">' + esc(fmtD(c.createdAt)) + "　" + esc(diseaseLabel(c.disease) || "病態未選択") +
+          (c.age ? "・" + esc(c.age) : "") + (c.sex ? "・" + esc(c.sex) : "") + "</div>" +
+          '<div class="t">' + esc(c.question || "（問い未入力）") + "</div>" +
+          "<div>" + statusBadge(c) + editedBadge(c) + matchBadge(c) + "</div></button>";
+      }
+      const q = e.o;
+      return '<div class="qcard"><span class="d">' + esc(q.date) + "　一行記録</span><br>" +
+        esc(CONTENT.quick_note.zure_label.split("：")[0]) + "：" + esc(q.zure || "―") + "<br>" +
+        esc(CONTENT.quick_note.next_label.split("：")[0]) + "：" + esc(q.next || "―") + "</div>";
+    }).join("") + "</div>";
+  }
+  html += footerHTML();
+  $("#app").innerHTML = html;
+
+  const rb = $("#resumeBtn");
+  if (rb) rb.addEventListener("click", () => {
+    const u = unfinished[0];
+    wizardIntent = { caseId: u.id, step: u.wizardStep || 1 };
+    nav("#new");
+  });
+  const gb = $("#goBackup"); if (gb) gb.addEventListener("click", () => nav("#settings"));
+  $("#newBtn").addEventListener("click", () => nav("#new"));
+  $("#quickBtn").addEventListener("click", openQuickModal);
+  $$("[data-case]").forEach(b => b.addEventListener("click", () => {
+    const c = loadCaseById(b.dataset.case);
+    if (!c) return;
+    if (c.status === "draft") { wizardIntent = { caseId: c.id, step: c.wizardStep || 1 }; nav("#new"); }
+    else nav("#case/" + c.id);
+  }));
+}
+function footerHTML() {
+  return "<footer>データは端末内（localStorage）のみ・外部送信ゼロ。定期的なバックアップは「設定」から。<br>" +
+    esc(CONTENT.links.guide_ref) + "／" + esc(CONTENT.links.nejm_ref) + "<br>" +
+    esc(CONTENT.links.bedside_bayes_note) + "： " +
+    '<a class="linkline" href="' + esc(CONTENT.links.bedside_bayes) + '" target="_blank" rel="noopener">' +
+    esc(CONTENT.links.bedside_bayes) + "</a>　<span>" + esc(APP_VERSION) + "</span></footer>";
+}
+
+/* 一行記録モーダル */
+function openQuickModal() {
+  const root = openModal('<div class="sheet-h">一行記録</div>' +
+    '<div class="field"><label for="qnDate">日付</label><input type="date" id="qnDate" value="' + todayStr() + '"></div>' +
+    fieldText({ id: "qnZure", label: CONTENT.quick_note.zure_label, ph: "" }) +
+    fieldText({ id: "qnNext", label: CONTENT.quick_note.next_label, ph: "" }) +
+    '<div class="btnrow split"><button type="button" class="btn ghost" data-close>閉じる</button>' +
+    '<button type="button" class="btn" id="qnSave">保存</button></div>');
+  $("#qnSave", root).addEventListener("click", () => {
+    const z = $("#qnZure").value.trim(), n = $("#qnNext").value.trim();
+    if (!z && !n) { toast("どちらか一方は入力してください"); return; }
+    const q = lsGet(K_QUICK, []);
+    q.push(newQuickNote($("#qnDate").value, z, n));
+    try { lsSet(K_QUICK, q); } catch (e) { toast("保存に失敗しました"); return; }
+    closeModal(); toast("一行記録を保存しました"); renderList();
+  });
+}
+
+/* ================================================================ #new（ウィザード S1〜S7） */
+function renderWizard() {
+  if (wizardIntent) {
+    const c = loadCaseById(wizardIntent.caseId);
+    if (c) { wizCase = c; wizStep = wizardIntent.step || c.wizardStep || 1; }
+    wizardIntent = null;
+  }
+  if (wizCase && !caseIsBlank(wizCase) && wizCase.id && !lsGet(K_CASE + wizCase.id, null) && wizCase.status !== "draft") {
+    wizCase = null; // 復元・全消去などで消えた case を掴んでいた
+  }
+  if (!wizCase) {
+    const ptr = lsGet(K_DRAFT, null);
+    const pc = ptr && ptr.caseId ? loadCaseById(ptr.caseId) : null;
+    if (pc && isUnfinished(pc)) { renderResumeChooser(pc); return; }
+    wizCase = newCase(); wizStep = 1;
+  }
+  wizStep = Math.min(Math.max(wizStep, 1), 7);
+  drawWizardStep();
+}
+function renderResumeChooser(pc) {
+  $("#app").innerHTML = pageHeader("書きかけの記録があります") +
+    '<div class="panel"><h2>どちらで始めますか</h2>' +
+    '<p class="note">書きかけ：' + esc(diseaseLabel(pc.disease) || pc.question || "（未入力）") +
+    "（S" + (pc.wizardStep || 1) + "・" + esc(fmtDT(pc.updatedAt)) + " 保存）</p>" +
+    '<div class="btnrow"><button type="button" class="btn" id="rcResume" style="flex:1">続きから再開</button>' +
+    '<button type="button" class="btn ghost" id="rcNew">新しく始める（書きかけは一覧に残る）</button></div>' +
+    '<div class="btnrow"><button type="button" class="btn ghost small" id="rcBack">一覧へ戻る</button></div></div>';
+  $("#rcResume").addEventListener("click", () => { wizCase = pc; wizStep = pc.wizardStep || 1; drawWizardStep(); });
+  $("#rcNew").addEventListener("click", () => { wizCase = newCase(); wizStep = 1; drawWizardStep(); });
+  $("#rcBack").addEventListener("click", () => nav("#list"));
+}
+const STEP_TITLES = { 1: "問いと病態", 2: "", 3: "", 4: "ロック", 5: "POCUS 答え合わせ", 6: "対比と外れ方", 7: "書き出しと完了" };
+function stepTitle(n) {
+  if (n === 2) return stripNo(ET[2].heading);
+  if (n === 3) return stripNo(ET[3].heading);
+  return STEP_TITLES[n];
+}
+function wizHeaderHTML() {
+  const c = wizCase;
+  let steps = "";
+  for (let i = 1; i <= 7; i++) {
+    steps += '<span class="st' + (i === wizStep ? " cur" : (i < wizStep ? " done" : "")) + '">' + i + "</span>";
+    if (i === 4) steps += '<span class="lk">🔒</span>';
+  }
+  return '<div class="wsteps">' + steps + "</div>" +
+    '<div class="wtitle">S' + wizStep + "　" + esc(stepTitle(wizStep)) + "</div>" +
+    '<div class="wnote">' + (wizStep <= 4 ? "画像を開く前に書く" : "画像のあと") +
+    (c.lock ? "　／　ロック " + esc(fmtDT(c.lock.lockedAt)) : "") + " " + editedBadge(c) + "</div>";
+}
+function drawWizardStep() {
+  const c = wizCase;
+  if (c.wizardStep !== wizStep) {
+    c.wizardStep = wizStep;
+    if (!caseIsBlank(c)) { c.updatedAt = nowISO(); scheduleSave(c); }
+  }
+  let body = "", bind = null;
+  if (wizStep === 1) { const r = stepS1(c); body = r[0]; bind = r[1]; }
+  else if (wizStep === 2) { const r = stepS2(c); body = r[0]; bind = r[1]; }
+  else if (wizStep === 3) { const r = stepS3(c); body = r[0]; bind = r[1]; }
+  else if (wizStep === 4) { const r = stepS4(c); body = r[0]; bind = r[1]; }
+  else if (wizStep === 5) { const r = stepS5(c); body = r[0]; bind = r[1]; }
+  else if (wizStep === 6) { const r = stepS6(c); body = r[0]; bind = r[1]; }
+  else { const r = stepS7(c); body = r[0]; bind = r[1]; }
+
+  const nextLabel = wizStep === 4 ? (c.lock ? "次へ（S5 POCUS）" : "") :
+    wizStep === 7 ? "" : "次へ（S" + (wizStep + 1) + "）";
+  $("#app").innerHTML =
+    '<div class="panel">' + wizHeaderHTML() + "</div>" +
+    '<div class="panel">' + body + "</div>" +
+    '<div class="btnrow split">' +
+    '<span><button type="button" class="btn ghost" id="wzBack"' + (wizStep === 1 ? " disabled" : "") + ">戻る</button></span>" +
+    "<span>" +
+    '<button type="button" class="btn ghost" id="wzLeave">中断して一覧へ</button> ' +
+    (nextLabel ? '<button type="button" class="btn" id="wzNext">' + nextLabel + "</button>" : "") +
+    "</span></div>";
+  if (bind) bind();
+  $("#wzBack").addEventListener("click", () => { if (wizStep > 1) { wizStep--; drawWizardStep(); window.scrollTo(0, 0); } });
+  $("#wzLeave").addEventListener("click", () => {
+    flushSave();
+    if (caseIsBlank(c)) wizCase = null;
+    nav("#list");
+  });
+  const nx = $("#wzNext");
+  if (nx) nx.addEventListener("click", () => {
+    if (wizStep === 1 && (!c.question.trim() || !c.disease)) { toast("検証する問いと病態は必須です"); return; }
+    if (wizStep === 6 && !c.compare.missPrimary) { toast("外れ方の分類（主）をひとつ選んでください"); return; }
+    wizStep++;
+    drawWizardStep(); window.scrollTo(0, 0);
+  });
+  window.scrollTo(0, 0);
+}
+function lockedBanner(c, section) {
+  if (canWriteSection(c, section)) return "";
+  return '<div class="banner warn"><span class="bx">ロック済み ── 画像前の記録は固定されています。' +
+    "訂正すると「" + esc(UI.edited_after_lock_badge) + "」が付きます。</span>" +
+    '<button type="button" class="btn small line" data-unlock="' + section + '">訂正する</button></div>';
+}
+function bindUnlock(c) {
+  $$("[data-unlock]").forEach(b => b.addEventListener("click", () => {
+    if (editAfterLock(c, b.dataset.unlock)) drawWizardStep();
+  }));
+}
+
+/* ---- S1 問いと病態 ---- */
+function stepS1(c) {
+  const dis = !canWriteSection(c, "s1");
+  const html = lockedBanner(c, "s1") +
+    '<p class="subnote">※ ' + esc(UI.anon_placeholder) + "</p>" +
+    fieldText({ id: "f_q", label: stripNo(ET[1].heading) + "（必須）", value: c.question, ph: ET[1].example || "", multiline: true, rows: 2, disabled: dis }) +
+    chipsField({ label: "病態（必須）", name: "disease", options: DISEASES.map(d => d.label), selected: c.disease ? [diseaseLabel(c.disease)] : [], single: true, disabled: dis }) +
+    '<div class="field"><label for="f_age">年代（任意）</label><select id="f_age"' + (dis ? " disabled" : "") + '><option value="">未選択</option>' +
+    AGES.map(a => '<option value="' + a + '"' + (c.age === a ? " selected" : "") + ">" + a + "</option>").join("") + "</select></div>" +
+    '<div class="field"><label for="f_sex">性別（任意）</label><select id="f_sex"' + (dis ? " disabled" : "") + '><option value="">未選択</option>' +
+    SEXES.map(a => '<option value="' + a + '"' + (c.sex === a ? " selected" : "") + ">" + a + "</option>").join("") + "</select></div>";
+  return [html, function bind() {
+    bindUnlock(c);
+    bindText("#f_q", c, "s1", (cc, v) => { cc.question = v; });
+    bindChips("disease", c, "s1", (cc, label) => {
+      const d = DISEASES.find(x => x.label === label);
+      const id = d ? d.id : "";
+      if (cc.disease && cc.disease !== id &&
+        (Object.keys(cc.exam.checks).length || Object.keys(cc.pocus.checks).length)) {
+        if (!confirm("病態を変えると、チェックリストの入力（あり/なし）は消えます。よろしいですか？")) {
+          drawWizardStep(); return;
+        }
+        cc.exam.checks = {}; cc.pocus.checks = {};
+      }
+      cc.disease = id;
+    });
+    const ageEl = $("#f_age"), sexEl = $("#f_sex");
+    if (ageEl && !ageEl.disabled) ageEl.addEventListener("change", () => writeCase(c, "s1", cc => { cc.age = ageEl.value; }));
+    if (sexEl && !sexEl.disabled) sexEl.addEventListener("change", () => writeCase(c, "s1", cc => { cc.sex = sexEl.value; }));
+  }];
+}
+
+/* ---- S2 画像前の予測 ---- */
+function stepS2(c) {
+  const dis = !canWriteSection(c, "pre");
+  const sf = ET[2].subfields;
+  const html = lockedBanner(c, "pre") +
+    fieldText({ id: "f_first", label: sf[0], value: c.pre.firstDx, ph: "", disabled: dis }) +
+    confField({ idBase: "cf1", label: sf[1], value: c.pre.conf, disabled: dis }) +
+    fieldText({ id: "f_alt", label: sf[2], value: c.pre.altDx, ph: "", disabled: dis }) +
+    '<div class="field"><label>' + esc(sf[3]) + "</label></div>" +
+    chipsField({ label: "左右", name: "sides", options: SITE.sides, selected: c.pre.site.sides, disabled: dis }) +
+    chipsField({ label: "面", name: "aspects", options: SITE.aspects, selected: c.pre.site.aspects, disabled: dis }) +
+    chipsField({ label: "高さ（肋間）", name: "ics", options: SITE.ics_chips, selected: c.pre.site.ics, disabled: dis }) +
+    fieldText({ id: "f_sitefree", label: "部位の自由記載", value: c.pre.site.free, ph: "", disabled: dis }) +
+    fieldText({ id: "f_rat", label: sf[4], value: c.pre.rationale, multiline: true, rows: 3, disabled: dis });
+  return [html, function bind() {
+    bindUnlock(c);
+    bindText("#f_first", c, "pre", (cc, v) => { cc.pre.firstDx = v; });
+    bindConf("cf1", c, "pre", (cc, v) => { cc.pre.conf = v; });
+    bindText("#f_alt", c, "pre", (cc, v) => { cc.pre.altDx = v; });
+    bindChips("sides", c, "pre", (cc, v) => { toggleArr(cc.pre.site.sides, v); });
+    bindChips("aspects", c, "pre", (cc, v) => { toggleArr(cc.pre.site.aspects, v); });
+    bindChips("ics", c, "pre", (cc, v) => { toggleArr(cc.pre.site.ics, v); });
+    bindText("#f_sitefree", c, "pre", (cc, v) => { cc.pre.site.free = v; });
+    bindText("#f_rat", c, "pre", (cc, v) => { cc.pre.rationale = v; });
+  }];
+}
+function toggleArr(arr, v) { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
+
+/* ---- S3 身体診察 ---- */
+function groupedExamItems(d) {
+  const order = [], map = {};
+  (d.exam_items || []).forEach(it => {
+    const g = it.group || "";
+    if (!map[g]) { map[g] = []; order.push(g); }
+    map[g].push(it);
+  });
+  order.forEach(g => map[g].sort((a, b) => Number(!!b.priority) - Number(!!a.priority)));
+  return order.map(g => ({ group: g, items: map[g] }));
+}
+function triRowHTML(it, val, dis) {
+  const d = dis ? " disabled" : "";
+  return '<div class="fnd"><div class="nm">' + (it.priority ? '<span class="pri">★</span>' : "") + esc(it.label) +
+    (it.note ? '<div class="meta">' + esc(it.note) + "</div>" : "") + "</div>" +
+    '<div class="tri" data-id="' + esc(it.id) + '">' +
+    '<button type="button" class="pos" aria-pressed="' + (val === 1) + '"' + d + ">あり</button>" +
+    '<button type="button" class="neg" aria-pressed="' + (val === -1) + '"' + d + ">なし</button>" +
+    '<button type="button" class="non" aria-pressed="' + (val !== 1 && val !== -1) + '"' + d + ">未評価</button>" +
+    "</div></div>";
+}
+function bindTriList(rootSel, c, section, checksOf, after) {
+  $$(rootSel + " .tri").forEach(t => t.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b || b.disabled) return;
+    const id = t.dataset.id;
+    const val = b.classList.contains("pos") ? 1 : b.classList.contains("neg") ? -1 : 0;
+    const ok = writeCase(c, section, cc => {
+      const checks = checksOf(cc);
+      if (val === 0) delete checks[id]; else checks[id] = val;
+    });
+    if (!ok) return;
+    $$("button", t).forEach(x => x.setAttribute("aria-pressed",
+      (val === 1 && x.classList.contains("pos")) || (val === -1 && x.classList.contains("neg")) ||
+      (val === 0 && x.classList.contains("non")) ? "true" : "false"));
+    if (after) after();
+  }));
+}
+function derivedBoxHTML(c) {
+  const list = derivedMissing(c.exam, c.disease);
+  return list.length ? list.map(esc).join("、") : '<span class="none">（「なし」と判定した所見がここに自動で並ぶ・保存はされない）</span>';
+}
+function stepS3(c) {
+  const dis = !canWriteSection(c, "exam");
+  const d = D_BY_ID[c.disease];
+  const sf = ET[3].subfields;
+  let html = lockedBanner(c, "exam");
+  if (!d) {
+    html += '<p class="note">S1 で病態を選ぶと、その病態のチェックリストが出ます。</p>';
+  } else if (!(d.exam_items || []).length) {
+    html += '<p class="note">「' + esc(d.label) + "」はチェックリストなし。自由記載で記録します。</p>";
+  } else {
+    html += '<p class="subnote">チェックリスト（' + esc(d.label) + "）　★＝まず探す所見　各項目 あり／なし／未評価（既定＝未評価）</p>";
+    groupedExamItems(d).forEach(g => {
+      html += '<div class="cat">' + esc(g.group) + "</div>" +
+        g.items.map(it => triRowHTML(it, c.exam.checks[it.id], dis)).join("");
+    });
+    if (d.integration_note) html += '<div class="hintbox">' + esc(d.integration_note) + "</div>";
+  }
+  html += fieldText({ id: "f_exfree", label: sf[2], value: c.exam.freeText, multiline: true, rows: 3, disabled: dis }) +
+    '<div class="field"><label>' + esc(sf[1]) + '</label><div class="derived" id="derivedBox">' + derivedBoxHTML(c) + "</div>" +
+    '<ul class="mmlist" id="mmList">' + mmListHTML(c, dis) + "</ul>" +
+    (dis ? "" : '<div class="addrow"><input type="text" id="mmInput" placeholder="手動で追加（自動導出に無いもの）">' +
+      '<button type="button" class="btn ghost small" id="mmAdd">追加</button></div>') +
+    "</div>" +
+    fieldText({ id: "f_limit", label: sf[3], value: c.exam.limitations, multiline: true, rows: 2, disabled: dis });
+  return [html, function bind() {
+    bindUnlock(c);
+    bindTriList("#app", c, "exam", cc => cc.exam.checks, () => { $("#derivedBox").innerHTML = derivedBoxHTML(c); });
+    bindText("#f_exfree", c, "exam", (cc, v) => { cc.exam.freeText = v; });
+    bindText("#f_limit", c, "exam", (cc, v) => { cc.exam.limitations = v; });
+    const add = $("#mmAdd");
+    if (add) add.addEventListener("click", () => {
+      const inp = $("#mmInput");
+      const v = inp.value.trim();
+      if (!v) return;
+      if (writeCase(c, "exam", cc => cc.exam.missingExpectedManual.push(v))) {
+        inp.value = ""; $("#mmList").innerHTML = mmListHTML(c, false); bindMMDel(c);
+      }
+    });
+    bindMMDel(c);
+  }];
+}
+function mmListHTML(c, dis) {
+  return (c.exam.missingExpectedManual || []).map((v, i) =>
+    "<li><span>" + esc(v) + "</span>" +
+    (dis ? "" : '<button type="button" class="x" data-mm="' + i + '">削除</button>') + "</li>").join("");
+}
+function bindMMDel(c) {
+  $$("[data-mm]").forEach(b => b.addEventListener("click", () => {
+    if (writeCase(c, "exam", cc => cc.exam.missingExpectedManual.splice(+b.dataset.mm, 1))) {
+      $("#mmList").innerHTML = mmListHTML(c, false); bindMMDel(c);
+    }
+  }));
+}
+
+/* ---- S4 ロック ---- */
+function stepS4(c) {
+  const d = D_BY_ID[c.disease];
+  const pos = d ? checkedLabels(d.exam_items, c.exam.checks, 1) : [];
+  const neg = d ? checkedLabels(d.exam_items, c.exam.checks, -1) : [];
+  let html = "";
+  if (c.lock) {
+    html += '<div class="lockbox"><div class="big">ロック済み ── ' + esc(fmtDT(c.lock.lockedAt)) + "</div>" +
+      '<p class="note">画像前の記録は固定されました。以降の訂正には「' + esc(UI.edited_after_lock_badge) + "」が付きます。</p></div>";
+  } else {
+    html += '<div class="lockbox"><div class="big">エコーを当てる前に、ここで固定する</div>' +
+      '<p class="note">' + esc(UI.lock_confirm) + "</p>" +
+      '<button type="button" class="btn lockbtn" id="lockBtn">🔒 ' + esc(UI.lock_button) + "</button></div>";
+  }
+  html += "<h2>ここまでの記録</h2>" +
+    kvRow(stripNo(ET[1].heading), c.question) +
+    kvRow("病態", diseaseLabel(c.disease)) +
+    kvRow(ET[2].subfields[0] + "／" + ET[2].subfields[1], (c.pre.firstDx || "（未記入）") + "／" + c.pre.conf + "%") +
+    kvRow(ET[2].subfields[3], fmtSite(c.pre.site)) +
+    kvRow("あり と判定", pos.join("、")) +
+    kvRow("なし と判定", neg.join("、")) +
+    kvRow(ET[3].subfields[3], c.exam.limitations);
+  return [html, function bind() {
+    const b = $("#lockBtn");
+    if (b) b.addEventListener("click", () => {
+      if (!c.question.trim() || !c.disease) { toast("S1 の問いと病態が必須です"); wizStep = 1; drawWizardStep(); return; }
+      if (!confirm(UI.lock_confirm)) return;
+      flushSave();
+      if (lockCase(c)) { toast("ロックしました。ここから先が画像です。"); wizStep = 5; drawWizardStep(); }
+    });
+  }];
+}
+
+/* ---- S5 POCUS ---- */
+function stepS5(c) {
+  const d = D_BY_ID[c.disease];
+  const sf = ET[4].subfields;
+  if (!c.lock) {
+    return ['<p class="note">まだロックされていません。S4 でロックしてから POCUS へ進んでください。</p>', null];
+  }
+  let html = "";
+  if (d && d.next_step_note) html += '<div class="hintbox">' + esc(d.next_step_note) + "</div>";
+  if (d && (d.pocus_items || []).length) {
+    html += '<p class="subnote">見る所見（' + esc(d.label) + "）</p>" +
+      d.pocus_items.map(it => triRowHTML(it, c.pocus.checks[it.id], false)).join("");
+  } else if (d) {
+    html += '<p class="note">「' + esc(d.label) + "」は所見リストなし。自由記載で記録します。</p>";
+  }
+  html += fieldText({ id: "f_pofind", label: sf[0] + "と位置（自由記載）", value: c.pocus.findings, multiline: true, rows: 3 }) +
+    fieldText({ id: "f_poconf", label: sf[1], value: c.pocus.confirmed, multiline: true, rows: 2 }) +
+    fieldText({ id: "f_poref", label: sf[2], value: c.pocus.refuted, multiline: true, rows: 2 }) +
+    confField({ idBase: "cf2", label: "POCUS 後の確信度（%）", value: c.pocus.conf != null ? c.pocus.conf : snapOf(c).pre.conf }) +
+    '<div class="field"><label>' + esc(sf[3]) + '</label><div class="derived" id="moveBox">' + esc(confMove(c).text) + "</div></div>" +
+    fieldText({ id: "f_ponew", label: sf[4], value: c.pocus.newSuspicion, multiline: true, rows: 2 });
+  return [html, function bind() {
+    bindTriList("#app", c, "pocus", cc => cc.pocus.checks, null);
+    bindText("#f_pofind", c, "pocus", (cc, v) => { cc.pocus.findings = v; });
+    bindText("#f_poconf", c, "pocus", (cc, v) => { cc.pocus.confirmed = v; });
+    bindText("#f_poref", c, "pocus", (cc, v) => { cc.pocus.refuted = v; });
+    bindConf("cf2", c, "pocus", (cc, v) => { cc.pocus.conf = v; }, () => { $("#moveBox").textContent = confMove(c).text; });
+    bindText("#f_ponew", c, "pocus", (cc, v) => { cc.pocus.newSuspicion = v; });
+  }];
+}
+
+/* ---- S6 対比と外れ方 ---- */
+function compareHTML(c) {
+  const snap = snapOf(c);
+  const d = D_BY_ID[snap.disease];
+  const posPre = d ? checkedLabels(d.exam_items, snap.exam.checks, 1) : [];
+  const missing = derivedMissing(snap.exam, snap.disease).concat(snap.exam.missingExpectedManual || []);
+  const posPo = d ? checkedLabels(d.pocus_items, c.pocus.checks, 1) : [];
+  const negPo = d ? checkedLabels(d.pocus_items, c.pocus.checks, -1) : [];
+  function cell(k, v) {
+    const s = String(v == null ? "" : v).trim();
+    return "<div><span class='k'>" + esc(k) + "</span>" + (s ? esc(s) : "<span class='k'>―</span>") + "</div>";
+  }
+  return '<div class="cmp">' +
+    '<div class="h">画像前（ロック時点）</div><div class="h">POCUS 後</div>' +
+    cell(ET[2].subfields[0], snap.pre.firstDx) + cell(ET[4].subfields[0], posPo.join("、") + (negPo.length ? (posPo.length ? "／" : "") + "なし：" + negPo.join("、") : "") + (c.pocus.findings ? "\n" + c.pocus.findings : "")) +
+    cell(ET[2].subfields[1], snap.pre.conf + "%") + cell(ET[4].subfields[3], confMove(c).text) +
+    cell(ET[2].subfields[3], fmtSite(snap.pre.site)) + cell(ET[4].subfields[1], c.pocus.confirmed) +
+    cell(ET[3].subfields[0], posPre.join("、")) + cell(ET[4].subfields[2], c.pocus.refuted) +
+    cell(ET[3].subfields[1], missing.join("、")) + cell(ET[4].subfields[4], c.pocus.newSuspicion) +
+    "</div>";
+}
+function catCardsHTML(sel, dataAttr) {
+  return '<div class="catgrid">' + CATS.map(cat =>
+    '<button type="button" class="catcard" ' + dataAttr + '="' + cat.id + '" aria-pressed="' + (sel === cat.id) + '">' +
+    "<b>" + esc(cat.label) + "</b><span>" + esc(cat.desc) + "</span></button>").join("") + "</div>";
+}
+function hintHTML(c) {
+  const out = [];
+  [c.compare.missPrimary, c.compare.missSecondary].forEach(id => {
+    if (id && HINTS[id]) out.push("<b>" + esc((CAT_BY_ID[id] || {}).label) + "</b> → " + esc(HINTS[id]));
+  });
+  return out.length ? '<div class="hintbox">次の一手のヒント：<br>' + out.join("<br>") + "</div>" : '<div id="__nohint"></div>';
+}
+function stepS6(c) {
+  if (!c.lock) return ['<p class="note">まだロックされていません。S4 でロックし、S5 の POCUS を先に記録してください。</p>', null];
+  const sf = ET[6].subfields;
+  const html = compareHTML(c) +
+    fieldText({ id: "f_hit", label: sf[0], value: c.compare.hit, multiline: true, rows: 2 }) +
+    fieldText({ id: "f_miss", label: sf[1], value: c.compare.miss, multiline: true, rows: 2 }) +
+    '<div class="field"><label>' + esc(sf[2]) + '（主・必須）</label>' +
+    '<div class="btnrow"><button type="button" class="btn line" id="treeBtn">分類に迷ったら ── 順に答えて辿る</button></div>' +
+    '<div id="primCards">' + catCardsHTML(c.compare.missPrimary, "data-prim") + "</div></div>" +
+    '<div class="field"><label>副分類（任意・もう1つあれば）</label>' +
+    '<div id="secCards">' + catCardsHTML(c.compare.missSecondary, "data-sec") + "</div>" +
+    '<div class="btnrow"><button type="button" class="btn ghost small" id="secClear">副分類を外す</button></div></div>' +
+    '<div id="hintBox">' + hintHTML(c) + "</div>" +
+    fieldText({ id: "f_next", label: sf[3], value: c.compare.nextAction, ph: "", multiline: false }) +
+    '<h2 style="margin-top:14px">' + esc(stripNo(ET[7].heading)) + "</h2>" +
+    fieldText({ id: "f_tp", label: UI.teaching_point_label, value: c.compare.teachingPoint, multiline: true, rows: 2 });
+  return [html, function bind() {
+    bindText("#f_hit", c, "compare", (cc, v) => { cc.compare.hit = v; });
+    bindText("#f_miss", c, "compare", (cc, v) => { cc.compare.miss = v; });
+    bindText("#f_next", c, "compare", (cc, v) => { cc.compare.nextAction = v; });
+    bindText("#f_tp", c, "compare", (cc, v) => { cc.compare.teachingPoint = v; });
+    function refreshCards() {
+      $("#primCards").innerHTML = catCardsHTML(c.compare.missPrimary, "data-prim");
+      $("#secCards").innerHTML = catCardsHTML(c.compare.missSecondary, "data-sec");
+      $("#hintBox").innerHTML = hintHTML(c);
+      bindCards();
+    }
+    function bindCards() {
+      $$("[data-prim]").forEach(b => b.addEventListener("click", () => {
+        writeCase(c, "compare", cc => { cc.compare.missPrimary = b.dataset.prim; });
+        refreshCards();
+      }));
+      $$("[data-sec]").forEach(b => b.addEventListener("click", () => {
+        writeCase(c, "compare", cc => { cc.compare.missSecondary = (cc.compare.missSecondary === b.dataset.sec ? "" : b.dataset.sec); });
+        refreshCards();
+      }));
+    }
+    bindCards();
+    $("#treeBtn").addEventListener("click", () => openTreeModal(result => {
+      writeCase(c, "compare", cc => { cc.compare.missPrimary = result; });
+      refreshCards();
+      toast("主分類：" + ((CAT_BY_ID[result] || {}).label || result));
+    }));
+    $("#secClear").addEventListener("click", () => {
+      writeCase(c, "compare", cc => { cc.compare.missSecondary = ""; });
+      refreshCards();
+    });
+  }];
+}
+
+/* ---- S7 書き出しと完了 ---- */
+function stepS7(c) {
+  const html = '<p class="note">巻末テンプレートの見出し順で書き出します。CT・最終診断は当日確定しないことが多いので、' +
+    "後日この記録を一覧から開き「後日追記」（画像・検査・経過と一致判定）を埋めてください。一致判定を入れると集計に載ります。</p>" +
+    '<pre class="export" id="expPre">' + esc(buildExportText(c)) + "</pre>" +
+    '<div class="btnrow"><button type="button" class="btn line" id="expCopy">テキストをコピー</button>' +
+    '<button type="button" class="btn" id="wzDone">完了（一覧へ）</button></div>';
+  return [html, function bind() {
+    $("#expCopy").addEventListener("click", () => copyText(buildExportText(c)));
+    $("#wzDone").addEventListener("click", () => {
+      if (c.status === "locked") c.status = "reviewed";
+      c.wizardStep = 7;
+      c.updatedAt = nowISO();
+      persistCase(c);
+      const ptr = lsGet(K_DRAFT, null);
+      if (ptr && ptr.caseId === c.id) localStorage.removeItem(K_DRAFT);
+      const id = c.id;
+      wizCase = null;
+      toast(c.status === "reviewed" ? "記録を閉じました。後日追記を忘れずに。" : "下書きのまま保存しました");
+      nav("#case/" + id);
+    });
+  }];
+}
+
+/* ================================================================ #case/<id> */
+function renderDetail(id) {
+  const c = loadCaseById(id);
+  if (!c) { toast("記録が見つかりません"); nav("#list"); return; }
+  if (c.status === "draft") { wizardIntent = { caseId: c.id, step: c.wizardStep || 1 }; nav("#new"); return; }
+  const d = D_BY_ID[c.disease];
+  const sf2 = ET[2].subfields, sf3 = ET[3].subfields, sf4 = ET[4].subfields, sf5 = ET[5].subfields, sf6 = ET[6].subfields;
+  let html = '<div class="btnrow" style="margin-top:0"><button type="button" class="btn ghost small" id="dBack">← 一覧</button></div>' +
+    '<div class="panel"><h2>' + esc(diseaseLabel(c.disease) || "病態未選択") + "　" + esc(fmtD(c.createdAt)) + "</h2>" +
+    "<div>" + statusBadge(c) + editedBadge(c) + matchBadge(c) + "</div>" +
+    '<p class="subnote">記録ID ' + esc(c.id) + "　ロック " + esc(c.lock ? fmtDT(c.lock.lockedAt) : "―") + "</p>" +
+    (c.editedAfterLock ? '<p class="subnote">※ 対比・書き出し・集計の「画像前」は、常にロック時点の記録（snapshot）を使います。</p>' : "") +
+    "</div>";
+  if (isUnfinished(c)) {
+    html += '<div class="banner"><span class="bx">この記録はまだ途中です（S' + (c.wizardStep || 5) + "）。</span>" +
+      '<button type="button" class="btn small" id="dResume">続きを記録する</button></div>';
+  }
+  /* 現在値の読み取り表示（訂正があれば current、画像前の採点は snapshot 側） */
+  html += '<div class="panel"><h2>' + esc(stripNo(ET[1].heading)) + "・病態</h2>" +
+    kvRow(stripNo(ET[1].heading), c.question) +
+    kvRow("病態／年代／性別", [diseaseLabel(c.disease), c.age, c.sex].filter(Boolean).join("・")) +
+    '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="s1" data-step="1">訂正する</button></div></div>';
+  html += '<div class="panel"><h2>' + esc(ET[2].heading) + "</h2>" +
+    kvRow(sf2[0], c.pre.firstDx) + kvRow(sf2[1], c.pre.conf + "%") + kvRow(sf2[2], c.pre.altDx) +
+    kvRow(sf2[3], fmtSite(c.pre.site)) + kvRow(sf2[4], c.pre.rationale) +
+    '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="pre" data-step="2">訂正する</button></div></div>';
+  html += '<div class="panel"><h2>' + esc(ET[3].heading) + "</h2>" +
+    kvRow(sf3[0], d ? checkedLabels(d.exam_items, c.exam.checks, 1).join("、") : "") +
+    kvRow(sf3[1], derivedMissing(c.exam, c.disease).concat(c.exam.missingExpectedManual || []).join("、")) +
+    kvRow(sf3[2], c.exam.freeText) + kvRow(sf3[3], c.exam.limitations) +
+    '<div class="btnrow"><button type="button" class="btn ghost small" data-fix="exam" data-step="3">訂正する</button></div></div>';
+  html += '<div class="panel"><h2>' + esc(ET[4].heading) + "</h2>" +
+    kvRow(sf4[0], (d ? checkedLabels(d.pocus_items, c.pocus.checks, 1).join("、") : "") + (c.pocus.findings ? "\n" + c.pocus.findings : "")) +
+    kvRow(sf4[1], c.pocus.confirmed) + kvRow(sf4[2], c.pocus.refuted) +
+    kvRow(sf4[3], c.lock ? confMove(c).text : "") + kvRow(sf4[4], c.pocus.newSuspicion) +
+    '<div class="btnrow"><button type="button" class="btn ghost small" data-edit-step="5">編集する</button></div></div>';
+  html += '<div class="panel"><h2>' + esc(ET[6].heading) + "・" + esc(stripNo(ET[7].heading)) + "</h2>" +
+    kvRow(sf6[0], c.compare.hit) + kvRow(sf6[1], c.compare.miss) +
+    kvRow(sf6[2], (c.compare.missPrimary ? "主：" + (CAT_BY_ID[c.compare.missPrimary] || {}).label : "") +
+      (c.compare.missSecondary ? "／副：" + (CAT_BY_ID[c.compare.missSecondary] || {}).label : "")) +
+    kvRow(sf6[3], c.compare.nextAction) + kvRow(UI.teaching_point_label, c.compare.teachingPoint) +
+    '<div class="btnrow"><button type="button" class="btn ghost small" data-edit-step="6">編集する</button></div></div>';
+  /* 後日追記（outcome はロック保護の対象外） */
+  html += '<div class="panel"><h2>後日追記 ── ' + esc(stripNo(ET[5].heading)) + '</h2>' +
+    fieldText({ id: "o_ct", label: sf5[0], value: c.outcome.ct, multiline: true, rows: 2 }) +
+    fieldText({ id: "o_tests", label: sf5[1], value: c.outcome.tests, multiline: true, rows: 2 }) +
+    fieldText({ id: "o_final", label: sf5[2], value: c.outcome.finalDx, multiline: true, rows: 2 }) +
+    '<div class="field"><label for="o_gap">' + esc(sf5[3]) + '（時間）</label>' +
+    '<input type="number" id="o_gap" min="0" step="1" inputmode="numeric" value="' + esc(c.outcome.gapHours) + '"></div>' +
+    chipsField({ label: "一致判定（予測と最終診断）", name: "match", options: ["はい", "部分", "いいえ", "未確定"], selected: [MATCH_LABEL[c.outcome.match] || "未確定"], single: true }) +
+    '<p class="subnote">「はい／部分／いいえ」を選ぶと集計の対象になります。</p></div>';
+  /* 書き出し */
+  html += '<div class="panel"><h2>テキスト書き出し</h2>' +
+    '<pre class="export">' + esc(buildExportText(c)) + "</pre>" +
+    '<div class="btnrow"><button type="button" class="btn line" id="dCopy">テキストをコピー</button></div></div>';
+  if (c.editLog.length) {
+    const names = { s1: "問い・病態", pre: stripNo(ET[2].heading), exam: stripNo(ET[3].heading) };
+    html += '<div class="panel"><h2>訂正履歴</h2><ul class="editlog">' +
+      c.editLog.map(l => "<li>" + esc(fmtDT(l.at)) + "　" + esc(names[l.section] || l.section) + "</li>").join("") + "</ul></div>";
+  }
+  html += footerHTML();
+  $("#app").innerHTML = html;
+
+  $("#dBack").addEventListener("click", () => nav("#list"));
+  const dr = $("#dResume");
+  if (dr) dr.addEventListener("click", () => { wizardIntent = { caseId: c.id, step: c.wizardStep || 5 }; nav("#new"); });
+  $$("[data-fix]").forEach(b => b.addEventListener("click", () => {
+    const section = b.dataset.fix, step = +b.dataset.step;
+    if (canWriteSection(c, section) || editAfterLock(c, section)) {
+      wizardIntent = { caseId: c.id, step: step };
+      nav("#new");
+    }
+  }));
+  $$("[data-edit-step]").forEach(b => b.addEventListener("click", () => {
+    wizardIntent = { caseId: c.id, step: +b.dataset.editStep };
+    nav("#new");
+  }));
+  bindText("#o_ct", c, "outcome", (cc, v) => { cc.outcome.ct = v; });
+  bindText("#o_tests", c, "outcome", (cc, v) => { cc.outcome.tests = v; });
+  bindText("#o_final", c, "outcome", (cc, v) => { cc.outcome.finalDx = v; });
+  const gap = $("#o_gap");
+  gap.addEventListener("input", () => writeCase(c, "outcome", cc => { cc.outcome.gapHours = gap.value; }));
+  const M_REV = { "はい": "yes", "部分": "partial", "いいえ": "no", "未確定": "pending" };
+  bindChips("match", c, "outcome", (cc, label) => { cc.outcome.match = M_REV[label] || "pending"; });
+  $("#dCopy").addEventListener("click", () => copyText(buildExportText(c)));
+}
+
+/* ================================================================ #stats */
+function renderStats() {
+  const all = allCases();
+  const filter = renderStats._filter || "";
+  const done = all.filter(c => c.lock && c.outcome && c.outcome.match && c.outcome.match !== "pending" &&
+    (!filter || c.disease === filter));
+  let html = pageHeader("集計 ── 一致判定（はい／部分／いいえ）が確定した記録だけを数える。") +
+    '<div class="panel"><div class="field"><label for="stFilter">疾患フィルタ</label><select id="stFilter">' +
+    '<option value="">すべての病態</option>' +
+    DISEASES.map(d => '<option value="' + d.id + '"' + (filter === d.id ? " selected" : "") + ">" + esc(d.label) + "</option>").join("") +
+    "</select></div>" +
+    '<p class="note">対象：' + done.length + " 件（一致判定が確定した記録）</p>";
+
+  if (done.length < 5) {
+    html += '<div class="hintbox">' + esc(UI.small_n_note) + "</div></div>";
+  } else {
+    const rows = done.map(c => {
+      const conf = snapOf(c).pre.conf;
+      const score = matchScore(c.outcome.match);
+      return { conf: conf, score: score, gap: conf - score,
+        move: (c.pocus.conf != null ? c.pocus.conf : conf) - conf,
+        prim: c.compare.missPrimary || "" };
+    });
+    const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+    const f1 = x => (x >= 0 ? "+" : "") + x.toFixed(1);
+    html += '<div class="stat3">' +
+      "<div><b>" + f1(mean(rows.map(r => r.gap))) + "</b><span>平均外れ幅<br>（確信度−的中）</span></div>" +
+      "<div><b>" + mean(rows.map(r => Math.abs(r.gap))).toFixed(1) + "</b><span>平均絶対外れ幅</span></div>" +
+      "<div><b>" + f1(mean(rows.map(r => r.move))) + "</b><span>POCUS 前後の<br>確信度移動（平均）</span></div>" +
+      "</div>" +
+      '<p class="subnote">的中スコア：はい=100／部分=50／いいえ=0。外れ幅＝ロック時の確信度−的中スコア（＋は自信過剰方向）。</p>';
+    /* 5ビン較正表 */
+    const bins = [[0, 20], [21, 40], [41, 60], [61, 80], [81, 100]];
+    html += "<h2>確信度と的中の較正表</h2>" +
+      '<p class="subnote">上の棒（灰）＝そのビンの平均確信度、下の棒（緑）＝平均的中スコア。二本が揃うほど較正が良い。</p>' +
+      bins.map(b => {
+        const rs = rows.filter(r => r.conf >= b[0] && r.conf <= b[1]);
+        const label = b[0] + "–" + b[1] + "%";
+        if (!rs.length) return '<div class="srow"><span class="bin">' + label + '</span><span class="n">0件</span><span class="subnote">―</span></div>';
+        const mc = mean(rs.map(r => r.conf)), ms = mean(rs.map(r => r.score));
+        return '<div class="srow"><span class="bin">' + label + '</span><span class="n">' + rs.length + "件</span>" +
+          '<span class="bars"><span class="bar conf"><i style="width:' + mc + '%"></i></span>' +
+          '<span class="bar"><i style="width:' + ms + '%"></i></span></span></div>';
+      }).join("");
+    /* 外れ方8分類の内訳 */
+    const counts = CATS.map(cat => ({ cat: cat, n: rows.filter(r => r.prim === cat.id).length }));
+    const maxN = Math.max(1, Math.max.apply(null, counts.map(x => x.n)));
+    html += '<h2 style="margin-top:14px">外れ方の分類（主）の内訳</h2>' +
+      counts.map(x =>
+        '<div class="mrow"><span>' + esc(x.cat.label) + '</span><span class="n">' + x.n + "</span>" +
+        '<span class="bar"><i style="width:' + (x.n / maxN * 100) + '%"></i></span></div>').join("") +
+      "</div>";
+  }
+  html += footerHTML();
+  $("#app").innerHTML = html;
+  $("#stFilter").addEventListener("change", e => { renderStats._filter = e.target.value; renderStats(); });
+}
+
+/* ================================================================ #settings */
+function usageEstimate() {
+  let chars = 0, cases = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.indexOf("awn.") === 0) {
+      chars += k.length + (localStorage.getItem(k) || "").length;
+      if (k.indexOf(K_CASE) === 0) cases++;
+    }
+  }
+  return { kb: (chars * 2 / 1024).toFixed(1), cases: cases };
+}
+function unbackedCount() {
+  const s = lsGet(K_SETTINGS, {});
+  const t = s.lastBackupAt || "";
+  const cs = allCases().filter(c => !t || (c.updatedAt || "") > t).length;
+  const qs = lsGet(K_QUICK, []).filter(q => !t || (q.createdAt || "") > t).length;
+  return cs + qs;
+}
+function renderSettings() {
+  const s = lsGet(K_SETTINGS, {});
+  const u = usageEstimate();
+  const html = pageHeader("設定 ── データはこの端末の中にしかない。だからバックアップする。") +
+    '<div class="panel"><h2>バックアップ <small>BACKUP</small></h2>' +
+    '<p class="note">全記録を JSON 1ファイルで書き出します。前回：' + (s.lastBackupAt ? esc(fmtDT(s.lastBackupAt)) : "未実施") +
+    "／未バックアップ " + unbackedCount() + " 件</p>" +
+    '<div class="btnrow"><button type="button" class="btn" id="bkBtn">JSON をダウンロード</button></div></div>' +
+    '<div class="panel"><h2>復元 <small>RESTORE</small></h2>' +
+    '<p class="note">バックアップ JSON を選ぶと、件数を確認してから「全置換」か「マージ」（同じ記録IDは更新の新しい方を残す）を選べます。</p>' +
+    '<input type="file" id="rsFile" accept=".json,application/json"></div>' +
+    '<div class="panel"><h2>データ <small>STORAGE</small></h2>' +
+    '<p class="note">使用量（概算）：' + u.kb + " KB／症例 " + u.cases + " 件・一行記録 " + lsGet(K_QUICK, []).length + " 件</p>" +
+    '<p class="note" id="persistState">端末へのデータ保持（persist）：確認中…</p>' +
+    '<div class="btnrow"><button type="button" class="btn line" id="psBtn">端末にデータ保持を要求する</button>' +
+    '<button type="button" class="btn danger" id="wipeBtn">全データを消去</button></div></div>' +
+    '<div class="panel"><h2>参照 <small>REFERENCES</small></h2>' +
+    '<p class="linkline">' + esc(CONTENT.links.bedside_bayes_note) + "：<br>" +
+    '<a href="' + esc(CONTENT.links.bedside_bayes) + '" target="_blank" rel="noopener">' + esc(CONTENT.links.bedside_bayes) + "</a></p>" +
+    '<p class="note">' + esc(CONTENT.links.guide_ref) + "<br>" + esc(CONTENT.links.nejm_ref) + "</p>" +
+    '<p class="note">このアプリは診療の判断を代行しません。記録と較正のための教育ツールです。</p>' +
+    '<p class="subnote">バージョン：' + esc(APP_VERSION) + "</p></div>" +
+    footerHTML();
+  $("#app").innerHTML = html;
+  $("#bkBtn").addEventListener("click", doBackup);
+  $("#rsFile").addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { handleRestore(String(r.result)); e.target.value = ""; };
+    r.readAsText(f);
+  });
+  $("#wipeBtn").addEventListener("click", () => {
+    if (!confirm("全データ（症例・一行記録・設定）をこの端末から消去します。よろしいですか？")) return;
+    if (!confirm("本当に消去しますか？ バックアップが無ければ元に戻せません。")) return;
+    wipeAll();
+    toast("消去しました");
+    renderSettings();
+  });
+  const ps = $("#psBtn");
+  refreshPersistState();
+  ps.addEventListener("click", async () => {
+    if (!(navigator.storage && navigator.storage.persist)) { toast("この環境では要求できません"); return; }
+    const ok = await navigator.storage.persist();
+    toast(ok ? "端末がデータ保持を受け付けました" : "受け付けられませんでした（ブックマーク追加やホーム画面追加で通りやすくなります）");
+    refreshPersistState();
+  });
+}
+async function refreshPersistState() {
+  const el = $("#persistState");
+  if (!el) return;
+  if (navigator.storage && navigator.storage.persisted) {
+    const p = await navigator.storage.persisted();
+    el.textContent = "端末へのデータ保持（persist）：" + (p ? "有効" : "未設定（ブラウザ都合で消えることがあります）");
+  } else {
+    el.textContent = "端末へのデータ保持（persist）：この環境では確認できません";
+  }
+}
+function doBackup() {
+  const data = { app: "kotaeawase-note", schemaVersion: 1, exportedAt: nowISO(), cases: allCases(), quick: lsGet(K_QUICK, []) };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kotaeawase-backup-" + todayStr().replace(/-/g, "") + ".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const s = lsGet(K_SETTINGS, {});
+  s.lastBackupAt = nowISO();
+  try { lsSet(K_SETTINGS, s); } catch (e) {}
+  toast("バックアップを書き出しました");
+  renderSettings();
+}
+function handleRestore(text) {
+  let data;
+  try { data = JSON.parse(text); } catch (e) { alert("JSON として読めませんでした。"); return; }
+  if (!data || data.app !== "kotaeawase-note" || !Array.isArray(data.cases)) {
+    alert("このアプリのバックアップではありません（app 識別子が一致しません）。"); return;
+  }
+  if ((data.schemaVersion || 1) > 1) {
+    alert("このバックアップは新しい版のものです。アプリを更新してから復元してください。"); return;
+  }
+  const cases = data.cases.map(migrateCase).filter(Boolean);
+  const quick = Array.isArray(data.quick) ? data.quick.filter(q => q && q.id) : [];
+  const cur = allCases();
+  const root = openModal('<div class="sheet-h">復元の確認</div>' +
+    '<p class="note">読み込み：症例 ' + cases.length + " 件・一行記録 " + quick.length + " 件<br>" +
+    "現在：症例 " + cur.length + " 件・一行記録 " + lsGet(K_QUICK, []).length + " 件</p>" +
+    '<div class="btnrow"><button type="button" class="btn danger" id="rsReplace">全置換（現在を消して読み込む）</button>' +
+    '<button type="button" class="btn" id="rsMerge">マージ（同IDは新しい方）</button>' +
+    '<button type="button" class="btn ghost" data-close>キャンセル</button></div>');
+  $("#rsReplace", root).addEventListener("click", () => {
+    if (!confirm("現在の全記録を消して、読み込んだ内容に置き換えます。よろしいですか？")) return;
+    wipeAll();
+    cases.forEach(c => { try { lsSet(K_CASE + c.id, c); } catch (e) {} });
+    try { lsSet(K_QUICK, quick); } catch (e) {}
+    finishRestore();
+  });
+  $("#rsMerge", root).addEventListener("click", () => {
+    const byId = {};
+    cur.forEach(c => { byId[c.id] = c; });
+    cases.forEach(c => {
+      const ex = byId[c.id];
+      if (!ex || (c.updatedAt || "") > (ex.updatedAt || "")) byId[c.id] = c;
+    });
+    Object.keys(byId).forEach(id => { try { lsSet(K_CASE + id, byId[id]); } catch (e) {} });
+    const qCur = lsGet(K_QUICK, []);
+    const qIds = {}; qCur.forEach(q => { qIds[q.id] = true; });
+    quick.forEach(q => { if (!qIds[q.id]) qCur.push(q); });
+    try { lsSet(K_QUICK, qCur); } catch (e) {}
+    finishRestore();
+  });
+  function finishRestore() {
+    wizCase = null; wizardIntent = null;
+    localStorage.removeItem(K_DRAFT);
+    closeModal();
+    toast("復元しました");
+    renderSettings();
+  }
+}
+function wipeAll() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.indexOf("awn.") === 0) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  wizCase = null; wizardIntent = null; pendingCase = null;
+  initMeta();
+}
+
+/* ---------------------------------------------------------------- bootstrap */
+initMeta();
+route();
+addEventListener("hashchange", route);
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch (e) {}
+}
+</script>
+</body>
+</html>
