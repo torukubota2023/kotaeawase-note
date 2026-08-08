@@ -57,12 +57,13 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--ink-2) 50%),
 textarea{resize:vertical;line-height:1.7}
 input:disabled,textarea:disabled,select:disabled{background:#F2F5F2;color:var(--ink-3)}
 input::placeholder,textarea::placeholder{color:#A9B5AB;font-size:12px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
 .chip{border:1px solid var(--rule);background:#fff;color:var(--ink-2);font-family:var(--sans);
   font-size:13px;padding:8px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .chip:disabled{opacity:.55;cursor:default}
-@media(pointer:coarse){.chip{min-height:44px;padding:10px 14px}}
+/* 診察中の親指向け: タップ標的は 48px（2026-08-08 片手入力対応） */
+@media(pointer:coarse){.chip{min-height:48px;padding:12px 15px}.btn{min-height:48px}}
 .confrow{display:grid;grid-template-columns:1fr 84px;gap:10px;align-items:center}
 input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;border:0;-webkit-appearance:auto;appearance:auto}
 .fnd{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dotted var(--rule-2)}
@@ -75,7 +76,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;b
 .tri{display:flex;border:1px solid var(--rule);background:#fff;flex:none}
 .tri button{border:0;background:transparent;font-family:var(--mono);font-size:11px;padding:5px 8px;
   cursor:pointer;color:var(--ink-2);border-right:1px solid var(--rule-2)}
-@media(pointer:coarse){.tri button{font-size:12px;padding:12px 9px;min-height:44px}}
+@media(pointer:coarse){.tri button{font-size:12px;padding:13px 10px;min-height:48px}}
 .tri button:last-child{border-right:0}
 .tri button:disabled{cursor:default;opacity:.6}
 .tri button[aria-pressed="true"]{color:#fff;opacity:1}
@@ -170,6 +171,12 @@ nav.bottom button{flex:1;border:0;background:transparent;font-family:var(--sans)
   color:var(--ink-2);padding:8px 4px;min-height:56px;cursor:pointer}
 nav.bottom button[aria-current="true"]{color:var(--accent);font-weight:700;box-shadow:inset 0 3px 0 var(--accent)}
 body.wizard nav.bottom{display:none}
+/* ウィザードの操作バーを下部固定にして常時親指圏に（片手入力対応）。アプリナビとは同時に出ない */
+.wizbar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:2px solid var(--ink);z-index:30;
+  display:flex;gap:8px;align-items:center;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.wizbar .btn.next{flex:1;min-width:0}
+body.wizard .wrap{padding-bottom:170px}
+.quickbox{border:1px dashed var(--rule);background:#fff;padding:2px 10px 10px;margin:12px 0}
 .toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:#fff;
   font-size:13px;padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
 .toast.on{opacity:1}
@@ -242,6 +249,7 @@ const ET = {}; ET_ITEMS.forEach(it => { ET[it["no"]] = it; });
 const CATS = CONTENT.miss_classification.categories;
 const CAT_BY_ID = {}; CATS.forEach(c => { CAT_BY_ID[c.id] = c; });
 const HINTS = {}; (CONTENT.miss_classification.next_hints || []).forEach(h => { HINTS[h.category] = h.hint; });
+const QT = CONTENT.quick_templates || {};
 const UI = CONTENT.ui_copy;
 const SITE = CONTENT.site_options;
 function stripNo(h) { return String(h).replace(/^\d+\.\s*/, ""); }
@@ -418,6 +426,33 @@ function fmtSite(site) {
   return parts && free ? parts + "／" + free : (parts || free);
 }
 function matchScore(m) { return m === "yes" ? 100 : m === "partial" ? 50 : m === "no" ? 0 : null; }
+/* ---- ワンハンド入力の組み立て（規則の正本は content.yaml の quick_templates） ---- */
+function sideOf(c) { return (c.pre.site.sides || []).length === 1 ? c.pre.site.sides[0] : ""; }
+function assembleQuestion(tpl, side) {
+  const slot = QT.side_slot || "◯";
+  return String(tpl).split(slot).join(side || "");
+}
+/* 問いがテンプレ由来（どの側でも）なら、その素のテンプレを返す。手書きなら null */
+function matchTemplate(q, diseaseId) {
+  if (!q) return null;
+  const tpls = (QT.questions || {})[diseaseId] || [];
+  const sides = [""].concat(SITE.sides);
+  for (let i = 0; i < tpls.length; i++)
+    for (let j = 0; j < sides.length; j++)
+      if (q === assembleQuestion(tpls[i], sides[j])) return tpls[i];
+  return null;
+}
+function firstDxSuggestions(diseaseId, side) {
+  if (!diseaseId || diseaseId === "other" || !D_BY_ID[diseaseId]) return [];
+  const label = diseaseLabel(diseaseId);
+  const out = [];
+  (QT.first_dx_patterns || []).forEach(p => {
+    if (p.indexOf("{side}") >= 0 && !side) return;
+    const t = p.split("{side}").join(side || "").split("{label}").join(label).trim();
+    if (t && out.indexOf(t) < 0) out.push(t);
+  });
+  return out;
+}
 /* POCUS 前後の確信度移動（プラン§6: 絶対値平均＋上下件数）。
    基準は snapshot の確信度（未ロックなら現行値）。pocus.conf 入力済みの記録のみ対象。
    符号付き平均だと ± が打ち消し合い「動かなかった」ように読めるので使わない。±0 は件数に数えない */
@@ -836,15 +871,15 @@ function drawWizardStep() {
 
   const nextLabel = wizStep === 4 ? (c.lock ? "次へ（S5 POCUS）" : "") :
     wizStep === 7 ? "" : "次へ（S" + (wizStep + 1) + "）";
+  /* 操作バーは下部固定（.wizbar）。次へ を最大幅にして親指圏に置く */
   $("#app").innerHTML =
     '<div class="panel">' + wizHeaderHTML() + "</div>" +
     '<div class="panel">' + body + "</div>" +
-    '<div class="btnrow split">' +
-    '<span><button type="button" class="btn ghost" id="wzBack"' + (wizStep === 1 ? " disabled" : "") + ">戻る</button></span>" +
-    "<span>" +
-    '<button type="button" class="btn ghost" id="wzLeave">中断して一覧へ</button> ' +
-    (nextLabel ? '<button type="button" class="btn" id="wzNext">' + nextLabel + "</button>" : "") +
-    "</span></div>";
+    '<div class="wizbar">' +
+    '<button type="button" class="btn ghost" id="wzBack"' + (wizStep === 1 ? " disabled" : "") + ">戻る</button>" +
+    '<button type="button" class="btn ghost" id="wzLeave">一覧へ</button>' +
+    (nextLabel ? '<button type="button" class="btn next" id="wzNext">' + nextLabel + "</button>" : '<span style="flex:1"></span>') +
+    "</div>";
   if (bind) bind();
   $("#wzBack").addEventListener("click", () => { if (wizStep > 1) { wizStep--; drawWizardStep(); window.scrollTo(0, 0); } });
   $("#wzLeave").addEventListener("click", () => {
@@ -873,13 +908,28 @@ function bindUnlock(c) {
   }));
 }
 
-/* ---- S1 問いと病態 ---- */
+/* ---- S1 問いと病態（病態→側→テンプレのタップだけで問いが入る） ---- */
 function stepS1(c) {
   const dis = !canWriteSection(c, "s1");
+  const preDis = !canWriteSection(c, "pre");
+  const tpls = (QT.questions || {})[c.disease] || [];
+  const showQuick = !dis && !preDis && tpls.length > 0;
+  const curSide = sideOf(c);
+  let quick = "";
+  if (showQuick) {
+    quick = '<div class="quickbox">' +
+      chipsField({ label: "側（タップで問いと予測部位に入る）", name: "s1side", options: SITE.sides, selected: c.pre.site.sides, single: true }) +
+      '<div class="field"><label>問いのテンプレ（タップで転記・あとから自由に編集できる）</label><div class="chips" id="tplChips">' +
+      tpls.map((t, i) => '<button type="button" class="chip" data-tpl="' + i + '" aria-pressed="' +
+        (c.question === assembleQuestion(t, curSide)) + '">' + esc(assembleQuestion(t, curSide)) + "</button>").join("") +
+      "</div></div></div>";
+  }
   const html = lockedBanner(c, "s1") +
     '<p class="subnote">※ ' + esc(UI.anon_placeholder) + "</p>" +
-    fieldText({ id: "f_q", label: stripNo(ET[1].heading) + "（必須）", value: c.question, ph: ET[1].example || "", multiline: true, rows: 2, disabled: dis }) +
+    '<p class="subnote">' + esc(UI.quick_hint) + "</p>" +
     chipsField({ label: "病態（必須）", name: "disease", options: DISEASES.map(d => d.label), selected: c.disease ? [diseaseLabel(c.disease)] : [], single: true, disabled: dis }) +
+    quick +
+    fieldText({ id: "f_q", label: stripNo(ET[1].heading) + "（必須）", value: c.question, ph: ET[1].example || "", multiline: true, rows: 2, disabled: dis }) +
     '<div class="field"><label for="f_age">年代（任意）</label><select id="f_age"' + (dis ? " disabled" : "") + '><option value="">未選択</option>' +
     AGES.map(a => '<option value="' + a + '"' + (c.age === a ? " selected" : "") + ">" + a + "</option>").join("") + "</select></div>" +
     '<div class="field"><label for="f_sex">性別（任意）</label><select id="f_sex"' + (dis ? " disabled" : "") + '><option value="">未選択</option>' +
@@ -887,7 +937,7 @@ function stepS1(c) {
   return [html, function bind() {
     bindUnlock(c);
     bindText("#f_q", c, "s1", (cc, v) => { cc.question = v; });
-    bindChips("disease", c, "s1", (cc, label) => {
+    const diseaseBox = bindChips("disease", c, "s1", (cc, label) => {
       const d = DISEASES.find(x => x.label === label);
       const id = d ? d.id : "";
       if (cc.disease && cc.disease !== id &&
@@ -899,19 +949,48 @@ function stepS1(c) {
       }
       cc.disease = id;
     });
+    if (diseaseBox) diseaseBox._after = () => drawWizardStep();  // テンプレブロックを出す
+    if (showQuick) {
+      // 側チップ: 単一選択で予測部位（pre.site.sides）へ。問いがテンプレ由来なら側も差し替える
+      $$('.chips[data-name="s1side"] .chip').forEach(b => b.addEventListener("click", () => {
+        const v = b.dataset.v;
+        writeCase(c, "pre", cc => { cc.pre.site.sides = [v]; });
+        const t = matchTemplate(c.question, c.disease);
+        if (t) writeCase(c, "s1", cc => { cc.question = assembleQuestion(t, v); });
+        drawWizardStep();
+      }));
+      // 問いテンプレ: タップで転記（手書きの問いは確認してから置換）
+      $$("#tplChips .chip").forEach(b => b.addEventListener("click", () => {
+        const t = tpls[+b.dataset.tpl];
+        const text = assembleQuestion(t, sideOf(c));
+        if (c.question.trim() && !matchTemplate(c.question, c.disease) && c.question !== text) {
+          if (!confirm("いまの問いを置き換えます。よろしいですか？")) return;
+        }
+        writeCase(c, "s1", cc => { cc.question = text; });
+        drawWizardStep();
+      }));
+    }
     const ageEl = $("#f_age"), sexEl = $("#f_sex");
     if (ageEl && !ageEl.disabled) ageEl.addEventListener("change", () => writeCase(c, "s1", cc => { cc.age = ageEl.value; }));
     if (sexEl && !sexEl.disabled) sexEl.addEventListener("change", () => writeCase(c, "s1", cc => { cc.sex = sexEl.value; }));
   }];
 }
 
-/* ---- S2 画像前の予測 ---- */
+/* ---- S2 画像前の予測（サジェスト＋確信度プリセットで片手高速化） ---- */
+const CONF_PRESETS = [30, 40, 50, 60, 70, 80, 90];
 function stepS2(c) {
   const dis = !canWriteSection(c, "pre");
   const sf = ET[2].subfields;
+  const sugs = dis ? [] : firstDxSuggestions(c.disease, sideOf(c));
   const html = lockedBanner(c, "pre") +
     fieldText({ id: "f_first", label: sf[0], value: c.pre.firstDx, ph: "", disabled: dis }) +
+    (sugs.length ? '<div class="chips" id="dxSugs" style="margin:-6px 0 10px">' +
+      sugs.map(s => '<button type="button" class="chip" data-s="' + esc(s) + '" aria-pressed="' + (c.pre.firstDx === s) + '">' +
+        esc(s) + "</button>").join("") + "</div>" : "") +
     confField({ idBase: "cf1", label: sf[1], value: c.pre.conf, disabled: dis }) +
+    (dis ? "" : '<div class="chips" id="confPresets" style="margin:-6px 0 10px">' +
+      CONF_PRESETS.map(p => '<button type="button" class="chip" data-p="' + p + '" aria-pressed="' + (c.pre.conf === p) + '">' +
+        p + "</button>").join("") + "</div>") +
     fieldText({ id: "f_alt", label: sf[2], value: c.pre.altDx, ph: "", disabled: dis }) +
     '<div class="field"><label>' + esc(sf[3]) + "</label></div>" +
     chipsField({ label: "左右", name: "sides", options: SITE.sides, selected: c.pre.site.sides, disabled: dis }) +
@@ -922,7 +1001,22 @@ function stepS2(c) {
   return [html, function bind() {
     bindUnlock(c);
     bindText("#f_first", c, "pre", (cc, v) => { cc.pre.firstDx = v; });
-    bindConf("cf1", c, "pre", (cc, v) => { cc.pre.conf = v; });
+    const syncPresets = v => $$("#confPresets .chip").forEach(x =>
+      x.setAttribute("aria-pressed", +x.dataset.p === v ? "true" : "false"));
+    bindConf("cf1", c, "pre", (cc, v) => { cc.pre.conf = v; }, syncPresets);
+    // 第一候補サジェスト（病態ラベル＋側の組み立て。タップで入力・そのまま編集可）
+    $$("#dxSugs .chip").forEach(b => b.addEventListener("click", () => {
+      if (!writeCase(c, "pre", cc => { cc.pre.firstDx = b.dataset.s; })) return;
+      $("#f_first").value = b.dataset.s;
+      $$("#dxSugs .chip").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    }));
+    // 確信度プリセット（タップ即設定。スライダー・数値も連動）
+    $$("#confPresets .chip").forEach(b => b.addEventListener("click", () => {
+      const p = +b.dataset.p;
+      if (!writeCase(c, "pre", cc => { cc.pre.conf = p; })) return;
+      $("#cf1r").value = p; $("#cf1n").value = p; $("#cf1v").textContent = p + "%";
+      syncPresets(p);
+    }));
     bindText("#f_alt", c, "pre", (cc, v) => { cc.pre.altDx = v; });
     bindChips("sides", c, "pre", (cc, v) => { toggleArr(cc.pre.site.sides, v); });
     bindChips("aspects", c, "pre", (cc, v) => { toggleArr(cc.pre.site.aspects, v); });
