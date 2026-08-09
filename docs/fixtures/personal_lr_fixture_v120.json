@@ -1,0 +1,2740 @@
+{
+ "app": "kotaeawase-note",
+ "schemaVersion": 1,
+ "exportedAt": "2026-08-09T00:00:00.000Z",
+ "cases": [
+  {
+   "id": "fx001",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-02T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-02T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx002",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-03T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-03T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx003",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-04T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-04T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx004",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-05T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-05T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx005",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-06T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-06T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx006",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-07T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-07T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx007",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-08T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-08T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx008",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-09T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-09T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx009",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-10T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.640Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-10T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx010",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-11T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-11T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx011",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-12T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-12T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx012",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-13T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-13T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "yes",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx013",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-14T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-14T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx014",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-15T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": 1,
+     "ef_bs_diminished": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-15T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": 1,
+       "ef_bs_diminished": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx015",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-16T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-16T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx016",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-17T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-17T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx017",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-18T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-18T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx018",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-19T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-19T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx019",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-20T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-20T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx020",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-21T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-21T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx021",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-22T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-22T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx022",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-23T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "qual",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": null
+   },
+   "exam": {
+    "checks": {
+     "ef_stony_dullness": -1
+    },
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-23T09:00:00.000Z",
+    "snapshot": {
+     "question": "右下肺の濁音・呼吸音減弱は胸水か、実質化か",
+     "qtype": "qual",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": null
+     },
+     "exam": {
+      "checks": {
+       "ef_stony_dullness": -1
+      },
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "no",
+    "quantActual": null
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx023",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-24T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右胸水の上縁は第何肋間まで来ているか",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "quant",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": {
+     "value": 9,
+     "unit": "肋間"
+    }
+   },
+   "exam": {
+    "checks": {},
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-24T09:00:00.000Z",
+    "snapshot": {
+     "question": "右胸水の上縁は第何肋間まで来ているか",
+     "qtype": "quant",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": {
+       "value": 9,
+       "unit": "肋間"
+      }
+     },
+     "exam": {
+      "checks": {},
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "unknown",
+    "quantActual": {
+     "value": 8
+    }
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx024",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-25T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右胸水の上縁は第何肋間まで来ているか",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "quant",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": {
+     "value": 10,
+     "unit": "肋間"
+    }
+   },
+   "exam": {
+    "checks": {},
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-25T09:00:00.000Z",
+    "snapshot": {
+     "question": "右胸水の上縁は第何肋間まで来ているか",
+     "qtype": "quant",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": {
+       "value": 10,
+       "unit": "肋間"
+      }
+     },
+     "exam": {
+      "checks": {},
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "unknown",
+    "quantActual": {
+     "value": 8
+    }
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx025",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-26T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右胸水の上縁は第何肋間まで来ているか",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "quant",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": {
+     "value": 11,
+     "unit": "肋間"
+    }
+   },
+   "exam": {
+    "checks": {},
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-26T09:00:00.000Z",
+    "snapshot": {
+     "question": "右胸水の上縁は第何肋間まで来ているか",
+     "qtype": "quant",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": {
+       "value": 11,
+       "unit": "肋間"
+      }
+     },
+     "exam": {
+      "checks": {},
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "unknown",
+    "quantActual": {
+     "value": 8
+    }
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx026",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-27T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右胸水の上縁は第何肋間まで来ているか",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "quant",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": {
+     "value": 6,
+     "unit": "肋間"
+    }
+   },
+   "exam": {
+    "checks": {},
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-27T09:00:00.000Z",
+    "snapshot": {
+     "question": "右胸水の上縁は第何肋間まで来ているか",
+     "qtype": "quant",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": {
+       "value": 6,
+       "unit": "肋間"
+      }
+     },
+     "exam": {
+      "checks": {},
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "unknown",
+    "quantActual": {
+     "value": 8
+    }
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  },
+  {
+   "id": "fx027",
+   "schemaVersion": 1,
+   "createdAt": "2026-07-28T09:00:00.000Z",
+   "updatedAt": "2026-08-09T03:29:55.641Z",
+   "status": "reviewed",
+   "wizardStep": 7,
+   "question": "右胸水の上縁は第何肋間まで来ているか",
+   "disease": "effusion",
+   "age": "70代",
+   "sex": "男性",
+   "qtype": "quant",
+   "pre": {
+    "firstDx": "胸水",
+    "conf": 60,
+    "altDx": "",
+    "site": {
+     "sides": [],
+     "aspects": [],
+     "mode": "grid",
+     "lines": [],
+     "ics": [],
+     "cm": null,
+     "free": ""
+    },
+    "rationale": "",
+    "quantPred": {
+     "value": 9,
+     "unit": "肋間"
+    }
+   },
+   "exam": {
+    "checks": {},
+    "freeText": "",
+    "missingExpectedManual": [],
+    "limitations": ""
+   },
+   "lock": {
+    "lockedAt": "2026-07-28T09:00:00.000Z",
+    "snapshot": {
+     "question": "右胸水の上縁は第何肋間まで来ているか",
+     "qtype": "quant",
+     "disease": "effusion",
+     "age": "70代",
+     "sex": "男性",
+     "pre": {
+      "firstDx": "胸水",
+      "conf": 60,
+      "altDx": "",
+      "site": {
+       "sides": [],
+       "aspects": [],
+       "mode": "grid",
+       "lines": [],
+       "ics": [],
+       "cm": null,
+       "free": ""
+      },
+      "rationale": "",
+      "quantPred": {
+       "value": 9,
+       "unit": "肋間"
+      }
+     },
+     "exam": {
+      "checks": {},
+      "freeText": "",
+      "missingExpectedManual": [],
+      "limitations": ""
+     }
+    }
+   },
+   "pocus": {
+    "checks": {},
+    "findings": "",
+    "confirmed": "",
+    "refuted": "",
+    "conf": 60,
+    "newSuspicion": "",
+    "sites": []
+   },
+   "compare": {
+    "hit": "",
+    "miss": "",
+    "missPrimary": "none",
+    "missSecondary": "",
+    "nextAction": "",
+    "teachingPoint": ""
+   },
+   "outcome": {
+    "ct": "",
+    "tests": "",
+    "finalDx": "",
+    "gapHours": "",
+    "match": "pending",
+    "diseasePresent": "unknown",
+    "quantActual": {
+     "value": 8
+    }
+   },
+   "addenda": [],
+   "editedAfterLock": false,
+   "editLog": []
+  }
+ ],
+ "quick": []
+}
