@@ -239,7 +239,7 @@
 | 固定表示 | verification bias 注記＋「この計算は、すべてこの端末の中で行われます。…」 | ui_copy.plr_bias_note / plr_privacy_note |
 
 ゼロセル補正の期待値（実画面では作りにくいのでロジックテストで担保。手で作るなら
-TP10・FP1・FN0・TN9 → 全セル+0.5）: LR+ **7.00**・LR− **0.05**（3桁丸めで 0.053）・
+TP10・FP1・FN0・TN9 → 全セル+0.5）: LR+ **7.00**・LR− **0.05**（全精度 0.05263…）・
 「補正あり」表示・書き出しの counts は**生の整数のまま**。
 
 1. 一致判定（match）を1件も入れていなくても軸1は集計される（対象は diseasePresent のみで決まる）
@@ -267,15 +267,24 @@ n=4 以下の病態×単位は quant_small_n 文言のみ（数値なし）。
    `{"app":"kotaeawase-note","type":"personal-panel","version":1,"exportedAt":"<ISO8601>",`
    `"disease":{"noteId":"effusion","bedsideKey":"eff","label":"胸水"},"n":{"present":12,"absent":10},`
    `"findings":[{"id":"ef_stony_dullness","nm":"石様濁音（stony dull）（実測）","cat":"打診",`
-   `"lp":3.75,"ln":0.313,"ci":[1.041,13.513],"cin":[0.112,0.873],`
+   `"lp":3.75,"ln":0.3125,"ci":[1.0406268491224149,13.513489500928449],`
+   `"cin":[0.11180673472724434,0.8734379931426774],`
    `"counts":{"tp":9,"fp":2,"fn":3,"tn":8},"sens":0.75,"spec":0.8,"corrected":false}]}`
-   （lp/ln/ci/cin/sens/spec は**同じ 2×2 の一組の数字**から導出・小数3桁丸め。
-   lp=sens/(1−spec)、ln=(1−sens)/spec）
-3. findings に閾値未満の行（呼吸音著明な減弱）が**入っていない**
+   - **sens/spec/lp/ln/ci/cin は丸めない全精度**（2026-08-09 bedside v2.9.0 取り込み仕様。
+     エンジン側が「JSON 内の sens/spec から再計算した lp と JSON 内の lp が ±1% で整合」を
+     検証するため、丸めると特異度99%台の行で拒否される。表示用の丸めはノートのUI側だけ）
+   - lp=sens/(1−spec)、ln=(1−sens)/spec を **JSON に書いた sens/spec と同じ値**から計算
+     （補正時は補正後の一組で一貫させ corrected:true）
+   - 検算例: counts 9/2/3/**13** なら sens 0.75・spec 13/15 → lp は **5.625**
+     （契約説明の旧例示 5.2 は counts と不整合な悪い例）
+3. findings に閾値未満の行（呼吸音著明な減弱）が**入っていない**。
+   **LR+ の大小では絞らない** ── 閾値（各10例）さえ満たせば LR+≤1 の「不成立実測」も書き出す
+   （エンジン側が「実測では判別できず」と表示する仕様）
 4. ボタン近くに「書き出しはクリップボードへのコピーです。どこに貼るかは、あなたが決めます。」
 
 ### C13.5 ロジックテスト（node + vm）
 
-開発時に 28 項目合格済み（2×2集計・CI の独立計算照合・Haldane 補正・閾値ゲート・
-丸め・契約 JSON・quant 集計・snapshot 規律・LOCK_PROTECTED 境界）。ハーネスは
+開発時に 29 項目合格済み（2×2集計・CI の独立計算照合・Haldane 補正・閾値ゲート・
+全精度書き出しと lp=sens/(1−spec) の整合・契約 JSON・quant 集計・snapshot 規律・
+LOCK_PROTECTED 境界）。ハーネスは
 スクラッチパッド一時領域のため、再検証時は同等のテストを書き直すか本節の実画面手順で確認する。

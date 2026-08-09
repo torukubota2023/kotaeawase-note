@@ -57,9 +57,14 @@ v1.1.0 でロックされた記録は snapshot に qtype が無い ── `qtype
 - 病態 → bedsideKey: **pneumonia→cap / effusion→eff / hf→hf / copd→copd**
   （2026-08-09 に bedside-bayes v2.8.1 `index.html` の `const DB` キーを実物確認）。
   pneumothorax / asthma / other はエンジン側に対応タブがなく書き出し対象外（注記表示）
-- findings は閾値を満たした行のみ。counts は生の整数 2×2、導出値（sens/spec/lp/ln/ci/cin）は
-  補正時は補正後の一組から計算して小数3桁丸め、`corrected` で補正の有無を渡す
-- 受け側（bedside-bayes）のインポートUIは**未実装**。橋のこちら側だけ先に架けた状態
+- findings は閾値を満たした行のみ。**LR+ の大小では絞らない** ── LR+≤1 の「不成立実測」も
+  正直に渡す（エンジン側が「実測では判別できず」と表示。bedside v2.9.0 仕様）
+- counts は生の整数 2×2。導出値（sens/spec/lp/ln/ci/cin）は補正時は補正後の一組から計算し、
+  **丸めずに全精度**で出す（2026-08-09 に「小数3桁丸め」指示は撤回 ── エンジン側が
+  「JSON 内の sens/spec から再計算した lp と JSON 内の lp の ±1% 整合」を検証するため、
+  spec が 1 に近い行では丸めた値からの再計算が ±1% を超えて拒否される）。
+  `corrected` で補正の有無を渡す。表示用の丸めは renderStats 側だけ
+- 受け側は bedside-bayes v2.9.0（PR #9）で実装済み
 
 ## 軸3（予後）── 構想のみ（未実装）
 
@@ -77,14 +82,20 @@ v1.1.0 でロックされた記録は snapshot に qtype が無い ── `qtype
   バナーを出す動線が要る）②死亡・転院の censoring ③診断の尤度比と混ぜて表示しない
   （別ブロック必須）④bedside-bayes への書き出しは診断パネルと別契約（type: "prognostic-panel" 等、
   bedside 側に受け手が無いので当面書き出さない）
+- **契約 v2 の課題（2026-08-09 エンジン側から申し送り）:** 機序クラスタ（cl）が
+  personal-panel 契約に無い。エンジン側は同一 cl の2つ目以降を κ で減衰させるが、
+  実測所見には cl が付かないため、**同じ手技の文献値と実測値を両方オンにすると
+  κ 減衰で結ばれず、相関する情報を独立に二重計上しうる**。契約 v2 で findings に
+  cl（エンジン側の既存クラスタ名）を渡すか、エンジン側で id 対応表を持つかは次版で裁定
 
 ## 実装ノート（次に触る人へ）
 
 - 集計ロジックは純関数群: `personalLRTargets` / `personalLRAggregate` / `lrFromCounts` /
   `plrRowEligible` / `buildPersonalPanel` / `quantAggregate`（index.html）。
   node+vm のロジックテスト28項目で検証（acceptance C13.5）
-- round3 は JS の Math.round（正の .5 は切り上げ: 0.3125→0.313）。Python の round は
-  偶数丸めなので、照合スクリプトを書くときはここで食い違う（開発時に実際に踏んだ）
+- 書き出し JSON に丸め処理は**存在しない**（全精度）。表示は renderStats の toFixed(2)／%整数のみ。
+  照合スクリプトを書くときの注意: JS の Math.round は正の .5 を切り上げ、Python の round は
+  偶数丸め（0.3125×1000 → JS 313 / Python 312。開発時に実際に踏んだ。丸め比較を書くなら JS 側規則で）
 - 新規UI文言はすべて content.yaml の ui_copy（build.py の UI_COPY_KEYS が検証）。
   進捗と件数のフォーマット文字列（plr_progress / plr_group_fmt）は {present}/{absent}
   プレースホルダ必須（build.py が検査）

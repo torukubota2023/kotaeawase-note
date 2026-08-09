@@ -640,10 +640,13 @@ function plrRowEligible(cnt) {
   const n = plrRowCounts(cnt);
   return n.present >= PLR_MIN_PRESENT && n.absent >= PLR_MIN_ABSENT;
 }
-function round3(x) { return Math.round(x * 1000) / 1000; }
 /* ベイズ診察エンジンへの自分パネル（インターフェース契約 version 1 ── キー名・構造を変えない）。
-   findings は閾値を満たした行のみ。counts は生の整数 2×2、sens/spec/lp/ln/ci/cin は
-   （補正時は補正後の）一組の数字から導出して小数3桁丸め */
+   findings は閾値を満たした行のみ（LR+ の大小では絞らない ── 判別に役立たなかった所見も正直に渡し、
+   エンジン側が「実測では判別できず」と表示する）。counts は生の整数 2×2。
+   sens/spec/lp/ln/ci/cin は（補正時は補正後の）一組の数字から導出し、**丸めずに全精度**で出す ──
+   エンジン側が「JSON 内の sens/spec から再計算した lp と JSON 内の lp が ±1% で整合」を検証するため、
+   丸めると spec が 1 に近い行で拒否される（2026-08-09 bedside v2.9.0 取り込み仕様）。
+   表示用の丸めは renderStats 側だけで行う */
 function buildPersonalPanel(diseaseId, group) {
   const key = BEDSIDE_KEYS[diseaseId];
   const d = D_BY_ID[diseaseId];
@@ -655,10 +658,10 @@ function buildPersonalPanel(diseaseId, group) {
     const m = lrFromCounts(cnt);
     findings.push({
       id: it.id, nm: it.label + "（実測）", cat: it.group || "",
-      lp: round3(m.lp), ln: round3(m.ln),
-      ci: [round3(m.ci[0]), round3(m.ci[1])], cin: [round3(m.cin[0]), round3(m.cin[1])],
+      lp: m.lp, ln: m.ln,
+      ci: [m.ci[0], m.ci[1]], cin: [m.cin[0], m.cin[1]],
       counts: { tp: cnt.tp, fp: cnt.fp, fn: cnt.fn, tn: cnt.tn },
-      sens: round3(m.sens), spec: round3(m.spec), corrected: m.corrected
+      sens: m.sens, spec: m.spec, corrected: m.corrected
     });
   });
   return {
