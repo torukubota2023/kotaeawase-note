@@ -46,7 +46,9 @@ UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
                 "plr_lrn", "plr_ci",
                 "quant_title", "quant_intro", "quant_empty", "quant_small_n",
                 "quant_mean_label", "quant_sd_label", "quant_rcv_label",
-                "quant_rcv_note"]
+                "quant_rcv_note",
+                # 2026-08-09 v1.3.0: 定量テンプレの howto の見出し（突合表 §16）
+                "quant_howto_label"]
 
 
 def validate(content: dict) -> list[str]:
@@ -172,6 +174,16 @@ def validate(content: dict) -> list[str]:
                 txt = t["text"]
                 need(txt.count(slot) <= 1,
                      f"quick_templates.questions.{k}: 側スロット '{slot}' は最大1個のはず（実際 {txt.count(slot)} 個）")
+                # v1.3.0: howto は任意。付けるなら中身のある文字列で、定量にだけ意味がある
+                if "howto" in t:
+                    need(isinstance(t["howto"], str) and t["howto"].strip(),
+                         f"quick_templates.questions.{k}: howto は中身のある文字列のはず")
+                    need(t.get("qtype") == "quant",
+                         f"quick_templates.questions.{k}: howto を付けられるのは qtype=quant だけ")
+        # 定量は1病態1本まで（2本あると集計の系統が割れる。2026-08-09 副院長判断）
+        if ok_list:
+            n_quant = sum(1 for t in v if t.get("qtype") == "quant")
+            need(n_quant <= 1, f"quick_templates.questions.{k}: 定量テンプレは1本まで（実際 {n_quant} 本）")
     pats = qt.get("first_dx_patterns") or []
     need(bool(pats) and all(isinstance(p, str) and "{label}" in p for p in pats),
          "quick_templates.first_dx_patterns は {label} を含む文字列のリストのはず")
