@@ -1,8 +1,11 @@
 # =============================================================================
 # 答え合わせノート 医学コンテンツ正本
 # 転記元との対応・編集の全記録は docs/content_map_reconciliation.md（突合表）を参照。
-# 逐語転記が原則。診断の重みの数値（尤度比・感度特異度・κ）は載せず、
+# 逐語転記が原則。文献の公表値としての診断の重みの数値（尤度比・感度特異度・κ）は載せず、
 # 「（数値はガイド第6章／bedside-bayes 参照）」に置換している。
+# 線引きの改訂（2026-08-09 副院長裁定）: 上の方針は「文献の公表値」について。
+# 使用者自身の記録から実行時に算出する実測値（「自分の尤度比」v1.2.0）は表示する。
+# この YAML は実測値の数値そのものを持たない ── アプリが端末内で計算する。
 # 所見の定義に含まれる操作閾値（FET 6秒、奇脈>15mmHg、呼気延長＞4秒、B-line 3本以上）は残す。
 # =============================================================================
 meta:
@@ -637,15 +640,23 @@ quick_note:
 # questions の「◯」（side_slot）は側（右/左/両側）で置換するスロット。other はテンプレなし。
 # first_dx_patterns は S2 第一候補サジェストの組み立て規則（{side}=選択した側・{label}=病態ラベル。
 # {side} を含む型は側が選ばれているときだけ使う）。
+# 2026-08-09 v1.2.0: questions を文字列から {text, qtype} の対象へ構造変更（text は不変・承認済み文言のまま）。
+# qtype は問いの型: qual=定性（病態の有無を当てる）／quant=定量（数値を予測する）。既存6本はすべて qual。
 quick_templates:
   side_slot: "◯"
   questions:
-    pneumonia: ["◯下肺に実質化があるか"]
-    effusion: ["◯下肺の濁音・呼吸音減弱は胸水か、実質化か"]
-    pneumothorax: ["◯肺の呼吸音低下・過共鳴は気胸か"]
-    copd: ["気流閉塞の増悪が主か、ほかの原因が混ざっているか"]
-    asthma: ["呼気気流制限はいま重症か"]
-    hf: ["両側下肺の crackles はうっ血か"]
+    pneumonia:
+      - {text: "◯下肺に実質化があるか", qtype: qual}
+    effusion:
+      - {text: "◯下肺の濁音・呼吸音減弱は胸水か、実質化か", qtype: qual}
+    pneumothorax:
+      - {text: "◯肺の呼吸音低下・過共鳴は気胸か", qtype: qual}
+    copd:
+      - {text: "気流閉塞の増悪が主か、ほかの原因が混ざっているか", qtype: qual}
+    asthma:
+      - {text: "呼気気流制限はいま重症か", qtype: qual}
+    hf:
+      - {text: "両側下肺の crackles はうっ血か", qtype: qual}
   first_dx_patterns: ["{side} {label}", "{label}"]
 
 ui_copy:
@@ -660,6 +671,45 @@ ui_copy:
   addendum_note: "補記は画像のあとに書いた文章として記録されます。腕の採点には使いません"
   # 予測どおりだった一周の入口（8分類＝外れ方の外側。決定木は変更しない）。承認待ち。突合表 §11
   no_miss_label: "外れなし（予測どおり）"
+  # ---- 以下 2026-08-09 v1.2.0「自分の尤度比」の新規UI文言（承認待ち。突合表 §15）----
+  # S1 問いの型（qual/quant）
+  qtype_label: "問いの型"
+  qtype_qual: "定性（病態の有無を当てる）"
+  qtype_quant: "定量（数値で予測する）"
+  # S2 定量の予測値（ロック保護＝snapshot に入る）
+  quant_pred_label: "予測値（画像の前に書く数値）"
+  quant_unit_label: "単位"
+  # 後日追記
+  quant_actual_label: "実測値（画像・検査で確定した数値）"
+  disease_present_label: "S1の病態は、実際にあったか"
+  disease_present_note: "「自分の尤度比（実測）」の答えの正本。予測との一致判定とは別に、病態そのものが有ったか無かったかを記録する。「はい／いいえ」を選ぶと実測の集計対象になる"
+  # 集計 ── 軸1「自分の尤度比（実測）」
+  plr_title: "自分の尤度比（実測）"
+  plr_intro: "文献の値ではなく、自分の記録から出した値。ロック時点の所見（あり／なし）と、後日追記の「S1の病態は、実際にあったか」を突き合わせて、所見ごとの感度・特異度・尤度比を計算する"
+  plr_empty: "まだ集計できる記録がありません。後日追記で「S1の病態は、実際にあったか」を はい／いいえ にした記録が対象になります"
+  plr_bias_note: "「なし」側は、その病態を疑って記録したが実際には無かった症例だけから来ている。疑わなかった患者は数に入っていないため、値は偏りうる（verification bias）"
+  plr_privacy_note: "この計算は、すべてこの端末の中で行われます。記録も、計算した数値も、外部には送信されません。"
+  plr_progress: "病態あり{present}/10・なし{absent}/10"
+  plr_group_fmt: "病態あり{present}・なし{absent}"
+  plr_corrected_badge: "補正あり"
+  plr_corrected_note: "「補正あり」＝2×2の表にゼロのマスがあるため、全マスに0.5を足して計算した（Haldane補正）"
+  plr_export_button: "自分パネルを書き出す（ベイズ診察エンジンへ）"
+  plr_clipboard_note: "書き出しはクリップボードへのコピーです。どこに貼るかは、あなたが決めます。"
+  plr_no_bridge_note: "この病態は、ベイズ診察エンジン側に対応するタブがないため、書き出しの対象外"
+  plr_sens: "感度"
+  plr_spec: "特異度"
+  plr_lrp: "LR+"
+  plr_lrn: "LR−"
+  plr_ci: "95%CI"
+  # 集計 ── 軸2「定量の癖と床」
+  quant_title: "定量の癖と床"
+  quant_intro: "定量の問いで、予測値と実測値が揃った記録から、ずれの癖（平均ずれ・SD）と、変化と読んでよい床（RCV）を出す"
+  quant_empty: "定量の記録（予測値と実測値が揃ったもの）はまだありません"
+  quant_small_n: "この病態・単位の組はまだ5例未満。数値を出さず、揃うまで蓄積する"
+  quant_mean_label: "平均ずれ（＋＝予測が高い）"
+  quant_sd_label: "ずれのSD"
+  quant_rcv_label: "RCV（変化と読む床）"
+  quant_rcv_note: "RCV＝√2×1.96×SD。次の測定でこの幅を超えて動いたときに、はじめて「変化した」と読む"
 
 links:
   bedside_bayes: "https://torukubota2023.github.io/bedside-bayes/"
