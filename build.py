@@ -33,7 +33,20 @@ AE = "/* ==== APPVER:END ==== */"
 
 UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
                 "anon_placeholder", "small_n_note", "teaching_point_label",
-                "quick_hint", "addendum_note", "no_miss_label"]
+                "quick_hint", "addendum_note", "no_miss_label",
+                # 2026-08-09 v1.2.0「自分の尤度比」（承認は突合表 §15）
+                "qtype_label", "qtype_qual", "qtype_quant",
+                "quant_pred_label", "quant_unit_label", "quant_actual_label",
+                "disease_present_label", "disease_present_note",
+                "plr_title", "plr_intro", "plr_empty", "plr_bias_note",
+                "plr_privacy_note", "plr_progress", "plr_group_fmt",
+                "plr_corrected_badge", "plr_corrected_note",
+                "plr_export_button", "plr_clipboard_note",
+                "plr_no_bridge_note", "plr_sens", "plr_spec", "plr_lrp",
+                "plr_lrn", "plr_ci",
+                "quant_title", "quant_intro", "quant_empty", "quant_small_n",
+                "quant_mean_label", "quant_sd_label", "quant_rcv_label",
+                "quant_rcv_note"]
 
 
 def validate(content: dict) -> list[str]:
@@ -147,15 +160,18 @@ def validate(content: dict) -> list[str]:
     need(isinstance(slot, str) and len(slot) == 1, "quick_templates.side_slot は1文字の文字列のはず")
     did_set = set(dids)
     questions = qt.get("questions") or {}
+    # v1.2.0: 各テンプレは {text, qtype} の対象（qtype: qual=定性／quant=定量）
     for k, v in questions.items():
         need(k in did_set, f"quick_templates.questions の疾患id '{k}' が diseases に無い")
         ok_list = isinstance(v, list) and 1 <= len(v) <= 2 and all(
-            isinstance(t, str) and t.strip() for t in v)
-        need(ok_list, f"quick_templates.questions.{k} は 1〜2 本の非空文字列リストのはず")
+            isinstance(t, dict) and isinstance(t.get("text"), str) and t.get("text").strip()
+            and t.get("qtype") in ("qual", "quant") for t in v)
+        need(ok_list, f"quick_templates.questions.{k} は 1〜2 件の {{text, qtype(qual|quant)}} リストのはず")
         if ok_list and isinstance(slot, str):
             for t in v:
-                need(t.count(slot) <= 1,
-                     f"quick_templates.questions.{k}: 側スロット '{slot}' は最大1個のはず（実際 {t.count(slot)} 個）")
+                txt = t["text"]
+                need(txt.count(slot) <= 1,
+                     f"quick_templates.questions.{k}: 側スロット '{slot}' は最大1個のはず（実際 {txt.count(slot)} 個）")
     pats = qt.get("first_dx_patterns") or []
     need(bool(pats) and all(isinstance(p, str) and "{label}" in p for p in pats),
          "quick_templates.first_dx_patterns は {label} を含む文字列のリストのはず")
@@ -170,6 +186,11 @@ def validate(content: dict) -> list[str]:
     ui = content.get("ui_copy") or {}
     for k in UI_COPY_KEYS:
         need(bool(ui.get(k)), f"ui_copy.{k} が無い")
+    # 進捗・件数のフォーマット文字列はプレースホルダ2種を必ず持つ（JS 側が置換位置参照する）
+    for k in ("plr_progress", "plr_group_fmt"):
+        s = ui.get(k) or ""
+        need("{present}" in s and "{absent}" in s,
+             f"ui_copy.{k} は {{present}} と {{absent}} の両方を含むはず")
     links = content.get("links") or {}
     for k in ("bedside_bayes", "bedside_bayes_note", "guide_ref", "nejm_ref"):
         need(bool(links.get(k)), f"links.{k} が無い")
