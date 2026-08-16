@@ -90,18 +90,22 @@ diseases:
         label: "実質化"
         note: "hepatization（肝様変化）"
         src: "別冊表3「発熱＋咳、肺炎を疑う」行（③）／ガイド第4章 肺炎🩻段落（補遺1）"
+        figure: consolidation
       - id: pn_us_air_bronchogram
         label: "air bronchogram が動くか"
         note: "dynamic air bronchogram"
         src: "別冊表3「発熱＋咳、肺炎を疑う」行（⑨）／ガイド第4章 肺炎🩻段落（補遺1）"
+        figure: air_bronchogram
       - id: pn_us_plaps
         label: "PLAPS（背側に胸水＋実質化）"
         note: "肺炎（背側に寄った型）"
         src: "別冊表3「発熱＋咳、肺炎を疑う」行（⑩）／profile表 PLAPS行"
+        figure: consolidation
       - id: pn_us_b_prime
         label: "B′ profile：lung sliding なし ＋ B-line 多数"
         note: "肺炎を疑う"
         src: "profile表 B′行"
+        figure: b_lines
       - id: pn_us_ab
         label: "A/B profile：片側 A・対側 B と左右差"
         note: "肺炎を疑う"
@@ -110,16 +114,19 @@ diseases:
         label: "C profile：前方に実質化がある"
         note: "肺炎（前方に及ぶ型）"
         src: "profile表 C行"
+        figure: consolidation
       # crackles の音質を較正するときの相手。fine と読んだら B-line と胸膜線の不整、
       # coarse と読んだら A-pattern が保たれることを、当てる前に書く（ガイド 3.4 の 🩻）。
       - id: pn_us_a_pattern
         label: "A-pattern（胸膜線と平行な線がくり返す＝含気が保たれる）"
         note: "coarse と読んだときの予測の相手。crackles があるなら気道側を先に考える"
         src: "ガイド第3章 3.4 🩻（図3-5c）"
+        figure: a_pattern
       - id: pn_us_bline_pleura
         label: "B-line ＋ 胸膜線の不整"
         note: "fine と読んだときの予測の相手"
         src: "ガイド第3章 3.4 🩻（図3-5c）"
+        figure: pleura_irregular
     integration_note: "肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。"
     next_step_note: "陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。／音質を較正するとき、的は「cracklesがB-lineと一致すること」ではなく「自分の読み（間質か気道か）が肺の見え方と合うこと」。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない。crackles陰性でも肺うっ血は除外できず、間質性肺疾患ではエコーはfine cracklesの金標準にならない。数値はガイド3.4へ。"
 
@@ -192,6 +199,7 @@ diseases:
         label: "胸水"
         note: ""
         src: "別冊表3「片側の呼吸音が弱い」行（④）"
+        figure: effusion
       - id: ef_us_curtain
         label: "curtain sign"
         note: "量の半定量と穿刺の安全域決定に直結する"
@@ -200,6 +208,7 @@ diseases:
         label: "横隔膜上のanechoic帯"
         note: ""
         src: "ガイド第4章 胸水🩻段落（補遺1）"
+        figure: effusion
     integration_note: "胸水セット：石様濁音、呼吸音減弱、声音振盪低下、上縁のヤギ音。（数値はガイド第6章／bedside-bayes 参照）ただし濁音は検者間一致が高く、境界を追いやすい。上縁を同じ体位で定点化すると量の変化を追える。"
     next_step_note: "少量・仰臥位では見逃すため、手技前は超音波で量と安全域を確認する（BTS 2023）。"
 
@@ -275,6 +284,7 @@ diseases:
         label: "A′ profile：lung sliding なし ＋ A-line"
         note: "気胸を疑う／気腫肺・無呼吸・胸膜癒着でも sliding は落ちるため、A′ から気胸へ進むときは lung point（⑧）を探して確かめる"
         src: "profile表 A′行＋同図の注記"
+        figure: a_pattern
     integration_note: "気胸セット：突然発症、片側呼吸音低下、過共鳴、声音振盪低下。陽性なら強く疑うが、小気胸では身体所見が乏しい。"
     next_step_note: "緊張性なら画像を待たず、安定例・外傷・仰臥位ではPOCUS（lung sliding/lung point）で確認する。"
 
@@ -362,6 +372,7 @@ diseases:
         label: "A profile：lung sliding あり ＋ A-line"
         note: "profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。"
         src: "profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"
+        figure: a_pattern
     integration_note: "過膨張・気流閉塞セット：FET延長、Hoover徴候、過共鳴、呼吸音減弱。FETは6秒以上を疑う入口、8〜9秒超をより強い支持所見として段階的に読む。身体診察はCOPDを疑い、増悪の重症度と治療反応を追う道具。"
     next_step_note: "GOLD 2026でも診断確定はスパイロメトリー（FEV1/FVC<0.7）。"
 
@@ -439,6 +450,7 @@ diseases:
         label: "A profile：lung sliding あり ＋ A-line"
         note: "profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。"
         src: "profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"
+        figure: a_pattern
     integration_note: "呼気気流制限の手がかり：呼気延長、wheeze、air entry低下、呼吸仕事量増加。これらは原因を特定しない。"
     next_step_note: "身体診察は重症度とT0からの変化を追い、喘息診断は変動する症状＋客観的な可変性気流制限で確認する（GINA 2026）。"
 
@@ -516,14 +528,17 @@ diseases:
         label: "B profile：lung sliding あり ＋ B-line 多数"
         note: "心原性肺水腫が代表"
         src: "profile表 B行"
+        figure: b_lines
       - id: hf_us_bilat_bline
         label: "両側性B-line（3本以上）"
         note: "間質性肺水腫を示す"
         src: "ガイド第4章 心不全🩻段落（補遺1）"
+        figure: b_lines
       - id: hf_us_bline_dist
         label: "B-line の分布"
         note: ""
         src: "別冊表3「むくみ、体重増加、心不全を疑う」行（②⑫）"
+        figure: b_lines
       - id: hf_us_ivc
         label: "IVC の変動"
         note: ""
@@ -532,6 +547,7 @@ diseases:
         label: "胸膜線の性状"
         note: ""
         src: "別冊表3「むくみ、体重増加、心不全を疑う」行（⑬⑭）"
+        figure: pleura_smooth
     integration_note: "うっ血セット：起座呼吸、JVD、S3、両側下肺野crackles、浮腫。S3とJVDは陽性なら強力（数値はガイド第6章／bedside-bayes 参照）。"
     next_step_note: "crackles単独は非特異的で、BNP/NT-proBNP、心エコー、LUS B-linesで統合し、治療反応は定点で追う。"
 
@@ -663,7 +679,9 @@ quick_templates:
       - {text: "◯下肺に実質化があるか", qtype: qual}
       # 音質そのものを較正する問い。この本の 3.4 が「聴診の目玉」と呼ぶ分けで、
       # 当てる前に fine か coarse かを書いてから、A-pattern か B-line かを見る。
-      - {text: "◯下肺の crackles は fine か coarse か", qtype: qual}
+      # reading_axis: このテンプレを選ぶと S2 に「耳の読み」チップが出て、
+      # 読み（fine/coarse）が snapshot に固定される（v1.5.0「読みの軸」）。
+      - {text: "◯下肺の crackles は fine か coarse か", qtype: qual, reading_axis: crackle_quality}
       - {text: "◯下肺の実質化は、腋窩中線で何肋間ぶんの高さか", qtype: quant}
     effusion:
       - {text: "◯下肺の濁音・呼吸音減弱は胸水か、実質化か", qtype: qual}
@@ -701,6 +719,36 @@ quick_templates:
           測れないときは「評価できず」と記録する（高度うっ血で下顎角より上、脱水で鎖骨の下に隠れる）
   first_dx_patterns: ["{side} {label}", "{label}"]
 
+# ---------------------------------------------------------------- POCUS 参照図（v1.5.0）
+# 答え合わせのときに開く模式図の文言。絵（SVG）は index.html の FIG_SVG が描く ──
+# 医学文言はここが正本、図形はコード、という分担。
+# ⚠ 較正は画像を正解にする作業ではない（ガイド 3.4）。図は S5（答え合わせ）でだけ開き、
+#    S3（診察）からは開けない ── 先に見ると「聴こえた気に」なる（肺エコー図譜 第1章）。
+# ⚠ 文献の感度・特異度・κ を書かない（README の線引き）。「1肋間に3本以上」は
+#    所見の定義であって診断精度ではないので置ける。
+pocus_figures:
+  - id: a_pattern
+    title: "A-pattern"
+    caption: "胸膜線と平行な線（A-line）が等間隔でくり返す。含気が保たれているという意味で、それ以上のことは言わない。cracklesがあるのにA-patternなら、肺の中よりも気道側を先に考える手がかりになる。"
+  - id: b_lines
+    title: "B-line"
+    caption: "胸膜線から画面の下端まで減衰せずに伸びるレーザー状の線。1肋間に3本以上で異常。本数は疾患を決めない ── 分けるのは胸膜線の性状と分布（正常域が残っているか）。"
+  - id: consolidation
+    title: "実質化"
+    caption: "肺が肝臓のような均一な組織に見える（hepatization）。白い点は残った気管支（air bronchogram）。肺炎で見え、coarseが主だが、早期と治癒期にはfineが混じる。"
+  - id: air_bronchogram
+    title: "air bronchogram ── 動くか"
+    caption: "実質化の中の気管支像が呼吸で動けば、気道が通じている＝肺炎の側。動かなければ無気肺の側。実質化を見たら、次はこの一点を確かめる。"
+  - id: pleura_smooth
+    title: "胸膜線 ── 平滑・連続"
+    caption: "胸膜線が平滑・連続で、B-lineが均一に立ち、正常域を欠く。心原性肺水腫の側。エコーだけで心不全と確定はしない ── JVP・S3と束にする。"
+  - id: pleura_irregular
+    title: "胸膜線 ── 肥厚・不整"
+    caption: "胸膜線が肥厚・不整・断裂し、B-lineが不均一で、正常域（spared area）が混じる。間質性肺疾患の側。Velcro様のfine cracklesと対で読む。"
+  - id: effusion
+    title: "胸水"
+    caption: "横隔膜の上に無エコーの帯。四辺形（quad sign）に囲まれ、呼吸で肺の縁が出入りする。量の推移は打診濁音の上縁と併走させて追える。"
+
 ui_copy:
   lock_button: "ここまでをエコーの前に書いた"
   lock_confirm: "ここまでの記録を固定します。腕の採点は、画像の前に書いた記録だけで行います。固定後に手を入れた項目には「画像後修正あり」が付きます。"
@@ -710,6 +758,17 @@ ui_copy:
   teaching_point_label: "次の類似症例で確かめることを一文で（一例から法則を作らない）"
   # 以下2件は 2026-08-08 ワンハンド入力対応の新規UI文言（承認待ち。突合表 §11）
   quick_hint: "診察中はタップだけで進めます。文章はあとから詳細画面の『補記』で足せます"
+  # v1.5.0 読みの軸（fine/coarse の較正）
+  reading_label: "耳の読み（画像の前に決める）"
+  reading_note: "読みはロックで固定され、「読みの軸」の集計に入る。迷ったら判定不能を選んでよい ── 判定できなかったことも記録である"
+  readingref_label: "エコーは、どちらの側だったか"
+  readingref_note: "間質側＝B-lineや胸膜線の不整が主。気道側＝A-patternが保たれる。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない ── ずれの向きを溜めて、自分の耳の癖を知るための記録"
+  reading_axis_title: "読みの軸 ── fine/coarse と、エコーの側"
+  reading_axis_intro: "実測LRは出さない。音とエコーは同じものを測っていないから、一致率を尤度比に変換しない（ガイド3.4）。ここで見るのは、一致のおおまかな程度と、外れるときの向き ── どちらへ外れやすいかが、次に耳を磨く場所を教える"
+  reading_axis_empty: "読みの記録はまだ足りない。「◯下肺の crackles は fine か coarse か」の問いで記録し、後日追記で「エコーの側」を入れると、ここに溜まっていく"
+  reading_axis_progress: "あと {n} 例で表示（読みとエコーの側が揃った記録 {have} / {need}）"
+  figure_note: "予測を書き終えてから開く。図は模式図で、実際の画面はプローブ・体格・深度で変わる"
+  figure_toggle_label: "図で確かめる"
   addendum_note: "補記は画像のあとに書いた文章として記録されます。腕の採点には使いません"
   # 予測どおりだった一周の入口（8分類＝外れ方の外側。決定木は変更しない）。承認待ち。突合表 §11
   no_miss_label: "外れなし（予測どおり）"

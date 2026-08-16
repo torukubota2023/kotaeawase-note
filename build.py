@@ -34,6 +34,12 @@ AE = "/* ==== APPVER:END ==== */"
 UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
                 "anon_placeholder", "small_n_note", "teaching_point_label",
                 "quick_hint", "addendum_note", "no_miss_label",
+                # 2026-08-16 v1.5.0 POCUS 参照図
+                "figure_toggle_label", "figure_note",
+                # 2026-08-16 v1.5.0 読みの軸
+                "reading_label", "reading_note", "readingref_label", "readingref_note",
+                "reading_axis_title", "reading_axis_intro", "reading_axis_empty",
+                "reading_axis_progress",
                 # 2026-08-09 v1.2.0「自分の尤度比」（承認は突合表 §15）
                 "qtype_label", "qtype_qual", "qtype_quant",
                 "quant_pred_label", "quant_unit_label", "quant_actual_label",
@@ -181,6 +187,10 @@ def validate(content: dict) -> list[str]:
                 need(txt.count(slot) <= 1,
                      f"quick_templates.questions.{k}: 側スロット '{slot}' は最大1個のはず（実際 {txt.count(slot)} 個）")
                 # v1.3.0: howto は任意。付けるなら中身のある文字列で、定量にだけ意味がある
+                # v1.5.0: reading_axis は任意。値は crackle_quality だけ（増やすときはここへ足す）
+                if "reading_axis" in t:
+                    need(t["reading_axis"] in ("crackle_quality",),
+                         f"quick_templates.questions.{k}: reading_axis '{t['reading_axis']}' は未知")
                 if "howto" in t:
                     need(isinstance(t["howto"], str) and t["howto"].strip(),
                          f"quick_templates.questions.{k}: howto は中身のある文字列のはず")
@@ -214,6 +224,23 @@ def validate(content: dict) -> list[str]:
     links = content.get("links") or {}
     for k in ("bedside_bayes", "bedside_bayes_note", "guide_ref", "nejm_ref"):
         need(bool(links.get(k)), f"links.{k} が無い")
+
+    # --- pocus_figures（v1.5.0 参照図） -------------------------------
+    # 文言はここ（content.yaml）が正本、絵は index.html の FIG_SVG。
+    # figure: の参照先が無いと、画面では黙って図が出ないだけ ── ここで止める。
+    figs = content.get("pocus_figures") or []
+    fig_ids = [f.get("id") for f in figs]
+    need(len(fig_ids) == len(set(fig_ids)), "pocus_figures の id に重複がある")
+    for f in figs:
+        need(bool(f.get("id")) and bool(f.get("title")) and bool(f.get("caption")),
+             f"pocus_figures の項目に id/title/caption が揃っていない: {f.get('id')}")
+    fig_set = set(fig_ids)
+    for d in content.get("diseases") or []:
+        for it in d.get("pocus_items") or []:
+            fig = it.get("figure")
+            if fig is not None:
+                need(fig in fig_set,
+                     f"{d.get('id')}.{it.get('id')} の figure '{fig}' が pocus_figures に無い")
 
     return errors
 

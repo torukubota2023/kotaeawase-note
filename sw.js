@@ -2,7 +2,7 @@
    ネットワーク優先・キャッシュ予備。更新は次回起動時に反映される。
    更新したら VERSION を必ず上げる（上げ忘れると既訪端末に旧版が配られ続ける）。
    VERSION は build.py が index.html の APP_VERSION へ転記する。 */
-const VERSION = "v1.4.1";
+const VERSION = "v1.5.0";
 const CACHE = "awn-" + VERSION;
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
