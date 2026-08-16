@@ -165,10 +165,16 @@ def validate(content: dict) -> list[str]:
     # v1.2.0: 各テンプレは {text, qtype} の対象（qtype: qual=定性／quant=定量）
     for k, v in questions.items():
         need(k in did_set, f"quick_templates.questions の疾患id '{k}' が diseases に無い")
-        ok_list = isinstance(v, list) and 1 <= len(v) <= 2 and all(
+        # v1.4.0: 上限を 2 → 3 へ。定性2本＋定量1本まで。
+        #   ガイド 3.4 が fine/coarse の分けを「聴診の目玉」として前へ出したので、
+        #   肺炎に「実質化があるか」と「fine か coarse か」の二つの定性が要る
+        #   （答え合わせの相手が違う ── 前者は実質化、後者は A-pattern か B-line か）。
+        #   ⚠ 定量が1本までなのは 2026-08-09 の副院長判断（2本あると集計の系統が割れる）。
+        #      そちらは緩めない。
+        ok_list = isinstance(v, list) and 1 <= len(v) <= 3 and all(
             isinstance(t, dict) and isinstance(t.get("text"), str) and t.get("text").strip()
             and t.get("qtype") in ("qual", "quant") for t in v)
-        need(ok_list, f"quick_templates.questions.{k} は 1〜2 件の {{text, qtype(qual|quant)}} リストのはず")
+        need(ok_list, f"quick_templates.questions.{k} は 1〜3 件の {{text, qtype(qual|quant)}} リストのはず")
         if ok_list and isinstance(slot, str):
             for t in v:
                 txt = t["text"]
@@ -184,6 +190,8 @@ def validate(content: dict) -> list[str]:
         if ok_list:
             n_quant = sum(1 for t in v if t.get("qtype") == "quant")
             need(n_quant <= 1, f"quick_templates.questions.{k}: 定量テンプレは1本まで（実際 {n_quant} 本）")
+            n_qual = sum(1 for t in v if t.get("qtype") == "qual")
+            need(n_qual <= 2, f"quick_templates.questions.{k}: 定性テンプレは2本まで（実際 {n_qual} 本）")
     pats = qt.get("first_dx_patterns") or []
     need(bool(pats) and all(isinstance(p, str) and "{label}" in p for p in pats),
          "quick_templates.first_dx_patterns は {label} を含む文字列のリストのはず")

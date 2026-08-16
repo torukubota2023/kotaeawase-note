@@ -79,7 +79,7 @@ diseases:
         label: "限局性のcrackles（吸気）"
         group: "聴診"
         priority: true
-        note: "初期はcoarse/mid-inspiratory、改善とともに短くなり吸気後半へ移動しfine寄り／初期では副雑音が目立たない"
+        note: "読む軸は音質と、吸気の終わりまで届くか（3.4）／初期はcoarse・吸気中期、改善とともに短くなり吸気後半へ移動しfine寄り（Piirilä 1992）／初期では副雑音が目立たない"
       - id: pn_voice_test
         label: "声音テスト陽性"
         group: "聴診"
@@ -110,8 +110,18 @@ diseases:
         label: "C profile：前方に実質化がある"
         note: "肺炎（前方に及ぶ型）"
         src: "profile表 C行"
+      # crackles の音質を較正するときの相手。fine と読んだら B-line と胸膜線の不整、
+      # coarse と読んだら A-pattern が保たれることを、当てる前に書く（ガイド 3.4 の 🩻）。
+      - id: pn_us_a_pattern
+        label: "A-pattern（胸膜線と平行な線がくり返す＝含気が保たれる）"
+        note: "coarse と読んだときの予測の相手。crackles があるなら気道側を先に考える"
+        src: "ガイド第3章 3.4 🩻（図3-5c）"
+      - id: pn_us_bline_pleura
+        label: "B-line ＋ 胸膜線の不整"
+        note: "fine と読んだときの予測の相手"
+        src: "ガイド第3章 3.4 🩻（図3-5c）"
     integration_note: "肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。"
-    next_step_note: "陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。"
+    next_step_note: "陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。／音質を較正するとき、的は「cracklesがB-lineと一致すること」ではなく「自分の読み（間質か気道か）が肺の見え方と合うこと」。音とエコーは同じものを測っていない（透析1,106回の観察で一致はκ0.00〜0.16）。間質性肺疾患では聴診のほうが特異的で（97.2%対17.6%）、エコーはfine cracklesの金標準ではない（3.4）。"
 
   # ---------------------------------------------------------------- 胸水
   - id: effusion
@@ -651,6 +661,9 @@ quick_templates:
     # 単位は QUANT_UNITS（肋間 / cm / その他）の語彙内に収めてある。
     pneumonia:
       - {text: "◯下肺に実質化があるか", qtype: qual}
+      # 音質そのものを較正する問い。この本の 3.4 が「聴診の目玉」と呼ぶ分けで、
+      # 当てる前に fine か coarse かを書いてから、A-pattern か B-line かを見る。
+      - {text: "◯下肺の crackles は fine か coarse か", qtype: qual}
       - {text: "◯下肺の実質化は、腋窩中線で何肋間ぶんの高さか", qtype: quant}
     effusion:
       - {text: "◯下肺の濁音・呼吸音減弱は胸水か、実質化か", qtype: qual}
