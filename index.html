@@ -225,6 +225,27 @@ footer{font-size:11px;color:var(--ink-3);border-top:1px solid var(--rule);paddin
 :focus-visible{outline:2px solid var(--warn);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 noscript{display:block;padding:14px;border:1px solid var(--pos);color:var(--pos);background:#fff;margin:14px}
+/* ---- 2026-08-22 第2弾（K-Q2 / K-S1 / 一覧の＋補記）。すべて基底規則より後ろに置く ---- */
+/* 8分類カード: 既定はラベルのみ。「説明」ボタンでその1枚だけ説明文を開く（設定で常時表示に切替可） */
+.catwrap{display:flex;gap:6px;align-items:stretch}
+.catwrap .catcard{flex:1;min-width:0}
+.catinfo{flex:none;border:1px solid var(--rule);background:#fff;color:var(--ink-3);
+  font-family:var(--sans);font-size:11px;padding:0 8px;cursor:pointer;line-height:1.4}
+.catinfo[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+@media(pointer:coarse){.catinfo{min-width:44px}}
+/* 詳細画面のアンカーチップ（後日追記・補記・書き出しへ一足飛び。読み順そのものは変えない） */
+.anchors{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.achip{border:1px solid var(--accent);background:#fff;color:var(--accent);font-family:var(--sans);
+  font-size:12.5px;padding:8px 12px;cursor:pointer}
+.achip:hover{background:var(--accent-weak)}
+@media(pointer:coarse){.achip{min-height:44px}}
+.panel[id]{scroll-margin-top:10px}
+/* 一覧からの「＋補記」直行。主要動作（カード本体）より小さく・弱く＝誤タップ対策 */
+.cardwrap{margin-bottom:8px}
+.cardwrap>.card{margin-bottom:0}
+.cardwrap>.btnrow{margin-top:4px;justify-content:flex-end}
+.btn.small.addx{font-size:11.5px;color:var(--ink-3);border-color:var(--rule-2);padding:5px 10px}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -308,6 +329,8 @@ const QUANT_UNITS = ["肋間", "cm", "その他"];   // pre.quantPred.unit の�
 const K_META = "awn.meta", K_QUICK = "awn.quick", K_DRAFT = "awn.draft", K_SETTINGS = "awn.settings", K_CASE = "awn.case.";
 function lsGet(k, fb) { try { const s = localStorage.getItem(k); return s == null ? fb : JSON.parse(s); } catch (e) { return fb; } }
 function lsSet(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+/* 8分類カードの説明文を既定で開くか（設定の「説明を常に表示」。既定=オフ＝ラベルのみ） */
+function descAlwaysOn() { const s = lsGet(K_SETTINGS, {}); return !!s.catDescAlways; }
 function initMeta() {
   const m = lsGet(K_META, null);
   if (!m) { try { lsSet(K_META, { schemaVersion: 1 }); } catch (e) {} }
@@ -903,14 +926,50 @@ async function copyText(text) {
 }
 
 /* ---------------------------------------------------------------- modal */
+/* iOS のソフトキーボードは position:fixed の下寄せシートを裏に隠す。visualViewport（= 実際に見えている
+   範囲）へ overlay を合わせ込むことで入力欄を鍵盤の上に保つ。visualViewport の無い環境（デスクトップの
+   古い版・一部 Android）では何もせず従来どおり CSS の 88vh で表示する */
+function syncModalViewport() {
+  const vv = window.visualViewport;
+  const ov = $(".overlay");
+  if (!vv || !ov) return;
+  const top = Math.max(0, vv.offsetTop);
+  const bottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  ov.style.top = top + "px";
+  ov.style.bottom = bottom + "px";
+  const sh = $(".sheet", ov);
+  /* 鍵盤が出ていないときは従来の 88vh を超えない（デスクトップの見た目を変えない） */
+  if (sh) sh.style.maxHeight = Math.max(120, Math.min(vv.height - 16, window.innerHeight * 0.88)) + "px";
+}
 function openModal(innerHTML) {
   const root = $("#modal-root");
   root.innerHTML = '<div class="overlay"><div class="sheet" role="dialog" aria-modal="true">' + innerHTML + "</div></div>";
   $$("[data-close]", root).forEach(b => b.addEventListener("click", closeModal));
   root.firstChild.addEventListener("click", e => { if (e.target === root.firstChild) closeModal(); });
+  if (window.visualViewport && !vvHandler) {
+    vvHandler = () => syncModalViewport();
+    window.visualViewport.addEventListener("resize", vvHandler);
+    window.visualViewport.addEventListener("scroll", vvHandler);
+  }
+  /* 鍵盤の出現は focus より遅れて visualViewport に反映されるので、合わせ込みを一拍おいても行う */
+  root.addEventListener("focusin", () => {
+    setTimeout(() => {
+      syncModalViewport();
+      const ae = document.activeElement, ov = $(".overlay");
+      if (ae && ov && ov.contains(ae) && ae.scrollIntoView) ae.scrollIntoView({ block: "nearest" });
+    }, 300);
+  });
+  syncModalViewport();
   return root;
 }
-function closeModal() { $("#modal-root").innerHTML = ""; }
+function closeModal() {
+  if (vvHandler && window.visualViewport) {
+    window.visualViewport.removeEventListener("resize", vvHandler);
+    window.visualViewport.removeEventListener("scroll", vvHandler);
+  }
+  vvHandler = null;
+  $("#modal-root").innerHTML = "";
+}
 
 /* 決定木モーダル（CONTENT.miss_classification.tree の汎用レンダラ） */
 function openTreeModal(onPick) {
@@ -945,6 +1004,8 @@ let wizCase = null;      // ウィザードが現在編集している case（�
 let wizStep = 1;
 let wizardIntent = null; // {caseId, step} 一覧・詳細からの遷移指定（{fresh:true}=常に新規）
 let s5OpenIdx = -1;      // S5 位置リストで開いている行（-1=全閉）
+let s6SecOpen = false;   // S6 副分類（任意）を開いているか。既定は畳む（選択済みなら常に開く）
+let vvHandler = null;    // モーダル表示中の visualViewport 追従ハンドラ
 function nav(hash) {
   if (location.hash === hash) route();
   else location.hash = hash;
@@ -1189,11 +1250,16 @@ function renderList() {
     html += '<div style="margin-top:12px">' + entries.map(e => {
       if (e.type === "case") {
         const c = e.o;
-        return '<button type="button" class="card" data-case="' + esc(c.id) + '">' +
+        /* 「文章あとで」の受け皿へ一覧から直行する。誤タップを避けるため、カード本体より小さく弱い副次スタイル。
+           下書き（未ロック）には出さない ── 補記は画像後の append-only だから */
+        return '<div class="cardwrap"><button type="button" class="card" data-case="' + esc(c.id) + '">' +
           '<div class="d">' + esc(fmtD(c.createdAt)) + "　" + esc(diseaseLabel(c.disease) || "病態未選択") +
           (c.age ? "・" + esc(c.age) : "") + (c.sex ? "・" + esc(c.sex) : "") + "</div>" +
           '<div class="t">' + esc(c.question || "（問い未入力）") + "</div>" +
-          "<div>" + statusBadge(c) + editedBadge(c) + matchBadge(c) + "</div></button>";
+          "<div>" + statusBadge(c) + editedBadge(c) + matchBadge(c) + "</div></button>" +
+          (c.status === "draft" ? "" :
+            '<div class="btnrow"><button type="button" class="btn ghost small addx" data-addx="' + esc(c.id) + '">＋ 補記</button></div>') +
+          "</div>";
       }
       const q = e.o;
       return '<div class="qcard"><span class="d">' + esc(q.date) + "　一行記録</span><br>" +
@@ -1213,6 +1279,10 @@ function renderList() {
   const gb = $("#goBackup"); if (gb) gb.addEventListener("click", () => nav("#settings"));
   $("#newBtn").addEventListener("click", () => { wizardIntent = { fresh: true }; nav("#new"); });
   $("#quickBtn").addEventListener("click", openQuickModal);
+  $$("[data-addx]").forEach(b => b.addEventListener("click", () => {
+    const c = loadCaseById(b.dataset.addx);
+    if (c) openAddendumModal(c, renderList);
+  }));
   $$("[data-case]").forEach(b => b.addEventListener("click", () => {
     const c = loadCaseById(b.dataset.case);
     if (!c) return;
@@ -1340,7 +1410,13 @@ function drawWizardStep() {
   const nx = $("#wzNext");
   if (nx) nx.addEventListener("click", () => {
     if (wizStep === 1 && (!c.question.trim() || !c.disease)) { toast("検証する問いと病態は必須です"); return; }
-    if (wizStep === 6 && !s6CanProceed(c)) { toast("外れ方の分類（主）か「" + UI.no_miss_label + "」を選んでください"); return; }
+    if (wizStep === 6 && !s6CanProceed(c)) {
+      toast("外れ方の分類（主）か「" + UI.no_miss_label + "」を選んでください");
+      /* toast だけだと選ぶ場所が2画面上＝迷子になるので、その場所へ画面を戻す */
+      const cb = $("#classBlock");
+      if (cb && cb.scrollIntoView) cb.scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
     wizStep++;
     drawWizardStep(); window.scrollTo(0, 0);
   });
@@ -1887,10 +1963,17 @@ function compareHTML(c) {
     cell(ET[2].subfields[4], snap.pre.rationale) + cell(ET[4].subfields[4], c.pocus.newSuspicion) +
     "</div>";
 }
+/* 8分類カード。既定はラベルのみ（説明は「説明」ボタンでその1枚だけ開く）。
+   設定の「説明を常に表示」がオンなら全カードが展開状態で始まる。説明文そのものは content.yaml のまま */
 function catCardsHTML(sel, dataAttr) {
+  const always = descAlwaysOn();
   return '<div class="catgrid">' + CATS.map(cat =>
+    '<div class="catwrap">' +
     '<button type="button" class="catcard" ' + dataAttr + '="' + cat.id + '" aria-pressed="' + (sel === cat.id) + '">' +
-    "<b>" + esc(cat.label) + "</b><span>" + esc(cat.desc) + "</span></button>").join("") + "</div>";
+    "<b>" + esc(cat.label) + "</b><span class=\"cdesc\"" + (always ? "" : " hidden") + ">" + esc(cat.desc) + "</span></button>" +
+    (always ? "" : '<button type="button" class="catinfo" data-desc="' + cat.id + '" aria-expanded="false" aria-label="' +
+      esc(cat.label) + ' の説明を開く">説明</button>') +
+    "</div>").join("") + "</div>";
 }
 function hintHTML(c) {
   const out = [];
@@ -1910,15 +1993,20 @@ function classBlockHTML(c) {
       '<div class="btnrow" style="margin-top:8px"><button type="button" class="btn line" id="treeBtn">分類に迷ったら ── 順に答えて辿る</button></div>') +
     '<div id="primCards">' + catCardsHTML(isNone ? "" : c.compare.missPrimary, "data-prim") + "</div></div>";
   if (!isNone) {
+    /* 副分類は任意の層なのでワンタップ奥へ畳む（選択済みなら開いたまま＝選んだ結果が隠れない） */
+    const secOpen = s6SecOpen || !!c.compare.missSecondary;
     h += '<div class="field"><label>副分類（任意・もう1つあれば）</label>' +
-      '<div id="secCards">' + catCardsHTML(c.compare.missSecondary, "data-sec") + "</div>" +
-      '<div class="btnrow"><button type="button" class="btn ghost small" id="secClear">副分類を外す</button></div></div>' +
+      (secOpen ? "" : '<div class="btnrow"><button type="button" class="btn ghost" id="secOpen" aria-expanded="false">副分類を選ぶ（任意）</button></div>') +
+      '<div id="secCards"' + (secOpen ? "" : " hidden") + ">" + catCardsHTML(c.compare.missSecondary, "data-sec") + "</div>" +
+      (secOpen ? '<div class="btnrow"><button type="button" class="btn ghost small" id="secClear">副分類を外す</button></div>' : "") +
+      "</div>" +
       '<div id="hintBox">' + hintHTML(c) + "</div>";
   }
   return h;
 }
 function stepS6(c) {
   if (!c.lock) return ['<p class="note">まだロックされていません。S4 でロックし、S5 の POCUS を先に記録してください。</p>', null];
+  s6SecOpen = false;   // S6 を開き直すたび副分類は畳んだ状態から
   const sf = ET[6].subfields;
   const html = compareHTML(c) +
     fieldText({ id: "f_hit", label: sf[0], value: c.compare.hit, multiline: true, rows: 2 }) +
@@ -1962,8 +2050,20 @@ function stepS6(c) {
       const scl = $("#secClear");
       if (scl) scl.addEventListener("click", () => {
         writeCase(c, "compare", cc => { cc.compare.missSecondary = ""; });
+        s6SecOpen = false;
         refreshClass();
       });
+      const so = $("#secOpen");
+      if (so) so.addEventListener("click", () => { s6SecOpen = true; refreshClass(); });
+      /* 説明の開閉はその場で（再描画しないので、開いた説明が選択操作で閉じない） */
+      $$("[data-desc]").forEach(b => b.addEventListener("click", () => {
+        const dsc = $(".cdesc", b.parentNode);
+        if (!dsc) return;
+        const open = !dsc.hidden;
+        dsc.hidden = open;
+        b.setAttribute("aria-expanded", String(!open));
+        b.textContent = open ? "説明" : "閉じる";
+      }));
     }
     bindClass();
   }];
@@ -2002,6 +2102,11 @@ function renderDetail(id) {
   const d = D_BY_ID[c.disease];
   const sf2 = ET[2].subfields, sf3 = ET[3].subfields, sf4 = ET[4].subfields, sf5 = ET[5].subfields, sf6 = ET[6].subfields;
   let html = '<div class="btnrow" style="margin-top:0"><button type="button" class="btn ghost small" id="dBack">← 一覧</button></div>' +
+    /* 後で開く理由は後日追記・補記・書き出しの3つだけ。読み順（読み取り→追記）は変えず、飛べる道だけ足す */
+    '<div class="anchors">' +
+    '<button type="button" class="achip" data-anchor="pOutcome">後日追記へ</button>' +
+    '<button type="button" class="achip" data-anchor="pAddenda">補記へ</button>' +
+    '<button type="button" class="achip" data-anchor="pExport">書き出しへ</button></div>' +
     '<div class="panel"><h2>' + esc(diseaseLabel(c.disease) || "病態未選択") + "　" + esc(fmtD(c.createdAt)) + "</h2>" +
     "<div>" + statusBadge(c) + editedBadge(c) + matchBadge(c) + "</div>" +
     '<p class="subnote">記録ID ' + esc(c.id) + "　ロック " + esc(c.lock ? fmtDT(c.lock.lockedAt) : "―") + "</p>" +
@@ -2041,7 +2146,7 @@ function renderDetail(id) {
     kvRow(sf6[3], c.compare.nextAction) + kvRow(UI.teaching_point_label, c.compare.teachingPoint) +
     '<div class="btnrow"><button type="button" class="btn ghost small" data-edit-step="6">編集する</button></div></div>';
   /* 後日追記（outcome はロック保護の対象外） */
-  html += '<div class="panel"><h2>後日追記 ── ' + esc(stripNo(ET[5].heading)) + '</h2>' +
+  html += '<div class="panel" id="pOutcome"><h2>後日追記 ── ' + esc(stripNo(ET[5].heading)) + '</h2>' +
     fieldText({ id: "o_ct", label: sf5[0], value: c.outcome.ct, multiline: true, rows: 2 }) +
     fieldText({ id: "o_tests", label: sf5[1], value: c.outcome.tests, multiline: true, rows: 2 }) +
     fieldText({ id: "o_final", label: sf5[2], value: c.outcome.finalDx, multiline: true, rows: 2 }) +
@@ -2068,14 +2173,14 @@ function renderDetail(id) {
       : "") +
     "</div>";
   /* 補記（画像後・append-only。タップ今・文章あとで） */
-  html += '<div class="panel"><h2>補記（画像後）</h2>' +
+  html += '<div class="panel" id="pAddenda"><h2>補記（画像後）</h2>' +
     '<p class="subnote">' + esc(UI.addendum_note) + "</p>" +
     ((c.addenda || []).length
       ? c.addenda.map(a => '<div class="kv"><div class="k">' + esc(fmtDT(a.at)) + '</div><div class="v">' + esc(a.text) + "</div></div>").join("")
       : '<p class="note">（まだありません）</p>') +
     '<div class="btnrow"><button type="button" class="btn line" id="addAdx">補記を足す</button></div></div>';
   /* 書き出し */
-  html += '<div class="panel"><h2>テキスト書き出し</h2>' +
+  html += '<div class="panel" id="pExport"><h2>テキスト書き出し</h2>' +
     '<pre class="export">' + esc(buildExportText(c)) + "</pre>" +
     '<div class="btnrow"><button type="button" class="btn line" id="dCopy">テキストをコピー</button></div></div>';
   if (c.editLog.length) {
@@ -2087,6 +2192,10 @@ function renderDetail(id) {
   $("#app").innerHTML = html;
 
   $("#dBack").addEventListener("click", () => nav("#list"));
+  $$("[data-anchor]").forEach(b => b.addEventListener("click", () => {
+    const t = document.getElementById(b.dataset.anchor);
+    if (t && t.scrollIntoView) t.scrollIntoView({ block: "start", behavior: "smooth" });
+  }));
   const dr = $("#dResume");
   if (dr) dr.addEventListener("click", () => { wizardIntent = { caseId: c.id, step: c.wizardStep || 5 }; nav("#new"); });
   $$("[data-fix]").forEach(b => b.addEventListener("click", () => {
@@ -2119,14 +2228,17 @@ function renderDetail(id) {
   $("#dCopy").addEventListener("click", () => copyText(buildExportText(c)));
 }
 /* 補記モーダル（append-only: 保存後の編集・削除UIは意図的に無い） */
-function openAddendumModal(c) {
+function openAddendumModal(c, after) {
   const root = openModal('<div class="sheet-h">補記を足す（画像後）</div>' +
     '<p class="subnote">' + esc(UI.addendum_note) + "　保存後の編集・削除はできません。</p>" +
     '<textarea id="adxText" rows="4" placeholder="' + esc(UI.anon_placeholder) + '"></textarea>' +
     '<div class="btnrow split"><button type="button" class="btn ghost" data-close>閉じる</button>' +
     '<button type="button" class="btn" id="adxSave">保存する</button></div>');
   $("#adxSave", root).addEventListener("click", () => {
-    if (addAddendum(c, $("#adxText").value)) { closeModal(); toast("補記を足しました"); renderDetail(c.id); }
+    if (addAddendum(c, $("#adxText").value)) {
+      closeModal(); toast("補記を足しました");
+      if (after) after(); else renderDetail(c.id);
+    }
     else toast("本文を入力してください");
   });
 }
@@ -2336,6 +2448,10 @@ function renderSettings() {
     '<p class="note" id="persistState">端末へのデータ保持（persist）：確認中…</p>' +
     '<div class="btnrow"><button type="button" class="btn line" id="psBtn">端末にデータ保持を要求する</button>' +
     '<button type="button" class="btn danger" id="wipeBtn">全データを消去</button></div></div>' +
+    '<div class="panel"><h2>表示 <small>DISPLAY</small></h2>' +
+    '<p class="note">外れ方の分類カードは、既定ではラベルだけを出し、「説明」を押した1枚だけ説明文を開きます。' +
+    "最初から全部の説明を出しておきたいときは、ここをオンにしてください。</p>" +
+    '<div class="chips"><button type="button" class="chip" id="descToggle" aria-pressed="' + descAlwaysOn() + '">説明を常に表示</button></div></div>' +
     '<div class="panel"><h2>参照 <small>REFERENCES</small></h2>' +
     '<p class="linkline">' + esc(CONTENT.links.bedside_bayes_note) + "：<br>" +
     '<a href="' + esc(CONTENT.links.bedside_bayes) + '" target="_blank" rel="noopener">' + esc(CONTENT.links.bedside_bayes) + "</a></p>" +
@@ -2345,6 +2461,13 @@ function renderSettings() {
     footerHTML();
   $("#app").innerHTML = html;
   $("#bkBtn").addEventListener("click", doBackup);
+  $("#descToggle").addEventListener("click", () => {
+    const st = lsGet(K_SETTINGS, {});
+    st.catDescAlways = !descAlwaysOn();
+    try { lsSet(K_SETTINGS, st); } catch (e) { toast("保存に失敗しました"); return; }
+    toast(st.catDescAlways ? "分類カードの説明を常に表示します" : "分類カードは既定でラベルのみにします");
+    renderSettings();
+  });
   $("#rsFile").addEventListener("change", e => {
     const f = e.target.files[0];
     if (!f) return;
@@ -2378,17 +2501,55 @@ async function refreshPersistState() {
     el.textContent = "端末へのデータ保持（persist）：この環境では確認できません";
   }
 }
-function doBackup() {
+/* ホーム画面追加のスタンドアロン利用では a.click() の blob ダウンロードが iOS の版によって
+   保存 UI を出さない。共有シート（→「ファイルに保存」）が使えるならそちらを先に通し、
+   使えなければ従来のダウンロードへ落とす。
+   ★ 共有をキャンセルした場合は保存されていないので lastBackupAt を更新しない
+     （保存していないのに「バックアップ済み」と表示する事故の防止） */
+function backupBlob() {
   const data = { app: "kotaeawase-note", schemaVersion: 1, exportedAt: nowISO(), cases: allCases(), quick: lsGet(K_QUICK, []) };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "kotaeawase-backup-" + todayStr().replace(/-/g, "") + ".json";
-  a.click();
-  URL.revokeObjectURL(a.href);
+  return { json: JSON.stringify(data, null, 2), name: "kotaeawase-backup-" + todayStr().replace(/-/g, "") + ".json" };
+}
+function markBackedUp() {
   const s = lsGet(K_SETTINGS, {});
   s.lastBackupAt = nowISO();
   try { lsSet(K_SETTINGS, s); } catch (e) {}
+}
+function downloadBackup(b) {
+  const blob = new Blob([b.json], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = b.name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+async function doBackup() {
+  const b = backupBlob();
+  let file = null;
+  try {
+    if (navigator.canShare && navigator.share && typeof File === "function") {
+      const f = new File([b.json], b.name, { type: "application/json" });
+      if (navigator.canShare({ files: [f] })) file = f;
+    }
+  } catch (e) { file = null; }
+  if (file) {
+    try {
+      await navigator.share({ files: [file], title: b.name });
+      markBackedUp();
+      toast("共有先に渡しました（「ファイルに保存」で端末に残ります）");
+      renderSettings();
+      return;
+    } catch (e) {
+      if (e && e.name === "AbortError") {
+        /* 利用者が共有をやめた ＝ どこにも保存されていない。前回バックアップ日時は動かさない */
+        toast("共有をやめました。バックアップは保存されていません");
+        return;
+      }
+      /* 共有そのものが通らない環境（NotAllowedError 等）はダウンロードへ落とす */
+    }
+  }
+  downloadBackup(b);
+  markBackedUp();
   toast("バックアップを書き出しました");
   renderSettings();
 }
