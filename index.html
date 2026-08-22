@@ -57,6 +57,10 @@ input[type=text],input[type=number],input[type=date],textarea,select{
   background:#fff;color:var(--ink);border-radius:0;-webkit-appearance:none;appearance:none}
 select{background-image:linear-gradient(45deg,transparent 50%,var(--ink-2) 50%),linear-gradient(135deg,var(--ink-2) 50%,transparent 50%);
   background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+@media(pointer:coarse){select{min-height:44px}}
+input[type=file]{width:100%;font-family:var(--sans);font-size:13px;color:var(--ink-2);
+  border:1px solid var(--rule);background:#fff;padding:10px}
+@media(pointer:coarse){input[type=file]{min-height:44px;padding:12px 10px}}
 textarea{resize:vertical;line-height:1.7}
 input:disabled,textarea:disabled,select:disabled{background:#F2F5F2;color:var(--ink-3)}
 input::placeholder,textarea::placeholder{color:#A9B5AB;font-size:12px}
@@ -109,6 +113,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;b
 .b-locked{color:var(--accent);border-color:var(--accent)}
 .b-rev{color:#fff;border-color:var(--accent);background:var(--accent)}
 .b-out{color:var(--neg);border-color:var(--neg)}
+.b-pend{color:var(--warn-ink);border-color:var(--warn);background:var(--warn-bg);font-weight:700}
 .card{display:block;width:100%;text-align:left;border:1px solid var(--rule);background:var(--panel);
   padding:10px 12px;margin-bottom:8px;cursor:pointer;font-family:var(--sans);color:var(--ink)}
 .card:hover{background:var(--accent-weak)}
@@ -151,6 +156,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;b
 .kv .v .none{color:var(--ink-3)}
 pre.export{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--rule);
   padding:12px;font-family:var(--mono);font-size:11.5px;line-height:1.7;max-height:55vh;overflow-y:auto;margin:8px 0}
+@media(pointer:coarse){pre.export{max-height:240px}}
 .srow{display:grid;grid-template-columns:66px 40px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dotted var(--rule-2);font-size:12px}
 .srow .bin{font-family:var(--mono);font-size:11px}
 .srow .n{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
@@ -161,14 +167,14 @@ pre.export{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px
 .stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:8px 0}
 .stat3>div{background:var(--panel);padding:8px 4px;text-align:center}
 .stat3 b{font-family:var(--mono);font-size:16px;display:block}
-.stat3 span{font-size:9.5px;color:var(--ink-2);line-height:1.4;display:block}
+.stat3 span{font-size:11px;color:var(--ink-2);line-height:1.4;display:block}
 .mrow{display:grid;grid-template-columns:9em 28px 1fr;gap:6px;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px dotted var(--rule-2)}
 .mrow .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right}
 /* 自分の尤度比（実測）の行: 1行目=所見名、2行目=実測値（等幅）。進捗のみの行は .prog */
 .plrrow{padding:7px 0;border-bottom:1px dotted var(--rule-2)}
 .plrrow .nm{font-size:12.5px;line-height:1.5;overflow-wrap:break-word}
-.plrrow .vals{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink);overflow-wrap:break-word}
-.plrrow .prog{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.plrrow .vals{font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--ink);overflow-wrap:break-word}
+.plrrow .prog{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
 .addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:6px}
 .mmlist{margin:4px 0 0;padding:0;list-style:none}
 .mmlist li{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0;border-bottom:1px dotted var(--rule-2);font-size:12.5px}
@@ -183,6 +189,8 @@ pre.export{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px
 .treeopts{display:grid;gap:8px;margin:10px 0}
 .treeopts .btn{text-align:left;background:#fff;color:var(--ink);border-color:var(--rule);line-height:1.6}
 .treeopts .btn:hover{border-color:var(--accent);background:var(--accent-weak)}
+/* 迷った初学者ほど多用する戻る/閉じるを選択肢本体(48px)と同格に（2026-08-22 K-Q4） */
+@media(pointer:coarse){.btn.small.treenav{min-height:48px}}
 nav.bottom{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--panel);
   border-top:2px solid var(--ink);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
 nav.bottom button{flex:1;border:0;background:transparent;font-family:var(--sans);font-size:13px;
@@ -208,7 +216,7 @@ body.wizard .wrap{padding-bottom:170px}
   font-family:var(--sans);font-size:12.5px;color:var(--ink);min-width:0;overflow-wrap:break-word;line-height:1.6;flex:1}
 .siterow .x{border:1px solid var(--rule);background:#fff;color:var(--ink-3);cursor:pointer;font-size:11px;padding:6px 10px;flex:none}
 @media(pointer:coarse){.siterow .x{min-height:44px}.siterow .opentxt{min-height:44px}}
-.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:#fff;
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;
   font-size:13px;padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
 .toast.on{opacity:1}
 .linkline{overflow-wrap:anywhere;font-size:12.5px}
@@ -773,7 +781,11 @@ function editedBadge(c) {
 }
 function matchBadge(c) {
   const m = c.outcome && c.outcome.match;
-  if (!m || m === "pending") return "";
+  if (!m || m === "pending") {
+    /* ロック済みなのに一致判定が未確定＝集計に載らない状態を、開かずに見分けられるようにする
+       （#stats の対象条件 c.lock && match !== "pending" の補集合。下書きは b-draft が既に示す） */
+    return c.lock ? '<span class="badge b-pend">後日追記待ち</span>' : "";
+  }
   return '<span class="badge b-out">一致判定：' + esc(MATCH_LABEL[m] || m) + "</span>";
 }
 
@@ -914,8 +926,8 @@ function openTreeModal(onPick) {
       '<div class="treeopts">' + n.options.map((o, i) =>
         '<button type="button" class="btn opt" data-i="' + i + '">' + esc(o.label) + "</button>").join("") + "</div>" +
       '<div class="btnrow split"><span>' +
-      (hist.length ? '<button type="button" class="btn ghost small" id="treeBack">ひとつ戻る</button>' : "") +
-      '</span><button type="button" class="btn ghost small" data-close>閉じる</button></div>');
+      (hist.length ? '<button type="button" class="btn ghost small treenav" id="treeBack">ひとつ戻る</button>' : "") +
+      '</span><button type="button" class="btn ghost small treenav" data-close>閉じる</button></div>');
     $$(".opt", root).forEach(b => b.addEventListener("click", () => {
       const o = n.options[+b.dataset.i];
       if (o.next) { hist.push(cur); cur = o.next; draw(); }
@@ -1775,6 +1787,9 @@ function stepS5(c) {
     fieldText({ id: "f_poconf", label: sf[1], value: c.pocus.confirmed, multiline: true, rows: 2 }) +
     fieldText({ id: "f_poref", label: sf[2], value: c.pocus.refuted, multiline: true, rows: 2 }) +
     confField({ idBase: "cf2", label: "POCUS 後の確信度（%）", value: c.pocus.conf != null ? c.pocus.conf : snapOf(c).pre.conf }) +
+    '<div class="chips" id="confPresets2" style="margin:-6px 0 10px">' +
+    CONF_PRESETS.map(p => '<button type="button" class="chip" data-p="' + p + '" aria-pressed="' + (c.pocus.conf === p) + '">' +
+      p + "</button>").join("") + "</div>" +
     '<div class="field"><label>' + esc(sf[3]) + '</label><div class="derived" id="moveBox">' + esc(confMove(c).text) + "</div></div>" +
     fieldText({ id: "f_ponew", label: sf[4], value: c.pocus.newSuspicion, multiline: true, rows: 2 });
   return [html, function bind() {
@@ -1796,7 +1811,17 @@ function stepS5(c) {
     bindText("#f_pofind", c, "pocus", (cc, v) => { cc.pocus.findings = v; });
     bindText("#f_poconf", c, "pocus", (cc, v) => { cc.pocus.confirmed = v; });
     bindText("#f_poref", c, "pocus", (cc, v) => { cc.pocus.refuted = v; });
-    bindConf("cf2", c, "pocus", (cc, v) => { cc.pocus.conf = v; }, () => { $("#moveBox").textContent = confMove(c).text; });
+    const syncPresets2 = v => $$("#confPresets2 .chip").forEach(x =>
+      x.setAttribute("aria-pressed", +x.dataset.p === v ? "true" : "false"));
+    bindConf("cf2", c, "pocus", (cc, v) => { cc.pocus.conf = v; }, v => { $("#moveBox").textContent = confMove(c).text; syncPresets2(v); });
+    // 確信度プリセット（S2 と同じ流儀: タップ即設定。スライダー・数値・移動表示も連動）
+    $$("#confPresets2 .chip").forEach(b => b.addEventListener("click", () => {
+      const p = +b.dataset.p;
+      if (!writeCase(c, "pocus", cc => { cc.pocus.conf = p; })) return;
+      $("#cf2r").value = p; $("#cf2n").value = p; $("#cf2v").textContent = p + "%";
+      $("#moveBox").textContent = confMove(c).text;
+      syncPresets2(p);
+    }));
     bindText("#f_ponew", c, "pocus", (cc, v) => { cc.pocus.newSuspicion = v; });
   }];
 }
