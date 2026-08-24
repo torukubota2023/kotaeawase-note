@@ -29,6 +29,17 @@ meta:
         - "L683〜L694：BLUE 点の凡例（upper BLUE／lower BLUE／PLAPS point の位置記述）── site_options.pocus_presets に使用"
         - "L713〜L719：BLUE profile 対応表（A／A′／B／B′／A/B／C／PLAPS → 病態）"
         - "L735〜L742：同図の注記（profileは型・A′→lung point確認・原法の下肢静脈エコー分岐）"
+    # ---- v1.7.0 画像モダリティ拡張（2026-08-24 起草。承認は突合表 §17）----
+    # xray_items / ct_items の所見定義の出典。抄録・本文の取得記録は
+    # ai-management リポジトリの pubmed-cache/ にある。定義のみを転記し、
+    # 感度・特異度・尤度比・診断精度の数値は載せない（冒頭の線引きのとおり）。
+    - file: "PubMed 一次資料（v1.7.0 xray_items / ct_items の定義出典）"
+      parts:
+        - "Fleischner Society 用語集 2024（Bankier ら. Radiology 2024;310(2):e232558. PMID 38411514・DOI 10.1148/radiol.232558）── consolidation・air bronchogram・ground-glass・septal thickening・pneumothorax（visceral pleural line・deep sulcus sign・緊張気胸の画像相関）・silhouette sign・pleural effusion・atelectasis・emphysema・air trapping・mosaic attenuation・mucoid impaction の各定義。RSNA 公開全文で本文の定義文を確認済み"
+        - "Gordon R. The deep sulcus sign. Radiology 1980;136(1). PMID 7384513・DOI 10.1148/radiology.136.1.7384513 ── 仰臥位気胸の deep sulcus sign（原著。抄録で確認）"
+        - "Milne ENC ら. The radiologic distinction of cardiogenic and noncardiogenic edema. AJR 1985;144(5):879-. PMID 3872571・DOI 10.2214/ajr.144.5.879 ── 心原性肺水腫の胸部X線 主要3所見（肺血流の分布・肺水腫の分布・血管茎の幅）＋補助7所見（抄録に列挙。読み方の詳細は原著参照）"
+        - "Felson B, Felson H. Localization of intrathoracic lesions by means of the postero-anterior roentgenogram; the silhouette sign. Radiology 1950;55(3):363-. PMID 14781343・DOI 10.1148/55.3.363 ── silhouette sign（原著）"
+        - "Thurlbeck WM, Simon G. Radiographic appearance of the chest in emphysema. AJR 1978;130(3):429-. PMID 415543・DOI 10.2214/ajr.130.3.429 ── 気腫の胸部X線所見（肺の縦長化・横隔膜低位・後胸骨腔拡大・血管影の乏しさ。抄録で確認。精度の数値は転記しない）"
 
 diseases:
   # ---------------------------------------------------------------- 肺炎
@@ -127,6 +138,29 @@ diseases:
         note: "fine と読んだときの予測の相手"
         src: "ガイド第3章 3.4 🩻（図3-5c）"
         figure: pleura_irregular
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17。出典は meta.sources の PubMed エントリ）----
+    xray_items:
+      - id: pn_xr_consol
+        label: "均等な濃度上昇（実質化）"
+        note: "肺胞の空気が液体などに置き換わった状態。X線では均一な濃度上昇に見える。原因の病理までは決めない"
+        src: "Fleischner用語集2024（PMID 38411514）consolidation 項"
+      - id: pn_xr_airbronch
+        label: "air bronchogram"
+        note: "含気を失った肺の中に、空気の残った気管支が透けて見える。中枢気道が開通している含意"
+        src: "Fleischner用語集2024（PMID 38411514）air bronchogram 項"
+      - id: pn_xr_silhouette
+        label: "silhouette sign（隣接する正常輪郭の消失）"
+        note: "X線吸収が近い構造どうしが接すると正常の輪郭が消える。どの輪郭が消えたかで病変の葉を当てる。漏斗胸など肺以外でも起こる"
+        src: "Felson 1950（PMID 14781343）原著／Fleischner用語集2024（PMID 38411514）silhouette sign 項"
+    ct_items:
+      - id: pn_ct_consol
+        label: "実質化（下層の血管・気管支が透けない濃度上昇）"
+        note: "開通した気管支が中に残れば air bronchogram になる"
+        src: "Fleischner用語集2024（PMID 38411514）consolidation 項"
+      - id: pn_ct_ggo
+        label: "すりガラス影（血管・気管支が透けて見える淡い濃度上昇）"
+        note: "肺胞の空気が完全には失われていない段階。CT でだけ使う用語"
+        src: "Fleischner用語集2024（PMID 38411514）ground-glass 項"
     integration_note: "肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。"
     next_step_note: "陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。／音質を較正するとき、的は「cracklesがB-lineと一致すること」ではなく「自分の読み（間質か気道か）が肺の見え方と合うこと」。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない。crackles陰性でも肺うっ血は除外できず、間質性肺疾患ではエコーはfine cracklesの金標準にならない。数値はガイド3.4へ。"
 
@@ -209,6 +243,25 @@ diseases:
         note: ""
         src: "ガイド第4章 胸水🩻段落（補遺1）"
         figure: effusion
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17）----
+    xray_items:
+      - id: ef_xr_blunting
+        label: "肋骨横隔膜角の鈍化（上縁はしばしば半月状）"
+        note: "少量胸水の X線での現れ方"
+        src: "Fleischner用語集2024（PMID 38411514）pleural effusion 項"
+      - id: ef_xr_homog
+        label: "重力側の均等な濃度上昇"
+        note: "量が増えたときの現れ方。実質化との見分けでは air bronchogram の有無が手がかり（あるなら実質化の側）"
+        src: "Fleischner用語集2024（PMID 38411514）pleural effusion 項・air bronchogram 項"
+    ct_items:
+      - id: ef_ct_dependent
+        label: "背側（重力側）の液体貯留"
+        note: "濃度はさまざま"
+        src: "Fleischner用語集2024（PMID 38411514）pleural effusion 項"
+      - id: ef_ct_atelect
+        label: "圧排された無気肺（容積減少＋濃度上昇）"
+        note: "胸水に圧された肺は容積が減り濃度が上がる。濁音の原因が水か肺かを分ける相手"
+        src: "Fleischner用語集2024（PMID 38411514）atelectasis 項"
     integration_note: "胸水セット：石様濁音、呼吸音減弱、声音振盪低下、上縁のヤギ音。（数値はガイド第6章／bedside-bayes 参照）ただし濁音は検者間一致が高く、境界を追いやすい。上縁を同じ体位で定点化すると量の変化を追える。"
     next_step_note: "少量・仰臥位では見逃すため、手技前は超音波で量と安全域を確認する（BTS 2023）。"
 
@@ -285,6 +338,25 @@ diseases:
         note: "気胸を疑う／気腫肺・無呼吸・胸膜癒着でも sliding は落ちるため、A′ から気胸へ進むときは lung point（⑧）を探して確かめる"
         src: "profile表 A′行＋同図の注記"
         figure: a_pattern
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17）----
+    xray_items:
+      - id: px_xr_pleural_line
+        label: "臓側胸膜線（visceral pleural line）"
+        note: "胸膜腔の空気と含気肺の境界を示す曲線状の線。立位X線での気胸の同定はこれによる"
+        src: "Fleischner用語集2024（PMID 38411514）pneumothorax 項"
+      - id: px_xr_deep_sulcus
+        label: "deep sulcus sign（仰臥位）"
+        note: "仰臥位では胸膜線が写らないことがあり、患側の肋骨横隔膜角が異常に深く・黒く・鋭くなる所見が唯一の手がかりになりうる"
+        src: "Gordon 1980（PMID 7384513）原著／Fleischner用語集2024（PMID 38411514）pneumothorax 項"
+      - id: px_xr_tension
+        label: "縦隔の対側偏位・患側横隔膜の低下"
+        note: "緊張気胸に相関する画像。ただし緊張気胸の確定は臨床・生理学的基準で決める"
+        src: "Fleischner用語集2024（PMID 38411514）pneumothorax 項"
+    ct_items:
+      - id: px_ct_air
+        label: "胸膜腔の空気（臓側・壁側胸膜の分離）"
+        note: "仰臥位 CT では空気は腹側（非重力側）に集まりやすい（分布の一文は定義からの組み立て）"
+        src: "Fleischner用語集2024（PMID 38411514）pneumothorax 項"
     integration_note: "気胸セット：突然発症、片側呼吸音低下、過共鳴、声音振盪低下。陽性なら強く疑うが、小気胸では身体所見が乏しい。"
     next_step_note: "緊張性なら画像を待たず、安定例・外傷・仰臥位ではPOCUS（lung sliding/lung point）で確認する。"
 
@@ -373,6 +445,25 @@ diseases:
         note: "profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。"
         src: "profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"
         figure: a_pattern
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17）----
+    xray_items:
+      - id: cp_xr_hyperinfl
+        label: "過膨張（肺の縦長化・横隔膜の低位・後胸骨腔の拡大）"
+        note: "気腫が進むほど肺は長く、横隔膜は低くなる。肺の長さと横隔膜の位置が最も判別的な計測だった"
+        src: "Thurlbeck & Simon 1978（PMID 415543）抄録"
+      - id: cp_xr_art_def
+        label: "血管影の乏しさ（arterial deficiency）"
+        note: "気腫のX線診断の主基準とされた所見"
+        src: "Thurlbeck & Simon 1978（PMID 415543）抄録"
+    ct_items:
+      - id: cp_ct_emphysema
+        label: "気腫（壁のない低吸収域）"
+        note: "終末細気管支より末梢の気腔の不可逆的な拡大と肺胞壁の破壊。小葉中心性は上肺野優位が典型"
+        src: "Fleischner用語集2024（PMID 38411514）emphysema 項"
+      - id: cp_ct_airtrap
+        label: "air trapping（呼気CT）"
+        note: "呼気で濃度が上がらず容積が減らない領域。呼気CTでのみ判定する"
+        src: "Fleischner用語集2024（PMID 38411514）air trapping 項"
     integration_note: "過膨張・気流閉塞セット：FET延長、Hoover徴候、過共鳴、呼吸音減弱。FETは6秒以上を疑う入口、8〜9秒超をより強い支持所見として段階的に読む。身体診察はCOPDを疑い、増悪の重症度と治療反応を追う道具。"
     next_step_note: "GOLD 2026でも診断確定はスパイロメトリー（FEV1/FVC<0.7）。"
 
@@ -451,6 +542,27 @@ diseases:
         note: "profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。"
         src: "profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記"
         figure: a_pattern
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17）。喘息の画像は
+    #      「発作そのものの証明」より合併症・別診断の除外が答えになることが多いため、
+    #      項目は合併症側に寄せてある（この設計判断も §17 で裁定対象）----
+    xray_items:
+      - id: as_xr_pneumothorax
+        label: "気胸の合併（臓側胸膜線）"
+        note: "胸膜腔の空気と含気肺の境界線。合併症の除外として探す"
+        src: "Fleischner用語集2024（PMID 38411514）pneumothorax 項"
+      - id: as_xr_atelect
+        label: "無気肺（容積減少＋濃度上昇）"
+        note: "粘液栓（mucoid impaction）による区域性の含気低下として現れうる"
+        src: "Fleischner用語集2024（PMID 38411514）atelectasis 項・mucoid impaction 項"
+    ct_items:
+      - id: as_ct_mucoid
+        label: "粘液栓（mucoid impaction）"
+        note: "気道が粘液で満たされる。閉塞性にも非閉塞性にも起こる"
+        src: "Fleischner用語集2024（PMID 38411514）mucoid impaction 項"
+      - id: as_ct_airtrap
+        label: "air trapping（呼気CT）・モザイク濃度（吸気CT）"
+        note: "air trapping は呼気CTでのみ、モザイク濃度は完全吸気CTでのみ判定する"
+        src: "Fleischner用語集2024（PMID 38411514）air trapping 項・mosaic attenuation 項"
     integration_note: "呼気気流制限の手がかり：呼気延長、wheeze、air entry低下、呼吸仕事量増加。これらは原因を特定しない。"
     next_step_note: "身体診察は重症度とT0からの変化を追い、喘息診断は変動する症状＋客観的な可変性気流制限で確認する（GINA 2026）。"
 
@@ -548,6 +660,42 @@ diseases:
         note: ""
         src: "別冊表3「むくみ、体重増加、心不全を疑う」行（⑬⑭）"
         figure: pleura_smooth
+    # ---- v1.7.0 胸部X線/CT（起草・承認待ち → 突合表 §17）。X線は Milne 1985 の
+    #      主要3所見＋補助所見の構成に沿う（各所見の読み方の詳細は原著参照）----
+    xray_items:
+      - id: hf_xr_flow
+        label: "肺血流の分布"
+        note: "心原性・非心原性を分ける主要3所見の一つ（何をどう読むかの詳細は原著参照）"
+        src: "Milne 1985（PMID 3872571）抄録・主要3所見"
+      - id: hf_xr_edema_dist
+        label: "肺水腫の分布"
+        note: "主要3所見の一つ"
+        src: "Milne 1985（PMID 3872571）抄録・主要3所見"
+      - id: hf_xr_pedicle
+        label: "血管茎（vascular pedicle）の幅"
+        note: "主要3所見の一つ"
+        src: "Milne 1985（PMID 3872571）抄録・主要3所見"
+      - id: hf_xr_septal
+        label: "小葉間隔壁の線（septal lines）"
+        note: "外側胸膜面に直角に接する細い線。間質の液体貯留を映す。「Kerley線」は旧称（現用語集では非推奨）"
+        src: "Fleischner用語集2024（PMID 38411514）septal thickening 項／Milne 1985（PMID 3872571）補助所見"
+      - id: hf_xr_cuff_eff
+        label: "気管支周囲の cuffing・胸水・心拡大"
+        note: "補助所見。胸水は肋骨横隔膜角の鈍化から"
+        src: "Milne 1985（PMID 3872571）補助所見／Fleischner用語集2024（PMID 38411514）pleural effusion 項"
+    ct_items:
+      - id: hf_ct_septal
+        label: "小葉間隔壁の肥厚"
+        note: "間質への液体貯留・リンパ路のうっ滞などで肥厚する"
+        src: "Fleischner用語集2024（PMID 38411514）septal thickening 項"
+      - id: hf_ct_ggo
+        label: "すりガラス影"
+        note: "肺胞の部分的な液体貯留などで生じる。CT でだけ使う用語"
+        src: "Fleischner用語集2024（PMID 38411514）ground-glass 項"
+      - id: hf_ct_effusion
+        label: "胸水（重力側の液体貯留）"
+        note: "濃度はさまざま"
+        src: "Fleischner用語集2024（PMID 38411514）pleural effusion 項"
     integration_note: "うっ血セット：起座呼吸、JVD、S3、両側下肺野crackles、浮腫。S3とJVDは陽性なら強力（数値はガイド第6章／bedside-bayes 参照）。"
     next_step_note: "crackles単独は非特異的で、BNP/NT-proBNP、心エコー、LUS B-linesで統合し、治療反応は定点で追う。"
 
@@ -556,6 +704,16 @@ diseases:
     label: "その他（自由枠）"
     exam_items: []
     pocus_items: []
+
+# ---------------------------------------------------------------- 答え合わせ画像（v1.7.0）
+# 答え合わせに使う画像の種類（主たる一つを選ぶ ── 2026-08-24 副院長裁定）。
+# 後から撮った画像・確定情報は従来どおり「後日追記（5. 画像・検査・経過）」が受ける。
+# ラベルは新規UI文言（承認は突合表 §17）。
+modalities:
+  - {id: pocus, label: "POCUS"}
+  - {id: cxr, label: "胸部X線"}
+  - {id: ct, label: "胸部CT"}
+  - {id: other, label: "その他"}
 
 site_options:
   sides: [右, 左, 両側]
@@ -580,6 +738,9 @@ site_options:
     - {id: upper_blue, label: "upper BLUE点", desc: "上の手の中央。第2肋間・鎖骨中線あたり"}
     - {id: lower_blue, label: "lower BLUE点", desc: "下の手掌の中央。第4〜5肋間、やや外側"}
     - {id: plaps, label: "PLAPS点", desc: "lower BLUE と同じ高さで、後腋窩線との交点。体を起こすか側臥位にして背側へ回り込む"}
+  # 胸部X線・CT 用のワンタップ位置（v1.7.0、2026-08-24 副院長裁定で6語を追加。
+  # タップすると位置の1行として追加される。舌区は左上葉の一部だが、答えの記載単位として独立させる）
+  lobe_chips: [右上葉, 右中葉, 右下葉, 左上葉, 舌区, 左下葉]
 
 export_template:
   items:
@@ -594,7 +755,9 @@ export_template:
       heading: "3. 身体診察"
       subfields: ["仮説を支持する所見", "あるはずなのに無かった所見", "所見の解剖学的位置（肋間・線・体表図）", "診察を制限した条件"]
     - "no": 4
-      heading: "4. POCUS 後の更新"
+      # v1.7.0: 「4. POCUS 後の更新」→「4. 画像後の更新」。ガイド表66 からの意図的乖離
+      # （アプリ側だけ POCUS 以外の画像でも答え合わせできるため。承認は突合表 §17）
+      heading: "4. 画像後の更新"
       subfields: ["所見", "確かめられたこと", "否定的になったこと", "確信度の動き（→上・→下）", "新たに疑ったこと"]
     - "no": 5
       heading: "5. 画像・検査・経過"
@@ -750,7 +913,8 @@ pocus_figures:
     caption: "横隔膜の上に無エコーの帯。四辺形（quad sign）に囲まれ、呼吸で肺の縁が出入りする。量の推移は打診濁音の上縁と併走させて追える。"
 
 ui_copy:
-  lock_button: "ここまでをエコーの前に書いた"
+  # v1.7.0: 「エコーの前に」→「画像の前に」（POCUS 以外でも答え合わせできるため。承認は突合表 §17）
+  lock_button: "ここまでを画像の前に書いた"
   lock_confirm: "ここまでの記録を固定します。腕の採点は、画像の前に書いた記録だけで行います。固定後に手を入れた項目には「画像後修正あり」が付きます。"
   edited_after_lock_badge: "画像後修正あり"
   anon_placeholder: "氏名・患者ID・病室番号・生年月日など、個人を特定できる情報は書かない（症例は「70代男性」のように匿名化する）"
@@ -813,6 +977,16 @@ ui_copy:
   quant_sd_label: "ずれのSD"
   quant_rcv_label: "RCV（変化と読む床）"
   quant_rcv_note: "RCV＝√2×1.96×SD。次の測定でこの幅を超えて動いたときに、はじめて「変化した」と読む"
+  # ---- 以下 2026-08-24 v1.7.0「答え合わせ画像のマルチモダリティ対応」の新規UI文言（承認待ち。突合表 §17）----
+  modality_label: "答え合わせに使った画像（主たる一つ）"
+  modality_note: "画像の種類で答えの細かさは変わる。粗い画像で外れたときは、外れ方8分類の「比較基準の不確実性」も候補に入れる"
+  modality_other_label: "その他の画像（何で答え合わせしたか）"
+  modality_switch_confirm: "答え合わせの画像を切り替えます。いま入力済みの所見チェック・位置は切り替え先では表示・書き出しに出ません（データは残り、戻せば復活します）。切り替えますか？"
+  imaging_site_label: "位置（画像上の場所・複数可）"
+  imaging_sites_empty: "肺葉チップか「＋ 位置を追加」で、答えの場所を記録できます"
+  imaging_conf_label: "画像後の確信度（%）"
+  outcome_ct_note: "答え合わせに使った画像は S5 に記録済み。ここは、その後の追加画像・確定情報のみ"
+  export_modality_label: "画像の種類"
 
 links:
   bedside_bayes: "https://torukubota2023.github.io/bedside-bayes/"

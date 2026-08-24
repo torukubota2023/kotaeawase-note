@@ -54,7 +54,15 @@ UI_COPY_KEYS = ["lock_button", "lock_confirm", "edited_after_lock_badge",
                 "quant_mean_label", "quant_sd_label", "quant_rcv_label",
                 "quant_rcv_note",
                 # 2026-08-09 v1.3.0: 定量テンプレの howto の見出し（突合表 §16）
-                "quant_howto_label"]
+                "quant_howto_label",
+                # 2026-08-24 v1.7.0: 答え合わせ画像のマルチモダリティ対応（突合表 §17）
+                "modality_label", "modality_note", "modality_other_label",
+                "modality_switch_confirm", "imaging_site_label",
+                "imaging_sites_empty", "imaging_conf_label",
+                "outcome_ct_note", "export_modality_label"]
+
+# v1.7.0: 答え合わせ画像の id（JS 側 modalityOf() の whitelist と同じ。増やすときは両方へ）
+MODALITY_IDS = ["pocus", "cxr", "ct", "other"]
 
 
 def validate(content: dict) -> list[str]:
@@ -71,11 +79,21 @@ def validate(content: dict) -> list[str]:
     need(len(set(dids)) == len(dids), f"disease id に重複がある: {dids}")
     item_ids: list[str] = []
     for d in diseases:
-        for it in (d.get("exam_items") or []) + (d.get("pocus_items") or []):
+        # v1.7.0: xray_items / ct_items も同じ規律（id/label 必須・全体一意）に入れる
+        for it in (d.get("exam_items") or []) + (d.get("pocus_items") or []) \
+                + (d.get("xray_items") or []) + (d.get("ct_items") or []):
             need(bool(it.get("id")) and bool(it.get("label")), f"{d.get('id')}: id/label の無い項目がある")
             item_ids.append(it.get("id"))
     dup = sorted({x for x in item_ids if item_ids.count(x) > 1})
-    need(not dup, f"exam/pocus 項目の id が全体で一意でない: {dup}")
+    need(not dup, f"exam/pocus/xray/ct 項目の id が全体で一意でない: {dup}")
+
+    # --- modalities（v1.7.0 答え合わせ画像） ---------------------------
+    mods = content.get("modalities") or []
+    mod_ids = [m.get("id") for m in mods]
+    need(mod_ids == MODALITY_IDS,
+         f"modalities の id は {MODALITY_IDS} の順のはず（実際 {mod_ids}）")
+    for m in mods:
+        need(bool(m.get("label")), f"modalities.{m.get('id')} に label が無い")
 
     # --- site_options ---------------------------------------------------
     site = content.get("site_options") or {}
@@ -96,6 +114,10 @@ def validate(content: dict) -> list[str]:
     need(len(dirs) == 4 and len(set(dirs)) == 4, f"site_options.cm_directions は一意な4件のはず（実際 {len(dirs)} 件）")
     ics = site.get("ics_chips") or []
     need(len(set(ics)) == len(ics), f"site_options.ics_chips に重複がある: {ics}")
+    # v1.7.0: 胸部X線/CT の肺葉チップ
+    lobes = site.get("lobe_chips") or []
+    need(bool(lobes), "site_options.lobe_chips が空")
+    need(len(set(lobes)) == len(lobes), f"site_options.lobe_chips に重複がある: {lobes}")
     presets = site.get("pocus_presets") or []
     need(bool(presets), "site_options.pocus_presets が空")
     pids = [p.get("id") for p in presets]
@@ -236,7 +258,8 @@ def validate(content: dict) -> list[str]:
              f"pocus_figures の項目に id/title/caption が揃っていない: {f.get('id')}")
     fig_set = set(fig_ids)
     for d in content.get("diseases") or []:
-        for it in d.get("pocus_items") or []:
+        # v1.7.0: xray/ct 項目には figure を付けない設計だが、付いていたら同じ整合を要求する
+        for it in (d.get("pocus_items") or []) + (d.get("xray_items") or []) + (d.get("ct_items") or []):
             fig = it.get("figure")
             if fig is not None:
                 need(fig in fig_set,
@@ -289,7 +312,10 @@ def main() -> int:
 
     n_exam = sum(len(d.get("exam_items") or []) for d in content["diseases"])
     n_pocus = sum(len(d.get("pocus_items") or []) for d in content["diseases"])
+    n_xray = sum(len(d.get("xray_items") or []) for d in content["diseases"])
+    n_ct = sum(len(d.get("ct_items") or []) for d in content["diseases"])
     report = (f"diseases 7・exam_items {n_exam}・pocus_items {n_pocus}・"
+              f"xray_items {n_xray}・ct_items {n_ct}・"
               f"分類 8・決定木ノード {len(content['miss_classification']['tree']['nodes'])}・"
               f"テンプレ 8項目／APP_VERSION {version}／"
               f"index.html {len(built.encode('utf-8')) / 1024:.1f} KB")
