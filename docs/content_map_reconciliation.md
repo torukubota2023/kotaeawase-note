@@ -546,3 +546,121 @@ content.yaml 冒頭注記を同時改訂）。
 | `ui_copy.quant_howto_label` | 「測り方（タップで開く）」 |
 | `build.py` の検証 | ①`howto` は中身のある文字列 ②`howto` を付けられるのは qtype=quant だけ ③**定量テンプレは1病態1本まで**（2本あると集計の系統が割れる） |
 | `sw.js` VERSION | v1.2.0 → **v1.3.0**（公開済みのため必須） |
+
+---
+
+## §17 答え合わせ画像のマルチモダリティ対応（v1.7.0・2026-08-24。承認対象＝**2026-08-24 副院長承認済み**）
+
+**経緯。** 副院長の要望（2026-08-24）「答え合わせを POCUS だけでなく、胸部レントゲンと胸部CTでも
+できるように。細かさは POCUS より落ちるが、ないよりは較正される」。同日のセッション内で
+次の3点の設計判断は副院長が裁定済み:
+①X線・CT の**所見チェックリストも今回作る**（一次資料からの起草）
+②複数の画像で答え合わせした場合は**主たる一つを選ぶ**（後から撮った画像は既存の「後日追記」が受ける）
+③X線・CT の位置入力に**肺葉チップ**（右上葉・右中葉・右下葉・左上葉・舌区・左下葉）を追加する。
+**承認記録: 2026-08-24 副院長承認** ── 下表の新規医学文言29件（xray_items 17・ct_items 12）・
+新規UI文言11件・変更した既存文言12件は、**起草文のとおり承認**（文言変更なし）。同日に
+main へのマージと公開も承認された。17.4 末尾の「裁定を仰ぐ追加提案（readingref_note への
+一文追加）」は**この承認に含まれない**（未実装のまま持ち越し）。
+
+**線引きの維持。** xray_items / ct_items は**所見の定義のみ**を載せ、感度・特異度・尤度比・
+診断精度の数値は載せない（冒頭の線引き・README・検収 C2.3 のとおり）。出典の正本は
+content.yaml の meta.sources「PubMed 一次資料」エントリ（全件 PMID・DOI つき。
+Fleischner 用語集 2024 は RSNA 公開全文で定義文を確認、Milne 1985・Thurlbeck 1978 は
+抄録に列挙された所見のみを転記し、抄録に無い読み方の詳細は「原著参照」と明記した）。
+
+### 17.1 新規医学文言 ── xray_items（17項目。種別: **新規医学文言・2026-08-24 副院長承認**）
+
+| yaml パス | label | note | 出典 |
+|---|---|---|---|
+| pneumonia.pn_xr_consol | 均等な濃度上昇（実質化） | 肺胞の空気が液体などに置き換わった状態。X線では均一な濃度上昇に見える。原因の病理までは決めない | Fleischner 2024 consolidation |
+| pneumonia.pn_xr_airbronch | air bronchogram | 含気を失った肺の中に、空気の残った気管支が透けて見える。中枢気道が開通している含意 | Fleischner 2024 air bronchogram |
+| pneumonia.pn_xr_silhouette | silhouette sign（隣接する正常輪郭の消失） | X線吸収が近い構造どうしが接すると正常の輪郭が消える。どの輪郭が消えたかで病変の葉を当てる。漏斗胸など肺以外でも起こる | Felson 1950 原著／Fleischner 2024 |
+| effusion.ef_xr_blunting | 肋骨横隔膜角の鈍化（上縁はしばしば半月状） | 少量胸水の X線での現れ方 | Fleischner 2024 pleural effusion |
+| effusion.ef_xr_homog | 重力側の均等な濃度上昇 | 量が増えたときの現れ方。実質化との見分けでは air bronchogram の有無が手がかり（あるなら実質化の側） | Fleischner 2024（見分けの一文は定義からの組み立て） |
+| pneumothorax.px_xr_pleural_line | 臓側胸膜線（visceral pleural line） | 胸膜腔の空気と含気肺の境界を示す曲線状の線。立位X線での気胸の同定はこれによる | Fleischner 2024 pneumothorax |
+| pneumothorax.px_xr_deep_sulcus | deep sulcus sign（仰臥位） | 仰臥位では胸膜線が写らないことがあり、患側の肋骨横隔膜角が異常に深く・黒く・鋭くなる所見が唯一の手がかりになりうる | Gordon 1980 原著／Fleischner 2024 |
+| pneumothorax.px_xr_tension | 縦隔の対側偏位・患側横隔膜の低下 | 緊張気胸に相関する画像。ただし緊張気胸の確定は臨床・生理学的基準で決める | Fleischner 2024 pneumothorax |
+| copd.cp_xr_hyperinfl | 過膨張（肺の縦長化・横隔膜の低位・後胸骨腔の拡大） | 気腫が進むほど肺は長く、横隔膜は低くなる。肺の長さと横隔膜の位置が最も判別的な計測だった | Thurlbeck & Simon 1978 抄録 |
+| copd.cp_xr_art_def | 血管影の乏しさ（arterial deficiency） | 気腫のX線診断の主基準とされた所見 | Thurlbeck & Simon 1978 抄録 |
+| asthma.as_xr_pneumothorax | 気胸の合併（臓側胸膜線） | 胸膜腔の空気と含気肺の境界線。合併症の除外として探す | Fleischner 2024 pneumothorax |
+| asthma.as_xr_atelect | 無気肺（容積減少＋濃度上昇） | 粘液栓（mucoid impaction）による区域性の含気低下として現れうる | Fleischner 2024 atelectasis・mucoid impaction |
+| hf.hf_xr_flow | 肺血流の分布 | 心原性・非心原性を分ける主要3所見の一つ（何をどう読むかの詳細は原著参照） | Milne 1985 抄録・主要3所見 |
+| hf.hf_xr_edema_dist | 肺水腫の分布 | 主要3所見の一つ | Milne 1985 抄録・主要3所見 |
+| hf.hf_xr_pedicle | 血管茎（vascular pedicle）の幅 | 主要3所見の一つ | Milne 1985 抄録・主要3所見 |
+| hf.hf_xr_septal | 小葉間隔壁の線（septal lines） | 外側胸膜面に直角に接する細い線。間質の液体貯留を映す。「Kerley線」は旧称（現用語集では非推奨） | Fleischner 2024 septal thickening／Milne 1985 補助所見 |
+| hf.hf_xr_cuff_eff | 気管支周囲の cuffing・胸水・心拡大 | 補助所見。胸水は肋骨横隔膜角の鈍化から | Milne 1985 補助所見／Fleischner 2024 pleural effusion |
+
+**喘息の設計判断（裁定対象）:** 喘息の画像は「発作そのものの証明」より合併症・別診断の除外が
+答えになることが多いため、項目を合併症側に寄せた（content.yaml のコメントにも明記）。
+
+### 17.2 新規医学文言 ── ct_items（12項目。種別: **新規医学文言・2026-08-24 副院長承認**）
+
+| yaml パス | label | note | 出典 |
+|---|---|---|---|
+| pneumonia.pn_ct_consol | 実質化（下層の血管・気管支が透けない濃度上昇） | 開通した気管支が中に残れば air bronchogram になる | Fleischner 2024 consolidation |
+| pneumonia.pn_ct_ggo | すりガラス影（血管・気管支が透けて見える淡い濃度上昇） | 肺胞の空気が完全には失われていない段階。CT でだけ使う用語 | Fleischner 2024 ground-glass |
+| effusion.ef_ct_dependent | 背側（重力側）の液体貯留 | 濃度はさまざま | Fleischner 2024 pleural effusion |
+| effusion.ef_ct_atelect | 圧排された無気肺（容積減少＋濃度上昇） | 胸水に圧された肺は容積が減り濃度が上がる。濁音の原因が水か肺かを分ける相手 | Fleischner 2024 atelectasis |
+| pneumothorax.px_ct_air | 胸膜腔の空気（臓側・壁側胸膜の分離） | 仰臥位 CT では空気は腹側（非重力側）に集まりやすい（分布の一文は定義からの組み立て） | Fleischner 2024 pneumothorax |
+| copd.cp_ct_emphysema | 気腫（壁のない低吸収域） | 終末細気管支より末梢の気腔の不可逆的な拡大と肺胞壁の破壊。小葉中心性は上肺野優位が典型 | Fleischner 2024 emphysema |
+| copd.cp_ct_airtrap | air trapping（呼気CT） | 呼気で濃度が上がらず容積が減らない領域。呼気CTでのみ判定する | Fleischner 2024 air trapping |
+| asthma.as_ct_mucoid | 粘液栓（mucoid impaction） | 気道が粘液で満たされる。閉塞性にも非閉塞性にも起こる | Fleischner 2024 mucoid impaction |
+| asthma.as_ct_airtrap | air trapping（呼気CT）・モザイク濃度（吸気CT） | air trapping は呼気CTでのみ、モザイク濃度は完全吸気CTでのみ判定する | Fleischner 2024 air trapping・mosaic attenuation |
+| hf.hf_ct_septal | 小葉間隔壁の肥厚 | 間質への液体貯留・リンパ路のうっ滞などで肥厚する | Fleischner 2024 septal thickening |
+| hf.hf_ct_ggo | すりガラス影 | 肺胞の部分的な液体貯留などで生じる。CT でだけ使う用語 | Fleischner 2024 ground-glass |
+| hf.hf_ct_effusion | 胸水（重力側の液体貯留） | 濃度はさまざま | Fleischner 2024 pleural effusion |
+
+### 17.3 新規UI文言（種別: **新規UI文言（組み立て）・2026-08-24 副院長承認**）
+
+| yaml パス | 起草文 | 根拠にした原文（趣旨の出所） | 種別 |
+|---|---|---|---|
+| modalities（4件の label） | POCUS／胸部X線／胸部CT／その他 | 一般的な検査名 | **新規UI文言・2026-08-24 副院長承認** |
+| site_options.lobe_chips | 右上葉・右中葉・右下葉・左上葉・舌区・左下葉 | 解剖の標準用語（裁定②③） | **新規UI語彙・2026-08-24 副院長承認** |
+| ui_copy.modality_label | 答え合わせに使った画像（主たる一つ） | 裁定②「主たる一つを選ぶ」 | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.modality_note | 画像の種類で答えの細かさは変わる。粗い画像で外れたときは、外れ方8分類の「比較基準の不確実性」も候補に入れる | 副院長要望の「細かさは落ちる」＋既存8分類 reference の説明文 | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.modality_other_label | その他の画像（何で答え合わせしたか） | 組み立て | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.modality_switch_confirm | 答え合わせの画像を切り替えます。いま入力済みの所見チェック・位置は切り替え先では表示・書き出しに出ません（データは残り、戻せば復活します）。切り替えますか？ | ロック規律の設計（答え入力後の基準差し替えへの防御） | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.imaging_site_label | 位置（画像上の場所・複数可） | 既存「位置（POCUS を当てた場所・複数可）」の同型 | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.imaging_sites_empty | 肺葉チップか「＋ 位置を追加」で、答えの場所を記録できます | 既存 BLUE 空状態文の同型 | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.imaging_conf_label | 画像後の確信度（%） | 旧「POCUS 後の確信度（%）」の一般化 | **変更UI文言・2026-08-24 副院長承認** |
+| ui_copy.outcome_ct_note | 答え合わせに使った画像は S5 に記録済み。ここは、その後の追加画像・確定情報のみ | S5 と後日追記の二重記載防止（設計レビュー指摘8） | **新規UI文言・2026-08-24 副院長承認** |
+| ui_copy.export_modality_label | 画像の種類 | 書き出し・詳細画面の行名 | **新規UI文言・2026-08-24 副院長承認** |
+
+### 17.4 変更した既存文言（種別: **変更・2026-08-24 副院長承認**）
+
+| 場所 | 旧 | 新 |
+|---|---|---|
+| export_template no=4 heading | 4. POCUS 後の更新 | **4. 画像後の更新**（ガイド表66 からの**意図的乖離**。アプリ側だけ POCUS 以外でも答え合わせできるため） |
+| ui_copy.lock_button | ここまでをエコーの前に書いた | ここまでを**画像**の前に書いた |
+| index.html STEP_TITLES[5] | POCUS 答え合わせ | 画像で答え合わせ |
+| index.html S4 次へボタン | 次へ（S5 POCUS） | 次へ（S5 答え合わせ） |
+| index.html S4 lockbox 見出し | エコーを当てる前に、ここで固定する | 画像を開く前に、ここで固定する |
+| index.html S5/S6 未ロックガード | …POCUS へ進んで／S5 の POCUS を先に… | …答え合わせへ進んで／S5 の答え合わせを先に… |
+| index.html S6 対比ヘッダ | POCUS 後 | 画像後（モダリティ名） |
+| index.html S6 対比の行名 | 位置（POCUS） | 位置（画像） |
+| index.html 一覧ヘッダ（pageHeader） | …POCUS で答え合わせして… | …POCUS・胸部X線・CT で答え合わせして… |
+| index.html 一覧の空状態 | エコーを当てる前に… | 画像を開く前に… |
+| index.html meta description・先頭コメント／README 冒頭／manifest description | POCUS で（による）… | POCUS・胸部X線・CT で… |
+| 集計 subnote（#stats） | （末尾に追記） | POCUS 以外の画像で答えた記録（◯◯ n件）は、答えの確度が違うためこのタイルに含めない |
+
+**変えていないもの（裁定済みの設計として維持）:** 集計タイル名「POCUS 前後の確信度移動」
+（対象を POCUS に限るため名称は正確なまま）／読みの軸（reading_label・readingref_label・
+readingref_note・reading_axis_*）＝**エコー専用のまま**（音とエコーの較正という設計思想。
+CT で答えた症例は readingRef 未入力のまま自然に集計対象外）／S5 の位置ラベル（POCUS 選択時）
+「位置（POCUS を当てた場所・複数可）」。
+
+**裁定を仰ぐ追加提案（未実装）:** readingref_note への一文追加「答えを CT で付けた場合も、
+エコーを当てたなら記録してよい」── 表示条件（POCUS または入力済み）はこの趣旨で実装済みだが、
+note 文言への明文化は裁定待ち。
+
+### 17.5 文言以外の変更
+
+| 変更 | 内容 |
+|---|---|
+| case スキーマ（additive・schemaVersion 1 のまま） | `pocus.modality`（"pocus"/"cxr"/"ct"/"other"）・`pocus.modalityOther`・`pocus.modalityChangedAt`（答え入力後に切り替えた事実の記録。editedAfterLock とは別物） |
+| migrateCase | 旧記録は「答えの実入力がある or reviewed」のときだけ "pocus" を貼る（未入力下書きは未設定のまま、読む側は modalityOf() が "pocus" に解決）。whitelist 外の値は "pocus" へ矯正 |
+| 読む側の一貫化 | S5 表示・S6 対比・書き出し・詳細画面は選択モダリティの所見リストだけを読む（切替でデータは消えない・戻せば復活） |
+| 集計 statsMove | 対象を modality=pocus に限定（CT はほぼ確定情報で移動幅が構造的に大きく、混ぜると釣り上がる）。他モダリティは件数を subnote に明示。自分の尤度比・較正表・平均外れ幅はモダリティ非依存で不変 |
+| build.py の検証 | ①xray/ct 項目も id/label 必須・全体一意 ②modalities は4件固定順 ③lobe_chips 非空・一意 ④ui_copy 新キー9件 ⑤figure 参照整合を xray/ct にも適用 |
+| `sw.js` VERSION | v1.6.0 → **v1.7.0**（公開済みのため必須） |
+| 検収 | acceptance.md C6/C8 を改訂し **C14** を新設 |
