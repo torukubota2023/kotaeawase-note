@@ -129,6 +129,26 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0;padding:0;b
   border-style:solid;border-color:#D9AEB0;background:#FDF7F7}
 .oyacard.pending{border-style:dashed;background:#FBEFEF}
 .oyacard .d{color:#8C2F33;font-weight:600}
+/* 経過モード。1日1回、上から順に叩けるように行を薄く区切る */
+.trow{padding:7px 0;border-bottom:1px dotted var(--rule)}
+.trow:last-of-type{border-bottom:none}
+.tnm{font-size:13px;margin-bottom:5px}
+.tdef{display:block;font-size:11px;color:var(--ink-3);margin-top:2px}
+.taxnm{font-size:11px;color:var(--ink-3);margin:5px 0 3px}
+.segplace{font-size:11.5px;color:#22523A;margin:4px 0 0;min-height:1px;line-height:1.6}
+.sprow{display:flex;align-items:center;gap:8px;margin:4px 0}
+.spnm{flex:0 0 52px;font-size:12px;color:var(--ink-2)}
+.sprow input{flex:1}
+.tkitem{border:1px solid var(--rule);border-radius:8px;padding:9px 10px;margin-bottom:9px}
+.chip.small{font-size:11.5px;padding:6px 9px}
+.blind{color:#7A4413}
+#trkRef .chip[disabled]{opacity:.35}
+.trkres{margin:4px 0 0;padding-left:0;list-style:none}
+.trkres li{padding:4px 0;border-bottom:1px dotted var(--rule);font-size:13.5px}
+.trkres li.ng{color:#7A4413}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;font-size:12px;width:100%}
+.tbl th,.tbl td{border-bottom:1px solid var(--rule);padding:5px 6px;text-align:left;white-space:nowrap}
 .banner{border:1px solid var(--accent);background:var(--accent-weak);padding:10px 12px;margin-bottom:10px;
   font-size:12.5px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .banner.warn{border-color:var(--warn);background:var(--warn-bg)}
@@ -269,10 +289,10 @@ noscript{display:block;padding:14px;border:1px solid var(--pos);color:var(--pos)
 <script>
 "use strict";
 /* ==== CONTENT:BEGIN ==== */
-const CONTENT = {"meta":{"transcribed_at":"2026-08-08","sources":[{"file":"docs/education/呼吸器身体診察実践ガイド_2026_統合版.docx","parts":["tables[17]〜[22]：第4章 疾患カード表（肺炎・胸水・気胸・COPD増悪・喘息発作・心不全（心原性肺水腫））。直前の見出し段落（para510/533/552/570/589/605）と最終行「統合の読み方」の内容（肺実質化セット／胸水セット／気胸セット／過膨張・気流閉塞セット／呼気気流制限／うっ血セット）の両方で疾患を同定済み","🚑 30秒ルート「まず探すN所見」段落：para[515]（肺炎）／para[538]（胸水）／para[557]＋⚠para[559]（気胸）／para[575]（COPD増悪）／para[594]（喘息発作）／para[610]（心不全）","第4章 🩻ベッドサイド統合段落（補遺1参照）：para[526]（肺炎）／para[547]（胸水）／para[563]〜[564]（気胸）／para[619]（心不全）── pocus_items の文言に使用","tables[56]：外れ方8分類（9行2列）","段落1211〜1238：第10章 06.5「症例で較正する」（決定木=para[1229]、一行記録=para[1230]、次の一手を一つ=para[1232]、一例から法則を作らない=para[1233]）","tables[66]：巻末「症例記録テンプレート」（9行2列）","位置ピッカー語彙（site_options.lines_by_aspect／cm_landmarks_by_aspect／cm_directions）：para[181]（頭側・尾側・一肋間ずつ）／para[199]（前腋窩線・鎖骨中線・中腋窩線）／para[215]（胸骨外縁・中腋窩線・内側）／para[287]（肩甲骨下角）／para[296]（脊柱）／para[301]（脊柱寄り・中央・後腋窩線寄り・最下肋骨・外側）／para[484]（胸骨角からの垂直距離を cm で）／para[763]（中腋窩線・腋窩）／para[1019]（第4–5肋間前〜中腋窩線・第2肋間鎖骨中線）／para[1221]（左右・面・基準線・肋間の順、肩甲骨下角の尾側）／para[1232]（尾側から頭側へ一肋間ずつ）"]},{"file":"docs/education/肺エコー図譜_2026.docx","parts":["tables[2]：ずれ方4分類＋次の一手（観察／手技／解釈／統合の4行）","tables[3]：入口→まず当てる場所→見る所見（6入口）"]},{"file":"scripts/build_lung_us_figures.py","parts":["L683〜L694：BLUE 点の凡例（upper BLUE／lower BLUE／PLAPS point の位置記述）── site_options.pocus_presets に使用","L713〜L719：BLUE profile 対応表（A／A′／B／B′／A/B／C／PLAPS → 病態）","L735〜L742：同図の注記（profileは型・A′→lung point確認・原法の下肢静脈エコー分岐）"]},{"file":"PubMed 一次資料（v1.7.0 xray_items / ct_items の定義出典）","parts":["Fleischner Society 用語集 2024（Bankier ら. Radiology 2024;310(2):e232558. PMID 38411514・DOI 10.1148/radiol.232558）── consolidation・air bronchogram・ground-glass・septal thickening・pneumothorax（visceral pleural line・deep sulcus sign・緊張気胸の画像相関）・silhouette sign・pleural effusion・atelectasis・emphysema・air trapping・mosaic attenuation・mucoid impaction の各定義。RSNA 公開全文で本文の定義文を確認済み","Gordon R. The deep sulcus sign. Radiology 1980;136(1). PMID 7384513・DOI 10.1148/radiology.136.1.7384513 ── 仰臥位気胸の deep sulcus sign（原著。抄録で確認）","Milne ENC ら. The radiologic distinction of cardiogenic and noncardiogenic edema. AJR 1985;144(5):879-. PMID 3872571・DOI 10.2214/ajr.144.5.879 ── 心原性肺水腫の胸部X線 主要3所見（肺血流の分布・肺水腫の分布・血管茎の幅）＋補助7所見（抄録に列挙。読み方の詳細は原著参照）","Felson B, Felson H. Localization of intrathoracic lesions by means of the postero-anterior roentgenogram; the silhouette sign. Radiology 1950;55(3):363-. PMID 14781343・DOI 10.1148/55.3.363 ── silhouette sign（原著）","Thurlbeck WM, Simon G. Radiographic appearance of the chest in emphysema. AJR 1978;130(3):429-. PMID 415543・DOI 10.2214/ajr.130.3.429 ── 気腫の胸部X線所見（肺の縦長化・横隔膜低位・後胸骨腔拡大・血管影の乏しさ。抄録で確認。精度の数値は転記しない）"]}]},"diseases":[{"id":"pneumonia","label":"肺炎","exam_items":[{"id":"pn_fever_chills","label":"発熱、悪寒","group":"視診","priority":false,"note":"高齢者では典型的症状に乏しい"},{"id":"pn_dyspnea_mild","label":"軽度の呼吸困難","group":"視診","priority":false,"note":""},{"id":"pn_cough_purulent","label":"咳嗽、膿性痰","group":"視診","priority":false,"note":""},{"id":"pn_fremitus_inc","label":"声音振盪増強","group":"触診","priority":false,"note":"肥満例では判定困難"},{"id":"pn_expansion_mild_limit","label":"胸郭運動軽度制限","group":"触診","priority":false,"note":""},{"id":"pn_dullness","label":"局在性濁音","group":"打診","priority":true,"note":"小さな病変では検出困難"},{"id":"pn_border_clear","label":"境界比較的明瞭","group":"打診","priority":false,"note":""},{"id":"pn_bronchial_breath","label":"気管支呼吸音","group":"聴診","priority":true,"note":"肺野で気管の音が聴こえたら異常"},{"id":"pn_crackles","label":"限局性のcrackles（吸気）","group":"聴診","priority":true,"note":"読む軸は音質と、吸気の終わりまで届くか（3.4）／初期はcoarse・吸気中期、改善とともに短くなり吸気後半へ移動しfine寄り（Piirilä 1992）／初期では副雑音が目立たない"},{"id":"pn_voice_test","label":"声音テスト陽性","group":"聴診","priority":true,"note":"ヤギ音／気管支声"}],"pocus_items":[{"id":"pn_us_consol","label":"実質化","note":"hepatization（肝様変化）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（③）／ガイド第4章 肺炎🩻段落（補遺1）","figure":"consolidation"},{"id":"pn_us_air_bronchogram","label":"air bronchogram が動くか","note":"dynamic air bronchogram","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑨）／ガイド第4章 肺炎🩻段落（補遺1）","figure":"air_bronchogram"},{"id":"pn_us_plaps","label":"PLAPS（背側に胸水＋実質化）","note":"肺炎（背側に寄った型）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑩）／profile表 PLAPS行","figure":"consolidation"},{"id":"pn_us_b_prime","label":"B′ profile：lung sliding なし ＋ B-line 多数","note":"肺炎を疑う","src":"profile表 B′行","figure":"b_lines"},{"id":"pn_us_ab","label":"A/B profile：片側 A・対側 B と左右差","note":"肺炎を疑う","src":"profile表 A/B行"},{"id":"pn_us_c","label":"C profile：前方に実質化がある","note":"肺炎（前方に及ぶ型）","src":"profile表 C行","figure":"consolidation"},{"id":"pn_us_a_pattern","label":"A-pattern（胸膜線と平行な線がくり返す＝含気が保たれる）","note":"coarse と読んだときの予測の相手。crackles があるなら気道側を先に考える","src":"ガイド第3章 3.4 🩻（図3-5c）","figure":"a_pattern"},{"id":"pn_us_bline_pleura","label":"B-line ＋ 胸膜線の不整","note":"fine と読んだときの予測の相手","src":"ガイド第3章 3.4 🩻（図3-5c）","figure":"pleura_irregular"}],"xray_items":[{"id":"pn_xr_consol","label":"均等な濃度上昇（実質化）","note":"肺胞の空気が液体などに置き換わった状態。X線では均一な濃度上昇に見える。原因の病理までは決めない","src":"Fleischner用語集2024（PMID 38411514）consolidation 項"},{"id":"pn_xr_airbronch","label":"air bronchogram","note":"含気を失った肺の中に、空気の残った気管支が透けて見える。中枢気道が開通している含意","src":"Fleischner用語集2024（PMID 38411514）air bronchogram 項"},{"id":"pn_xr_silhouette","label":"silhouette sign（隣接する正常輪郭の消失）","note":"X線吸収が近い構造どうしが接すると正常の輪郭が消える。どの輪郭が消えたかで病変の葉を当てる。漏斗胸など肺以外でも起こる","src":"Felson 1950（PMID 14781343）原著／Fleischner用語集2024（PMID 38411514）silhouette sign 項"}],"ct_items":[{"id":"pn_ct_consol","label":"実質化（下層の血管・気管支が透けない濃度上昇）","note":"開通した気管支が中に残れば air bronchogram になる","src":"Fleischner用語集2024（PMID 38411514）consolidation 項"},{"id":"pn_ct_ggo","label":"すりガラス影（血管・気管支が透けて見える淡い濃度上昇）","note":"肺胞の空気が完全には失われていない段階。CT でだけ使う用語","src":"Fleischner用語集2024（PMID 38411514）ground-glass 項"}],"integration_note":"肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。","next_step_note":"陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。／音質を較正するとき、的は「cracklesがB-lineと一致すること」ではなく「自分の読み（間質か気道か）が肺の見え方と合うこと」。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない。crackles陰性でも肺うっ血は除外できず、間質性肺疾患ではエコーはfine cracklesの金標準にならない。数値はガイド3.4へ。"},{"id":"effusion","label":"胸水","exam_items":[{"id":"ef_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"少量では症状軽微"},{"id":"ef_lateral_decubitus","label":"患側臥位を好む","group":"視診","priority":false,"note":""},{"id":"ef_tracheal_dev_visible","label":"大量では気管偏位","group":"視診","priority":true,"note":""},{"id":"ef_fremitus_dec","label":"声音振盪著明な低下","group":"触診","priority":true,"note":"液面上では正常のことも"},{"id":"ef_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"ef_tracheal_dev_palp","label":"大量では気管健側偏位","group":"触診","priority":true,"note":""},{"id":"ef_stony_dullness","label":"石様濁音（stony dull）","group":"打診","priority":true,"note":"500mL以上で検出可能"},{"id":"ef_border_sharp","label":"境界明瞭","group":"打診","priority":false,"note":""},{"id":"ef_shift_with_position","label":"体位変換で移動","group":"打診","priority":false,"note":""},{"id":"ef_bs_diminished","label":"呼吸音著明な減弱","group":"聴診","priority":true,"note":"液面上では気管支呼吸音も"},{"id":"ef_voice_test_neg","label":"濁音域では声音テスト陰性（伝導低下）","group":"聴診","priority":false,"note":""},{"id":"ef_egophony_upper","label":"濁音上縁でのみヤギ音（Egophony）陽性（圧迫肺による）","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"ef_us_effusion","label":"胸水","note":"","src":"別冊表3「片側の呼吸音が弱い」行（④）","figure":"effusion"},{"id":"ef_us_curtain","label":"curtain sign","note":"量の半定量と穿刺の安全域決定に直結する","src":"ガイド第4章 胸水🩻段落（補遺1）"},{"id":"ef_us_anechoic","label":"横隔膜上のanechoic帯","note":"","src":"ガイド第4章 胸水🩻段落（補遺1）","figure":"effusion"}],"xray_items":[{"id":"ef_xr_blunting","label":"肋骨横隔膜角の鈍化（上縁はしばしば半月状）","note":"少量胸水の X線での現れ方","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"},{"id":"ef_xr_homog","label":"重力側の均等な濃度上昇","note":"量が増えたときの現れ方。実質化との見分けでは air bronchogram の有無が手がかり（あるなら実質化の側）","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項・air bronchogram 項"}],"ct_items":[{"id":"ef_ct_dependent","label":"背側（重力側）の液体貯留","note":"濃度はさまざま","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"},{"id":"ef_ct_atelect","label":"圧排された無気肺（容積減少＋濃度上昇）","note":"胸水に圧された肺は容積が減り濃度が上がる。濁音の原因が水か肺かを分ける相手","src":"Fleischner用語集2024（PMID 38411514）atelectasis 項"}],"integration_note":"胸水セット：石様濁音、呼吸音減弱、声音振盪低下、上縁のヤギ音。（数値はガイド第6章／bedside-bayes 参照）ただし濁音は検者間一致が高く、境界を追いやすい。上縁を同じ体位で定点化すると量の変化を追える。","next_step_note":"少量・仰臥位では見逃すため、手技前は超音波で量と安全域を確認する（BTS 2023）。"},{"id":"pneumothorax","label":"気胸","exam_items":[{"id":"px_sudden_pain","label":"突然の胸痛","group":"視診","priority":false,"note":"小気胸では症状軽微"},{"id":"px_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":""},{"id":"px_chest_motion_dec","label":"患側胸郭運動低下","group":"視診","priority":false,"note":""},{"id":"px_jvd","label":"頸静脈怒張","group":"視診","priority":true,"note":"緊張性では気管が健側へ偏位＋頸静脈怒張＋血行動態不安定"},{"id":"px_fremitus_dec","label":"声音振盪低下","group":"触診","priority":true,"note":""},{"id":"px_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"px_tracheal_dev","label":"緊張性では気管偏位","group":"触診","priority":true,"note":"緊張性気胸では緊急対応要／⚠ 緊張性気胸を疑う（片側呼吸音消失＋進行する低酸素または循環不全。気管偏位は無くても否定しない）なら、画像確認前に直ちに脱気（第7章）"},{"id":"px_hyperresonance","label":"過共鳴","group":"打診","priority":true,"note":"小気胸では判定困難"},{"id":"px_asymmetry","label":"軽度〜中等度の左右差","group":"打診","priority":false,"note":""},{"id":"px_bs_dim_absent","label":"呼吸音減弱〜消失","group":"聴診","priority":true,"note":"完全虚脱では呼吸音消失"},{"id":"px_no_adventitious","label":"副雑音なし","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"px_us_sliding_loss","label":"lung sliding 消失","note":"気胸を強く示唆","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑥）／ガイド第4章 気胸🩻段落（補遺1）"},{"id":"px_us_lung_point","label":"lung point","note":"見つかれば気胸を強く支持","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑧）"},{"id":"px_us_a_prime","label":"A′ profile：lung sliding なし ＋ A-line","note":"気胸を疑う／気腫肺・無呼吸・胸膜癒着でも sliding は落ちるため、A′ から気胸へ進むときは lung point（⑧）を探して確かめる","src":"profile表 A′行＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"px_xr_pleural_line","label":"臓側胸膜線（visceral pleural line）","note":"胸膜腔の空気と含気肺の境界を示す曲線状の線。立位X線での気胸の同定はこれによる","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"px_xr_deep_sulcus","label":"deep sulcus sign（仰臥位）","note":"仰臥位では胸膜線が写らないことがあり、患側の肋骨横隔膜角が異常に深く・黒く・鋭くなる所見が唯一の手がかりになりうる","src":"Gordon 1980（PMID 7384513）原著／Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"px_xr_tension","label":"縦隔の対側偏位・患側横隔膜の低下","note":"緊張気胸に相関する画像。ただし緊張気胸の確定は臨床・生理学的基準で決める","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"}],"ct_items":[{"id":"px_ct_air","label":"胸膜腔の空気（臓側・壁側胸膜の分離）","note":"仰臥位 CT では空気は腹側（非重力側）に集まりやすい（分布の一文は定義からの組み立て）","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"}],"integration_note":"気胸セット：突然発症、片側呼吸音低下、過共鳴、声音振盪低下。陽性なら強く疑うが、小気胸では身体所見が乏しい。","next_step_note":"緊張性なら画像を待たず、安定例・外傷・仰臥位ではPOCUS（lung sliding/lung point）で確認する。"},{"id":"copd","label":"COPD増悪","exam_items":[{"id":"cp_barrel_chest","label":"樽状胸","group":"視診","priority":true,"note":"慢性変化と急性増悪の鑑別"},{"id":"cp_exp_prolong_insp","label":"呼気延長","group":"視診","priority":true,"note":""},{"id":"cp_pursed_lip","label":"口すぼめ呼吸","group":"視診","priority":true,"note":""},{"id":"cp_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"cp_hoover","label":"Hoover徴候","group":"視診","priority":true,"note":"吸気時に下位肋骨が奇異性に内方移動"},{"id":"cp_accessory_muscle","label":"呼吸補助筋使用","group":"視診","priority":true,"note":"増悪では呼吸補助筋使用・会話困難"},{"id":"cp_speech_difficulty","label":"会話困難","group":"視診","priority":true,"note":""},{"id":"cp_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":"両側性の変化"},{"id":"cp_fremitus_mild_dec","label":"声音振盪軽度低下","group":"触診","priority":false,"note":""},{"id":"cp_hyperresonance","label":"軽度過共鳴","group":"打診","priority":true,"note":"過膨張による変化／30秒ルートでは「両側の過共鳴（打診）」"},{"id":"cp_lung_base_low","label":"肺下縁低下","group":"打診","priority":false,"note":""},{"id":"cp_bs_global_dim","label":"呼吸音全体的に減弱","group":"聴診","priority":false,"note":""},{"id":"cp_exp_prolong_ausc","label":"呼気延長（＞4秒）","group":"聴診","priority":true,"note":""},{"id":"cp_wheeze_rhonchi","label":"散在性 wheeze/rhonchi","group":"聴診","priority":true,"note":""},{"id":"cp_silent_chest","label":"Silent chest（重症）","group":"聴診","priority":false,"note":"Silent chestは危険所見"}],"pocus_items":[{"id":"cp_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"cp_xr_hyperinfl","label":"過膨張（肺の縦長化・横隔膜の低位・後胸骨腔の拡大）","note":"気腫が進むほど肺は長く、横隔膜は低くなる。肺の長さと横隔膜の位置が最も判別的な計測だった","src":"Thurlbeck & Simon 1978（PMID 415543）抄録"},{"id":"cp_xr_art_def","label":"血管影の乏しさ（arterial deficiency）","note":"気腫のX線診断の主基準とされた所見","src":"Thurlbeck & Simon 1978（PMID 415543）抄録"}],"ct_items":[{"id":"cp_ct_emphysema","label":"気腫（壁のない低吸収域）","note":"終末細気管支より末梢の気腔の不可逆的な拡大と肺胞壁の破壊。小葉中心性は上肺野優位が典型","src":"Fleischner用語集2024（PMID 38411514）emphysema 項"},{"id":"cp_ct_airtrap","label":"air trapping（呼気CT）","note":"呼気で濃度が上がらず容積が減らない領域。呼気CTでのみ判定する","src":"Fleischner用語集2024（PMID 38411514）air trapping 項"}],"integration_note":"過膨張・気流閉塞セット：FET延長、Hoover徴候、過共鳴、呼吸音減弱。FETは6秒以上を疑う入口、8〜9秒超をより強い支持所見として段階的に読む。身体診察はCOPDを疑い、増悪の重症度と治療反応を追う道具。","next_step_note":"GOLD 2026でも診断確定はスパイロメトリー（FEV1/FVC<0.7）。"},{"id":"asthma","label":"喘息発作","exam_items":[{"id":"as_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"重症度の迅速評価が重要"},{"id":"as_sitting","label":"起座位","group":"視診","priority":true,"note":"tripod位"},{"id":"as_accessory_muscle","label":"補助呼吸筋使用","group":"視診","priority":true,"note":""},{"id":"as_sweating","label":"発汗","group":"視診","priority":false,"note":""},{"id":"as_word_by_word","label":"会話が単語単位","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_cyanosis","label":"チアノーゼ","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_expansion_slight","label":"胸郭拡張やや制限","group":"触診","priority":false,"note":""},{"id":"as_pulsus_paradoxus","label":"奇脈（重症時）","group":"触診","priority":true,"note":"奇脈は重症度の指標／>15mmHg（重症化サイン）"},{"id":"as_hyperres_mild","label":"軽度過共鳴","group":"打診","priority":false,"note":"発作時のみ検出／診断的価値は限定的"},{"id":"as_wheeze","label":"両側性高調wheeze","group":"聴診","priority":true,"note":""},{"id":"as_exp_dominant","label":"呼気優位","group":"聴診","priority":true,"note":""},{"id":"as_exp_prolong","label":"呼気延長","group":"聴診","priority":true,"note":""},{"id":"as_silent_chest","label":"Silent chest（重症時）","group":"聴診","priority":true,"note":"Silent chestは最重症／重症化サイン＝wheezeの消失"}],"pocus_items":[{"id":"as_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"as_xr_pneumothorax","label":"気胸の合併（臓側胸膜線）","note":"胸膜腔の空気と含気肺の境界線。合併症の除外として探す","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"as_xr_atelect","label":"無気肺（容積減少＋濃度上昇）","note":"粘液栓（mucoid impaction）による区域性の含気低下として現れうる","src":"Fleischner用語集2024（PMID 38411514）atelectasis 項・mucoid impaction 項"}],"ct_items":[{"id":"as_ct_mucoid","label":"粘液栓（mucoid impaction）","note":"気道が粘液で満たされる。閉塞性にも非閉塞性にも起こる","src":"Fleischner用語集2024（PMID 38411514）mucoid impaction 項"},{"id":"as_ct_airtrap","label":"air trapping（呼気CT）・モザイク濃度（吸気CT）","note":"air trapping は呼気CTでのみ、モザイク濃度は完全吸気CTでのみ判定する","src":"Fleischner用語集2024（PMID 38411514）air trapping 項・mosaic attenuation 項"}],"integration_note":"呼気気流制限の手がかり：呼気延長、wheeze、air entry低下、呼吸仕事量増加。これらは原因を特定しない。","next_step_note":"身体診察は重症度とT0からの変化を追い、喘息診断は変動する症状＋客観的な可変性気流制限で確認する（GINA 2026）。"},{"id":"hf","label":"心不全（心原性肺水腫）","exam_items":[{"id":"hf_orthopnea_forced","label":"起座位強制","group":"視診","priority":true,"note":"急性と慢性の鑑別／30秒ルートでは「起座呼吸・発作性夜間呼吸困難（PND）」"},{"id":"hf_jvd","label":"頸静脈怒張（JVD）","group":"視診","priority":true,"note":""},{"id":"hf_leg_edema","label":"下腿浮腫","group":"視診","priority":true,"note":""},{"id":"hf_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"hf_pnd","label":"発作性夜間呼吸困難（PND）","group":"視診","priority":true,"note":""},{"id":"hf_apex_palpable","label":"心尖拍動触知","group":"触診","priority":false,"note":"右心不全の徴候も重要"},{"id":"hf_hepatomegaly","label":"肝腫大","group":"触診","priority":false,"note":""},{"id":"hf_edema_pitting","label":"下腿浮腫の圧痕","group":"触診","priority":false,"note":""},{"id":"hf_cardiac_dullness_wide","label":"心濁音拡大","group":"打診","priority":false,"note":""},{"id":"hf_basal_dullness","label":"下肺野濁音（胸水合併時）","group":"打診","priority":false,"note":"胸水の合併に注意"},{"id":"hf_fine_crackles","label":"両側下肺野fine crackles","group":"聴診","priority":true,"note":"cracklesは重力依存性"},{"id":"hf_s3","label":"S3ギャロップ","group":"聴診","priority":true,"note":""},{"id":"hf_murmur","label":"心雑音","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"hf_us_b_profile","label":"B profile：lung sliding あり ＋ B-line 多数","note":"心原性肺水腫が代表","src":"profile表 B行","figure":"b_lines"},{"id":"hf_us_bilat_bline","label":"両側性B-line（3本以上）","note":"間質性肺水腫を示す","src":"ガイド第4章 心不全🩻段落（補遺1）","figure":"b_lines"},{"id":"hf_us_bline_dist","label":"B-line の分布","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（②⑫）","figure":"b_lines"},{"id":"hf_us_ivc","label":"IVC の変動","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑮）"},{"id":"hf_us_pleural_line","label":"胸膜線の性状","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑬⑭）","figure":"pleura_smooth"}],"xray_items":[{"id":"hf_xr_flow","label":"肺血流の分布","note":"心原性・非心原性を分ける主要3所見の一つ（何をどう読むかの詳細は原著参照）","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_edema_dist","label":"肺水腫の分布","note":"主要3所見の一つ","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_pedicle","label":"血管茎（vascular pedicle）の幅","note":"主要3所見の一つ","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_septal","label":"小葉間隔壁の線（septal lines）","note":"外側胸膜面に直角に接する細い線。間質の液体貯留を映す。「Kerley線」は旧称（現用語集では非推奨）","src":"Fleischner用語集2024（PMID 38411514）septal thickening 項／Milne 1985（PMID 3872571）補助所見"},{"id":"hf_xr_cuff_eff","label":"気管支周囲の cuffing・胸水・心拡大","note":"補助所見。胸水は肋骨横隔膜角の鈍化から","src":"Milne 1985（PMID 3872571）補助所見／Fleischner用語集2024（PMID 38411514）pleural effusion 項"}],"ct_items":[{"id":"hf_ct_septal","label":"小葉間隔壁の肥厚","note":"間質への液体貯留・リンパ路のうっ滞などで肥厚する","src":"Fleischner用語集2024（PMID 38411514）septal thickening 項"},{"id":"hf_ct_ggo","label":"すりガラス影","note":"肺胞の部分的な液体貯留などで生じる。CT でだけ使う用語","src":"Fleischner用語集2024（PMID 38411514）ground-glass 項"},{"id":"hf_ct_effusion","label":"胸水（重力側の液体貯留）","note":"濃度はさまざま","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"}],"integration_note":"うっ血セット：起座呼吸、JVD、S3、両側下肺野crackles、浮腫。S3とJVDは陽性なら強力（数値はガイド第6章／bedside-bayes 参照）。","next_step_note":"crackles単独は非特異的で、BNP/NT-proBNP、心エコー、LUS B-linesで統合し、治療反応は定点で追う。"},{"id":"other","label":"その他（自由枠）","exam_items":[],"pocus_items":[]}],"modalities":[{"id":"pocus","label":"POCUS"},{"id":"cxr","label":"胸部X線"},{"id":"ct","label":"胸部CT"},{"id":"other","label":"その他"}],"site_options":{"sides":["右","左","両側"],"aspects":["前面","側面","背面"],"ics_chips":["第2肋間","第3肋間","第4肋間","第5肋間","第6肋間","第7肋間","第8肋間","第9肋間","第10肋間","肩甲骨下角の高さ"],"lines_by_aspect":{"前面":["胸骨外縁","鎖骨中線"],"側面":["前腋窩線","中腋窩線","後腋窩線"],"背面":["脊柱寄り","中央","後腋窩線寄り"]},"cm_landmarks_by_aspect":{"前面":["鎖骨","胸骨角"],"側面":["腋窩","最下肋骨"],"背面":["肩甲骨下角","脊柱","最下肋骨"]},"cm_directions":["頭側","尾側","内側","外側"],"pocus_presets":[{"id":"upper_blue","label":"upper BLUE点","desc":"上の手の中央。第2肋間・鎖骨中線あたり"},{"id":"lower_blue","label":"lower BLUE点","desc":"下の手掌の中央。第4〜5肋間、やや外側"},{"id":"plaps","label":"PLAPS点","desc":"lower BLUE と同じ高さで、後腋窩線との交点。体を起こすか側臥位にして背側へ回り込む"}],"lobe_chips":["右上葉","右中葉","右下葉","左上葉","舌区","左下葉"]},"export_template":{"items":[{"no":0,"heading":"症例番号 / 主な臨床問題"},{"no":1,"heading":"1. 検証する問い（一つだけ）","example":"例：右下肺の濁音は胸水か、実質化か"},{"no":2,"heading":"2. 画像前の予測","subfields":["第一候補","確信度（%）","代替診断","予測する部位・左右・広がり","その根拠となった所見"]},{"no":3,"heading":"3. 身体診察","subfields":["仮説を支持する所見","あるはずなのに無かった所見","所見の解剖学的位置（肋間・線・体表図）","診察を制限した条件"]},{"no":4,"heading":"4. 画像後の更新","subfields":["所見","確かめられたこと","否定的になったこと","確信度の動き（→上・→下）","新たに疑ったこと"]},{"no":5,"heading":"5. 画像・検査・経過","subfields":["CT などの画像所見（解剖）","その他の検査","最終診断（菌・病理・治療反応・経過を含む）","診察から検査までの時間差"]},{"no":6,"heading":"6. 振り返り","subfields":["当たった部分","外れた部分","外れ方の分類（第10章 06.5 の8区分）","次の症例で実行する行動（一つだけ）"]},{"no":7,"heading":"7. 暫定 Teaching point","subfields":["次の類似症例で確かめることを一文で（一例から法則を作らない）"]}]},"miss_classification":{"categories":[{"id":"observation","label":"観察の誤り","desc":"出ていた所見を拾えなかった。左右を比べていない、聴く場所が足りない"},{"id":"technique","label":"手技の誤り","desc":"取り方が違った。打診が強すぎる、体位が合っていない、声を止めさせて比べた"},{"id":"interpretation","label":"解釈の誤り","desc":"所見は取れたが、意味を取り違えた。濁音を胸水と読んで、無気肺を考えなかった"},{"id":"integration","label":"統合の誤り","desc":"個々は合っていたが、束ね方を誤った。相関する所見を独立に数えて確信を上げすぎた"},{"id":"anatomy","label":"解剖の理解不足","desc":"所見の場所と肺葉の対応がずれた。後胸部だけで中葉・舌区を探した"},{"id":"conditions","label":"診察条件の制約","desc":"肥満・胸壁の厚み・体位・騒音・小さく深い病変。腕ではなく条件の問題"},{"id":"timecourse","label":"病態の時間的変化","desc":"診察と画像のあいだに病態が動いた。所見が正しく、画像も正しいことがある"},{"id":"reference","label":"比較基準の不確実性","desc":"画像や最終診断のほうが確定していない。読影者間でも判定が割れる領域がある"}],"tree":{"root":"q0","nodes":[{"id":"q0","text":"その前にひとつ外す ── どちらかが「測れていなかっただけ」ではないか。その場合は自分のずれではない。","options":[{"label":"測れていなかっただけ","next":"q0b"},{"label":"測れていた（自分のずれを分ける）","next":"qa"}]},{"id":"q0b","text":"「測れていなかった」の中身はどれか（表の下3行がこれにあたる）。","options":[{"label":"肥満・胸壁の厚み・体位・騒音・小さく深い病変","result":"conditions"},{"label":"診察と画像のあいだに病態が動いた","result":"timecourse"},{"label":"画像や最終診断のほうが確定していない","result":"reference"}]},{"id":"qa","text":"所見の場所と肺葉の対応はずれていなかったか（解剖の理解不足は、取る側にも読む側にも根として現れる）。","options":[{"label":"対応がずれていた","result":"anatomy"},{"label":"ずれていない","next":"q1"}]},{"id":"q1","text":"問い1 ── 答えに照らして、所見そのものは合っていたか。","options":[{"label":"違っていた（「取るとき」のずれ）","next":"q2take"},{"label":"合っていた（「読むとき」のずれ）","next":"q2read"}]},{"id":"q2take","text":"体位や当て方を変えれば取れたか、ただ拾い損ねたか。","options":[{"label":"体位や当て方を変えれば取れた","result":"technique"},{"label":"ただ拾い損ねた","result":"observation"}]},{"id":"q2read","text":"一つの所見の意味を取り違えたか、組み合わせか。","options":[{"label":"一つの所見の意味を取り違えた","result":"interpretation"},{"label":"組み合わせ（束ね方）","result":"integration"}]}]},"next_hints":[{"category":"observation","hint":"次はそこを意識して取りにいく"},{"category":"technique","hint":"体位を変える。座位か側臥位へ"},{"category":"interpretation","hint":"その所見が本当は何を見ているか調べ直す"},{"category":"integration","hint":"文脈を一つ足して読み直す（分布・体位・重力）"}]},"quick_note":{"zure_label":"ずれ：どれ（何と読んだ → 実際は）","next_label":"次：一手","oya_button":"おや？","oya_saved":"「おや」を記録しました。中身は後から書けます","oya_pending_label":"おや（未記入）","oya_hint":"予想と違ったその瞬間に押す。日時だけ残るので、中身は後から書けばよい。教科書に無いことは、たいてい驚いたところにある","oya_zure_label":"何が予想と違ったか"},"quick_templates":{"side_slot":"◯","questions":{"pneumonia":[{"text":"◯下肺に実質化があるか","qtype":"qual"},{"text":"◯下肺の crackles は fine か coarse か","qtype":"qual","reading_axis":"crackle_quality"},{"text":"◯下肺の実質化は、腋窩中線で何肋間ぶんの高さか","qtype":"quant"}],"effusion":[{"text":"◯下肺の濁音・呼吸音減弱は胸水か、実質化か","qtype":"qual"},{"text":"◯胸水の上縁は、腋窩中線で第何肋間の高さか","qtype":"quant"}],"pneumothorax":[{"text":"◯肺の呼吸音低下・過共鳴は気胸か","qtype":"qual"},{"text":"◯肺の虚脱は、鎖骨中線で第何肋間まで及ぶか","qtype":"quant"}],"copd":[{"text":"気流閉塞の増悪が主か、ほかの原因が混ざっているか","qtype":"qual"}],"asthma":[{"text":"呼気気流制限はいま重症か","qtype":"qual"}],"hf":[{"text":"両側下肺の crackles はうっ血か","qtype":"qual"},{"text":"頸静脈の拍動上縁は、胸骨角の上何cmか","qtype":"quant","howto":"① 背上げ角度を決めて記録する（例：背上げ45度）。同じ患者は毎回同じ角度で\n② 頭を枕で支えて胸鎖乳突筋を脱力させる。顔はわずかに反対側へ（回旋・伸展はさせない）\n③ 右の頸部で行う（右内頸静脈は腕頭静脈を介してほぼ直線的に右房へ通じる）\n④ リニアプローブを短軸で当て、内頸静脈と総頸動脈を出す（静脈は非拍動性で、軽く押すとつぶれる）\n⑤ プローブは皮膚に触れるだけ。ゼリーを多めに。押すと虚脱点が実際より低く出る\n⑥ 短軸のまま頭側へゆっくり滑らせ、断面が消える高さ＝虚脱点を、呼気終末で決める\n⑦ プローブ中央の皮膚に印をつける\n⑧ 定規を2本。1本を胸骨角に当てて鉛直に立て、もう1本を印から水平に渡し、交わる目盛りを読む\n　 皮膚の上をなぞらない（斜めに測ると必ず高く出る）\n⑨ 読んだ値がそのまま「胸骨角の上 N cm」。+5 は足さない\nずれる向き … 押した→低く出る／回旋・伸展→動く／斜めに測った→高く出る／吸気で読んだ→低く出る\n測れないときは「評価できず」と記録する（高度うっ血で下顎角より上、脱水で鎖骨の下に隠れる）\n"}]},"first_dx_patterns":["{side} {label}","{label}"]},"pocus_figures":[{"id":"a_pattern","title":"A-pattern","caption":"胸膜線と平行な線（A-line）が等間隔でくり返す。含気が保たれているという意味で、それ以上のことは言わない。cracklesがあるのにA-patternなら、肺の中よりも気道側を先に考える手がかりになる。"},{"id":"b_lines","title":"B-line","caption":"胸膜線から画面の下端まで減衰せずに伸びるレーザー状の線。1肋間に3本以上で異常。本数は疾患を決めない ── 分けるのは胸膜線の性状と分布（正常域が残っているか）。"},{"id":"consolidation","title":"実質化","caption":"肺が肝臓のような均一な組織に見える（hepatization）。白い点は残った気管支（air bronchogram）。肺炎で見え、coarseが主だが、早期と治癒期にはfineが混じる。"},{"id":"air_bronchogram","title":"air bronchogram ── 動くか","caption":"実質化の中の気管支像が呼吸で動けば、気道が通じている＝肺炎の側。動かなければ無気肺の側。実質化を見たら、次はこの一点を確かめる。"},{"id":"pleura_smooth","title":"胸膜線 ── 平滑・連続","caption":"胸膜線が平滑・連続で、B-lineが均一に立ち、正常域を欠く。心原性肺水腫の側。エコーだけで心不全と確定はしない ── JVP・S3と束にする。"},{"id":"pleura_irregular","title":"胸膜線 ── 肥厚・不整","caption":"胸膜線が肥厚・不整・断裂し、B-lineが不均一で、正常域（spared area）が混じる。間質性肺疾患の側。Velcro様のfine cracklesと対で読む。"},{"id":"effusion","title":"胸水","caption":"横隔膜の上に無エコーの帯。四辺形（quad sign）に囲まれ、呼吸で肺の縁が出入りする。量の推移は打診濁音の上縁と併走させて追える。"}],"ui_copy":{"lock_button":"ここまでを画像の前に書いた","lock_confirm":"ここまでの記録を固定します。腕の採点は、画像の前に書いた記録だけで行います。固定後に手を入れた項目には「画像後修正あり」が付きます。","edited_after_lock_badge":"画像後修正あり","anon_placeholder":"氏名・患者ID・病室番号・生年月日など、個人を特定できる情報は書かない（症例は「70代男性」のように匿名化する）","small_n_note":"同じずれ方の症例はまだ5例未満。一例から法則を作らず、次の類似症例で確かめる仮説として扱う","teaching_point_label":"次の類似症例で確かめることを一文で（一例から法則を作らない）","quick_hint":"診察中はタップだけで進めます。文章はあとから詳細画面の『補記』で足せます","reading_label":"耳の読み（画像の前に決める）","reading_note":"読みはロックで固定され、「読みの軸」の集計に入る。迷ったら判定不能を選んでよい ── 判定できなかったことも記録である","readingref_label":"エコーは、どちらの側だったか","readingref_note":"間質側＝B-lineや胸膜線の不整が主。気道側＝A-patternが保たれる。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない ── ずれの向きを溜めて、自分の耳の癖を知るための記録","reading_axis_title":"読みの軸 ── fine/coarse と、エコーの側","reading_axis_intro":"実測LRは出さない。音とエコーは同じものを測っていないから、一致率を尤度比に変換しない（ガイド3.4）。ここで見るのは、一致のおおまかな程度と、外れるときの向き ── どちらへ外れやすいかが、次に耳を磨く場所を教える","reading_axis_empty":"読みの記録はまだ足りない。「◯下肺の crackles は fine か coarse か」の問いで記録し、後日追記で「エコーの側」を入れると、ここに溜まっていく","reading_axis_progress":"あと {n} 例で表示（読みとエコーの側が揃った記録 {have} / {need}）","figure_note":"予測を書き終えてから開く。図は模式図で、実際の画面はプローブ・体格・深度で変わる","figure_toggle_label":"図で確かめる","addendum_note":"補記は画像のあとに書いた文章として記録されます。腕の採点には使いません","no_miss_label":"外れなし（予測どおり）","qtype_label":"問いの型","qtype_qual":"定性（病態の有無を当てる）","qtype_quant":"定量（数値で予測する）","quant_pred_label":"予測値（画像の前に書く数値）","quant_unit_label":"単位","quant_howto_label":"測り方（タップで開く）","quant_actual_label":"実測値（画像・検査で確定した数値）","disease_present_label":"S1の病態は、実際にあったか","disease_present_note":"「自分の尤度比（実測）」の答えの正本。予測との一致判定とは別に、病態そのものが有ったか無かったかを記録する。「はい／いいえ」を選ぶと実測の集計対象になる","plr_title":"自分の尤度比（実測）","plr_intro":"文献の値ではなく、自分の記録から出した値。ロック時点の所見（あり／なし）と、後日追記の「S1の病態は、実際にあったか」を突き合わせて、所見ごとの感度・特異度・尤度比を計算する","plr_empty":"まだ集計できる記録がありません。後日追記で「S1の病態は、実際にあったか」を はい／いいえ にした記録が対象になります","plr_bias_note":"「なし」側は、その病態を疑って記録したが実際には無かった症例だけから来ている。疑わなかった患者は数に入っていないため、値は偏りうる（verification bias）","plr_privacy_note":"この計算は、すべてこの端末の中で行われます。記録も、計算した数値も、外部には送信されません。","plr_progress":"病態あり{present}/10・なし{absent}/10","plr_group_fmt":"病態あり{present}・なし{absent}","plr_corrected_badge":"補正あり","plr_corrected_note":"「補正あり」＝2×2の表にゼロのマスがあるため、全マスに0.5を足して計算した（Haldane補正）","plr_export_button":"自分パネルを書き出す（ベイズ診察エンジンへ）","plr_clipboard_note":"書き出しはクリップボードへのコピーです。どこに貼るかは、あなたが決めます。","plr_no_bridge_note":"この病態は、ベイズ診察エンジン側に対応するタブがないため、書き出しの対象外","plr_sens":"感度","plr_spec":"特異度","plr_lrp":"LR+","plr_lrn":"LR−","plr_ci":"95%CI","quant_title":"定量の癖と床","quant_intro":"定量の問いで、予測値と実測値が揃った記録から、ずれの癖（平均ずれ・SD）と、変化と読んでよい床（RCV）を出す","quant_empty":"定量の記録（予測値と実測値が揃ったもの）はまだありません","quant_small_n":"この病態・単位の組はまだ5例未満。数値を出さず、揃うまで蓄積する","quant_mean_label":"平均ずれ（＋＝予測が高い）","quant_sd_label":"ずれのSD","quant_rcv_label":"RCV（変化と読む床）","quant_rcv_note":"RCV＝√2×1.96×SD。次の測定でこの幅を超えて動いたときに、はじめて「変化した」と読む","modality_label":"答え合わせに使った画像（主たる一つ）","modality_note":"画像の種類で答えの細かさは変わる。粗い画像で外れたときは、外れ方8分類の「比較基準の不確実性」も候補に入れる","modality_other_label":"その他の画像（何で答え合わせしたか）","modality_switch_confirm":"答え合わせの画像を切り替えます。いま入力済みの所見チェック・位置は切り替え先では表示・書き出しに出ません（データは残り、戻せば復活します）。切り替えますか？","imaging_site_label":"位置（画像上の場所・複数可）","imaging_sites_empty":"肺葉チップか「＋ 位置を追加」で、答えの場所を記録できます","imaging_conf_label":"画像後の確信度（%）","outcome_ct_note":"答え合わせに使った画像は S5 に記録済み。ここは、その後の追加画像・確定情報のみ","export_modality_label":"画像の種類"},"links":{"bedside_bayes":"https://torukubota2023.github.io/bedside-bayes/","bedside_bayes_note":"尤度比・情報量の数値はこちら","guide_ref":"呼吸器身体診察実践ガイド 2026（第4章・第10章06.5・巻末テンプレート）","nejm_ref":"Garibaldi BT, Russell SW. N Engl J Med 2025;393:2142-2150 (PMID 41223363)"}};
+const CONTENT = {"meta":{"transcribed_at":"2026-08-08","sources":[{"file":"docs/education/呼吸器身体診察実践ガイド_2026_統合版.docx","parts":["tables[17]〜[22]：第4章 疾患カード表（肺炎・胸水・気胸・COPD増悪・喘息発作・心不全（心原性肺水腫））。直前の見出し段落（para510/533/552/570/589/605）と最終行「統合の読み方」の内容（肺実質化セット／胸水セット／気胸セット／過膨張・気流閉塞セット／呼気気流制限／うっ血セット）の両方で疾患を同定済み","🚑 30秒ルート「まず探すN所見」段落：para[515]（肺炎）／para[538]（胸水）／para[557]＋⚠para[559]（気胸）／para[575]（COPD増悪）／para[594]（喘息発作）／para[610]（心不全）","第4章 🩻ベッドサイド統合段落（補遺1参照）：para[526]（肺炎）／para[547]（胸水）／para[563]〜[564]（気胸）／para[619]（心不全）── pocus_items の文言に使用","tables[56]：外れ方8分類（9行2列）","段落1211〜1238：第10章 06.5「症例で較正する」（決定木=para[1229]、一行記録=para[1230]、次の一手を一つ=para[1232]、一例から法則を作らない=para[1233]）","tables[66]：巻末「症例記録テンプレート」（9行2列）","位置ピッカー語彙（site_options.lines_by_aspect／cm_landmarks_by_aspect／cm_directions）：para[181]（頭側・尾側・一肋間ずつ）／para[199]（前腋窩線・鎖骨中線・中腋窩線）／para[215]（胸骨外縁・中腋窩線・内側）／para[287]（肩甲骨下角）／para[296]（脊柱）／para[301]（脊柱寄り・中央・後腋窩線寄り・最下肋骨・外側）／para[484]（胸骨角からの垂直距離を cm で）／para[763]（中腋窩線・腋窩）／para[1019]（第4–5肋間前〜中腋窩線・第2肋間鎖骨中線）／para[1221]（左右・面・基準線・肋間の順、肩甲骨下角の尾側）／para[1232]（尾側から頭側へ一肋間ずつ）"]},{"file":"docs/education/肺エコー図譜_2026.docx","parts":["tables[2]：ずれ方4分類＋次の一手（観察／手技／解釈／統合の4行）","tables[3]：入口→まず当てる場所→見る所見（6入口）"]},{"file":"scripts/build_lung_us_figures.py","parts":["L683〜L694：BLUE 点の凡例（upper BLUE／lower BLUE／PLAPS point の位置記述）── site_options.pocus_presets に使用","L713〜L719：BLUE profile 対応表（A／A′／B／B′／A/B／C／PLAPS → 病態）","L735〜L742：同図の注記（profileは型・A′→lung point確認・原法の下肢静脈エコー分岐）"]},{"file":"PubMed 一次資料（v1.7.0 xray_items / ct_items の定義出典）","parts":["Fleischner Society 用語集 2024（Bankier ら. Radiology 2024;310(2):e232558. PMID 38411514・DOI 10.1148/radiol.232558）── consolidation・air bronchogram・ground-glass・septal thickening・pneumothorax（visceral pleural line・deep sulcus sign・緊張気胸の画像相関）・silhouette sign・pleural effusion・atelectasis・emphysema・air trapping・mosaic attenuation・mucoid impaction の各定義。RSNA 公開全文で本文の定義文を確認済み","Gordon R. The deep sulcus sign. Radiology 1980;136(1). PMID 7384513・DOI 10.1148/radiology.136.1.7384513 ── 仰臥位気胸の deep sulcus sign（原著。抄録で確認）","Milne ENC ら. The radiologic distinction of cardiogenic and noncardiogenic edema. AJR 1985;144(5):879-. PMID 3872571・DOI 10.2214/ajr.144.5.879 ── 心原性肺水腫の胸部X線 主要3所見（肺血流の分布・肺水腫の分布・血管茎の幅）＋補助7所見（抄録に列挙。読み方の詳細は原著参照）","Felson B, Felson H. Localization of intrathoracic lesions by means of the postero-anterior roentgenogram; the silhouette sign. Radiology 1950;55(3):363-. PMID 14781343・DOI 10.1148/55.3.363 ── silhouette sign（原著）","Thurlbeck WM, Simon G. Radiographic appearance of the chest in emphysema. AJR 1978;130(3):429-. PMID 415543・DOI 10.2214/ajr.130.3.429 ── 気腫の胸部X線所見（肺の縦長化・横隔膜低位・後胸骨腔拡大・血管影の乏しさ。抄録で確認。精度の数値は転記しない）"]}]},"diseases":[{"id":"pneumonia","label":"肺炎","exam_items":[{"id":"pn_fever_chills","label":"発熱、悪寒","group":"視診","priority":false,"note":"高齢者では典型的症状に乏しい"},{"id":"pn_dyspnea_mild","label":"軽度の呼吸困難","group":"視診","priority":false,"note":""},{"id":"pn_cough_purulent","label":"咳嗽、膿性痰","group":"視診","priority":false,"note":""},{"id":"pn_fremitus_inc","label":"声音振盪増強","group":"触診","priority":false,"note":"肥満例では判定困難"},{"id":"pn_expansion_mild_limit","label":"胸郭運動軽度制限","group":"触診","priority":false,"note":""},{"id":"pn_dullness","label":"局在性濁音","group":"打診","priority":true,"note":"小さな病変では検出困難"},{"id":"pn_border_clear","label":"境界比較的明瞭","group":"打診","priority":false,"note":""},{"id":"pn_bronchial_breath","label":"気管支呼吸音","group":"聴診","priority":true,"note":"肺野で気管の音が聴こえたら異常"},{"id":"pn_crackles","label":"限局性のcrackles（吸気）","group":"聴診","priority":true,"note":"読む軸は音質と、吸気の終わりまで届くか（3.4）／初期はcoarse・吸気中期、改善とともに短くなり吸気後半へ移動しfine寄り（Piirilä 1992）／初期では副雑音が目立たない"},{"id":"pn_voice_test","label":"声音テスト陽性","group":"聴診","priority":true,"note":"ヤギ音／気管支声"}],"pocus_items":[{"id":"pn_us_consol","label":"実質化","note":"hepatization（肝様変化）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（③）／ガイド第4章 肺炎🩻段落（補遺1）","figure":"consolidation"},{"id":"pn_us_air_bronchogram","label":"air bronchogram が動くか","note":"dynamic air bronchogram","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑨）／ガイド第4章 肺炎🩻段落（補遺1）","figure":"air_bronchogram"},{"id":"pn_us_plaps","label":"PLAPS（背側に胸水＋実質化）","note":"肺炎（背側に寄った型）","src":"別冊表3「発熱＋咳、肺炎を疑う」行（⑩）／profile表 PLAPS行","figure":"consolidation"},{"id":"pn_us_b_prime","label":"B′ profile：lung sliding なし ＋ B-line 多数","note":"肺炎を疑う","src":"profile表 B′行","figure":"b_lines"},{"id":"pn_us_ab","label":"A/B profile：片側 A・対側 B と左右差","note":"肺炎を疑う","src":"profile表 A/B行"},{"id":"pn_us_c","label":"C profile：前方に実質化がある","note":"肺炎（前方に及ぶ型）","src":"profile表 C行","figure":"consolidation"},{"id":"pn_us_a_pattern","label":"A-pattern（胸膜線と平行な線がくり返す＝含気が保たれる）","note":"coarse と読んだときの予測の相手。crackles があるなら気道側を先に考える","src":"ガイド第3章 3.4 🩻（図3-5c）","figure":"a_pattern"},{"id":"pn_us_bline_pleura","label":"B-line ＋ 胸膜線の不整","note":"fine と読んだときの予測の相手","src":"ガイド第3章 3.4 🩻（図3-5c）","figure":"pleura_irregular"}],"xray_items":[{"id":"pn_xr_consol","label":"均等な濃度上昇（実質化）","note":"肺胞の空気が液体などに置き換わった状態。X線では均一な濃度上昇に見える。原因の病理までは決めない","src":"Fleischner用語集2024（PMID 38411514）consolidation 項"},{"id":"pn_xr_airbronch","label":"air bronchogram","note":"含気を失った肺の中に、空気の残った気管支が透けて見える。中枢気道が開通している含意","src":"Fleischner用語集2024（PMID 38411514）air bronchogram 項"},{"id":"pn_xr_silhouette","label":"silhouette sign（隣接する正常輪郭の消失）","note":"X線吸収が近い構造どうしが接すると正常の輪郭が消える。どの輪郭が消えたかで病変の葉を当てる。漏斗胸など肺以外でも起こる","src":"Felson 1950（PMID 14781343）原著／Fleischner用語集2024（PMID 38411514）silhouette sign 項"}],"ct_items":[{"id":"pn_ct_consol","label":"実質化（下層の血管・気管支が透けない濃度上昇）","note":"開通した気管支が中に残れば air bronchogram になる","src":"Fleischner用語集2024（PMID 38411514）consolidation 項"},{"id":"pn_ct_ggo","label":"すりガラス影（血管・気管支が透けて見える淡い濃度上昇）","note":"肺胞の空気が完全には失われていない段階。CT でだけ使う用語","src":"Fleischner用語集2024（PMID 38411514）ground-glass 項"}],"integration_note":"肺実質化セット：局所crackles、濁音、気管支呼吸音、声音テスト陽性。陽性なら肺炎方向に動くが、同一病態の相関所見なのでLRを単純積算しない。側臥位のラ音も価値が高い（3.4・補遺4）。","next_step_note":"陰性で除外せず、高齢者・初期病変・脱水例・好中球減少や免疫抑制の例ではPOCUS/胸部画像へ。／音質を較正するとき、的は「cracklesがB-lineと一致すること」ではなく「自分の読み（間質か気道か）が肺の見え方と合うこと」。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない。crackles陰性でも肺うっ血は除外できず、間質性肺疾患ではエコーはfine cracklesの金標準にならない。数値はガイド3.4へ。"},{"id":"effusion","label":"胸水","exam_items":[{"id":"ef_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"少量では症状軽微"},{"id":"ef_lateral_decubitus","label":"患側臥位を好む","group":"視診","priority":false,"note":""},{"id":"ef_tracheal_dev_visible","label":"大量では気管偏位","group":"視診","priority":true,"note":""},{"id":"ef_fremitus_dec","label":"声音振盪著明な低下","group":"触診","priority":true,"note":"液面上では正常のことも"},{"id":"ef_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"ef_tracheal_dev_palp","label":"大量では気管健側偏位","group":"触診","priority":true,"note":""},{"id":"ef_stony_dullness","label":"石様濁音（stony dull）","group":"打診","priority":true,"note":"500mL以上で検出可能"},{"id":"ef_border_sharp","label":"境界明瞭","group":"打診","priority":false,"note":""},{"id":"ef_shift_with_position","label":"体位変換で移動","group":"打診","priority":false,"note":""},{"id":"ef_bs_diminished","label":"呼吸音著明な減弱","group":"聴診","priority":true,"note":"液面上では気管支呼吸音も"},{"id":"ef_voice_test_neg","label":"濁音域では声音テスト陰性（伝導低下）","group":"聴診","priority":false,"note":""},{"id":"ef_egophony_upper","label":"濁音上縁でのみヤギ音（Egophony）陽性（圧迫肺による）","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"ef_us_effusion","label":"胸水","note":"","src":"別冊表3「片側の呼吸音が弱い」行（④）","figure":"effusion"},{"id":"ef_us_curtain","label":"curtain sign","note":"量の半定量と穿刺の安全域決定に直結する","src":"ガイド第4章 胸水🩻段落（補遺1）"},{"id":"ef_us_anechoic","label":"横隔膜上のanechoic帯","note":"","src":"ガイド第4章 胸水🩻段落（補遺1）","figure":"effusion"}],"xray_items":[{"id":"ef_xr_blunting","label":"肋骨横隔膜角の鈍化（上縁はしばしば半月状）","note":"少量胸水の X線での現れ方","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"},{"id":"ef_xr_homog","label":"重力側の均等な濃度上昇","note":"量が増えたときの現れ方。実質化との見分けでは air bronchogram の有無が手がかり（あるなら実質化の側）","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項・air bronchogram 項"}],"ct_items":[{"id":"ef_ct_dependent","label":"背側（重力側）の液体貯留","note":"濃度はさまざま","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"},{"id":"ef_ct_atelect","label":"圧排された無気肺（容積減少＋濃度上昇）","note":"胸水に圧された肺は容積が減り濃度が上がる。濁音の原因が水か肺かを分ける相手","src":"Fleischner用語集2024（PMID 38411514）atelectasis 項"}],"integration_note":"胸水セット：石様濁音、呼吸音減弱、声音振盪低下、上縁のヤギ音。（数値はガイド第6章／bedside-bayes 参照）ただし濁音は検者間一致が高く、境界を追いやすい。上縁を同じ体位で定点化すると量の変化を追える。","next_step_note":"少量・仰臥位では見逃すため、手技前は超音波で量と安全域を確認する（BTS 2023）。"},{"id":"pneumothorax","label":"気胸","exam_items":[{"id":"px_sudden_pain","label":"突然の胸痛","group":"視診","priority":false,"note":"小気胸では症状軽微"},{"id":"px_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":""},{"id":"px_chest_motion_dec","label":"患側胸郭運動低下","group":"視診","priority":false,"note":""},{"id":"px_jvd","label":"頸静脈怒張","group":"視診","priority":true,"note":"緊張性では気管が健側へ偏位＋頸静脈怒張＋血行動態不安定"},{"id":"px_fremitus_dec","label":"声音振盪低下","group":"触診","priority":true,"note":""},{"id":"px_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":""},{"id":"px_tracheal_dev","label":"緊張性では気管偏位","group":"触診","priority":true,"note":"緊張性気胸では緊急対応要／⚠ 緊張性気胸を疑う（片側呼吸音消失＋進行する低酸素または循環不全。気管偏位は無くても否定しない）なら、画像確認前に直ちに脱気（第7章）"},{"id":"px_hyperresonance","label":"過共鳴","group":"打診","priority":true,"note":"小気胸では判定困難"},{"id":"px_asymmetry","label":"軽度〜中等度の左右差","group":"打診","priority":false,"note":""},{"id":"px_bs_dim_absent","label":"呼吸音減弱〜消失","group":"聴診","priority":true,"note":"完全虚脱では呼吸音消失"},{"id":"px_no_adventitious","label":"副雑音なし","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"px_us_sliding_loss","label":"lung sliding 消失","note":"気胸を強く示唆","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑥）／ガイド第4章 気胸🩻段落（補遺1）"},{"id":"px_us_lung_point","label":"lung point","note":"見つかれば気胸を強く支持","src":"別冊表3「急に呼吸が悪化した、気胸を疑う」行（⑧）"},{"id":"px_us_a_prime","label":"A′ profile：lung sliding なし ＋ A-line","note":"気胸を疑う／気腫肺・無呼吸・胸膜癒着でも sliding は落ちるため、A′ から気胸へ進むときは lung point（⑧）を探して確かめる","src":"profile表 A′行＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"px_xr_pleural_line","label":"臓側胸膜線（visceral pleural line）","note":"胸膜腔の空気と含気肺の境界を示す曲線状の線。立位X線での気胸の同定はこれによる","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"px_xr_deep_sulcus","label":"deep sulcus sign（仰臥位）","note":"仰臥位では胸膜線が写らないことがあり、患側の肋骨横隔膜角が異常に深く・黒く・鋭くなる所見が唯一の手がかりになりうる","src":"Gordon 1980（PMID 7384513）原著／Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"px_xr_tension","label":"縦隔の対側偏位・患側横隔膜の低下","note":"緊張気胸に相関する画像。ただし緊張気胸の確定は臨床・生理学的基準で決める","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"}],"ct_items":[{"id":"px_ct_air","label":"胸膜腔の空気（臓側・壁側胸膜の分離）","note":"仰臥位 CT では空気は腹側（非重力側）に集まりやすい（分布の一文は定義からの組み立て）","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"}],"integration_note":"気胸セット：突然発症、片側呼吸音低下、過共鳴、声音振盪低下。陽性なら強く疑うが、小気胸では身体所見が乏しい。","next_step_note":"緊張性なら画像を待たず、安定例・外傷・仰臥位ではPOCUS（lung sliding/lung point）で確認する。"},{"id":"copd","label":"COPD増悪","exam_items":[{"id":"cp_barrel_chest","label":"樽状胸","group":"視診","priority":true,"note":"慢性変化と急性増悪の鑑別"},{"id":"cp_exp_prolong_insp","label":"呼気延長","group":"視診","priority":true,"note":""},{"id":"cp_pursed_lip","label":"口すぼめ呼吸","group":"視診","priority":true,"note":""},{"id":"cp_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"cp_hoover","label":"Hoover徴候","group":"視診","priority":true,"note":"吸気時に下位肋骨が奇異性に内方移動"},{"id":"cp_accessory_muscle","label":"呼吸補助筋使用","group":"視診","priority":true,"note":"増悪では呼吸補助筋使用・会話困難"},{"id":"cp_speech_difficulty","label":"会話困難","group":"視診","priority":true,"note":""},{"id":"cp_expansion_limit","label":"胸郭拡張制限","group":"触診","priority":false,"note":"両側性の変化"},{"id":"cp_fremitus_mild_dec","label":"声音振盪軽度低下","group":"触診","priority":false,"note":""},{"id":"cp_hyperresonance","label":"軽度過共鳴","group":"打診","priority":true,"note":"過膨張による変化／30秒ルートでは「両側の過共鳴（打診）」"},{"id":"cp_lung_base_low","label":"肺下縁低下","group":"打診","priority":false,"note":""},{"id":"cp_bs_global_dim","label":"呼吸音全体的に減弱","group":"聴診","priority":false,"note":""},{"id":"cp_exp_prolong_ausc","label":"呼気延長（＞4秒）","group":"聴診","priority":true,"note":""},{"id":"cp_wheeze_rhonchi","label":"散在性 wheeze/rhonchi","group":"聴診","priority":true,"note":""},{"id":"cp_silent_chest","label":"Silent chest（重症）","group":"聴診","priority":false,"note":"Silent chestは危険所見"}],"pocus_items":[{"id":"cp_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"cp_xr_hyperinfl","label":"過膨張（肺の縦長化・横隔膜の低位・後胸骨腔の拡大）","note":"気腫が進むほど肺は長く、横隔膜は低くなる。肺の長さと横隔膜の位置が最も判別的な計測だった","src":"Thurlbeck & Simon 1978（PMID 415543）抄録"},{"id":"cp_xr_art_def","label":"血管影の乏しさ（arterial deficiency）","note":"気腫のX線診断の主基準とされた所見","src":"Thurlbeck & Simon 1978（PMID 415543）抄録"}],"ct_items":[{"id":"cp_ct_emphysema","label":"気腫（壁のない低吸収域）","note":"終末細気管支より末梢の気腔の不可逆的な拡大と肺胞壁の破壊。小葉中心性は上肺野優位が典型","src":"Fleischner用語集2024（PMID 38411514）emphysema 項"},{"id":"cp_ct_airtrap","label":"air trapping（呼気CT）","note":"呼気で濃度が上がらず容積が減らない領域。呼気CTでのみ判定する","src":"Fleischner用語集2024（PMID 38411514）air trapping 項"}],"integration_note":"過膨張・気流閉塞セット：FET延長、Hoover徴候、過共鳴、呼吸音減弱。FETは6秒以上を疑う入口、8〜9秒超をより強い支持所見として段階的に読む。身体診察はCOPDを疑い、増悪の重症度と治療反応を追う道具。","next_step_note":"GOLD 2026でも診断確定はスパイロメトリー（FEV1/FVC<0.7）。"},{"id":"asthma","label":"喘息発作","exam_items":[{"id":"as_dyspnea","label":"呼吸困難","group":"視診","priority":false,"note":"重症度の迅速評価が重要"},{"id":"as_sitting","label":"起座位","group":"視診","priority":true,"note":"tripod位"},{"id":"as_accessory_muscle","label":"補助呼吸筋使用","group":"視診","priority":true,"note":""},{"id":"as_sweating","label":"発汗","group":"視診","priority":false,"note":""},{"id":"as_word_by_word","label":"会話が単語単位","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_cyanosis","label":"チアノーゼ","group":"視診","priority":true,"note":"重症化サイン"},{"id":"as_expansion_slight","label":"胸郭拡張やや制限","group":"触診","priority":false,"note":""},{"id":"as_pulsus_paradoxus","label":"奇脈（重症時）","group":"触診","priority":true,"note":"奇脈は重症度の指標／>15mmHg（重症化サイン）"},{"id":"as_hyperres_mild","label":"軽度過共鳴","group":"打診","priority":false,"note":"発作時のみ検出／診断的価値は限定的"},{"id":"as_wheeze","label":"両側性高調wheeze","group":"聴診","priority":true,"note":""},{"id":"as_exp_dominant","label":"呼気優位","group":"聴診","priority":true,"note":""},{"id":"as_exp_prolong","label":"呼気延長","group":"聴診","priority":true,"note":""},{"id":"as_silent_chest","label":"Silent chest（重症時）","group":"聴診","priority":true,"note":"Silent chestは最重症／重症化サイン＝wheezeの消失"}],"pocus_items":[{"id":"as_us_a_profile","label":"A profile：lung sliding あり ＋ A-line","note":"profile はあくまで「型」であり、これだけで診断を確定しない。身体所見と経過、必要な画像と併せて判断する。原法は A profile から喘息／COPD へ進む前に、下肢静脈エコーで肺塞栓を除外する。","src":"profile表 A行（示唆される病態＝喘息／COPD）＋同図の注記","figure":"a_pattern"}],"xray_items":[{"id":"as_xr_pneumothorax","label":"気胸の合併（臓側胸膜線）","note":"胸膜腔の空気と含気肺の境界線。合併症の除外として探す","src":"Fleischner用語集2024（PMID 38411514）pneumothorax 項"},{"id":"as_xr_atelect","label":"無気肺（容積減少＋濃度上昇）","note":"粘液栓（mucoid impaction）による区域性の含気低下として現れうる","src":"Fleischner用語集2024（PMID 38411514）atelectasis 項・mucoid impaction 項"}],"ct_items":[{"id":"as_ct_mucoid","label":"粘液栓（mucoid impaction）","note":"気道が粘液で満たされる。閉塞性にも非閉塞性にも起こる","src":"Fleischner用語集2024（PMID 38411514）mucoid impaction 項"},{"id":"as_ct_airtrap","label":"air trapping（呼気CT）・モザイク濃度（吸気CT）","note":"air trapping は呼気CTでのみ、モザイク濃度は完全吸気CTでのみ判定する","src":"Fleischner用語集2024（PMID 38411514）air trapping 項・mosaic attenuation 項"}],"integration_note":"呼気気流制限の手がかり：呼気延長、wheeze、air entry低下、呼吸仕事量増加。これらは原因を特定しない。","next_step_note":"身体診察は重症度とT0からの変化を追い、喘息診断は変動する症状＋客観的な可変性気流制限で確認する（GINA 2026）。"},{"id":"hf","label":"心不全（心原性肺水腫）","exam_items":[{"id":"hf_orthopnea_forced","label":"起座位強制","group":"視診","priority":true,"note":"急性と慢性の鑑別／30秒ルートでは「起座呼吸・発作性夜間呼吸困難（PND）」"},{"id":"hf_jvd","label":"頸静脈怒張（JVD）","group":"視診","priority":true,"note":""},{"id":"hf_leg_edema","label":"下腿浮腫","group":"視診","priority":true,"note":""},{"id":"hf_cyanosis","label":"チアノーゼ","group":"視診","priority":false,"note":""},{"id":"hf_pnd","label":"発作性夜間呼吸困難（PND）","group":"視診","priority":true,"note":""},{"id":"hf_apex_palpable","label":"心尖拍動触知","group":"触診","priority":false,"note":"右心不全の徴候も重要"},{"id":"hf_hepatomegaly","label":"肝腫大","group":"触診","priority":false,"note":""},{"id":"hf_edema_pitting","label":"下腿浮腫の圧痕","group":"触診","priority":false,"note":""},{"id":"hf_cardiac_dullness_wide","label":"心濁音拡大","group":"打診","priority":false,"note":""},{"id":"hf_basal_dullness","label":"下肺野濁音（胸水合併時）","group":"打診","priority":false,"note":"胸水の合併に注意"},{"id":"hf_fine_crackles","label":"両側下肺野fine crackles","group":"聴診","priority":true,"note":"cracklesは重力依存性"},{"id":"hf_s3","label":"S3ギャロップ","group":"聴診","priority":true,"note":""},{"id":"hf_murmur","label":"心雑音","group":"聴診","priority":false,"note":""}],"pocus_items":[{"id":"hf_us_b_profile","label":"B profile：lung sliding あり ＋ B-line 多数","note":"心原性肺水腫が代表","src":"profile表 B行","figure":"b_lines"},{"id":"hf_us_bilat_bline","label":"両側性B-line（3本以上）","note":"間質性肺水腫を示す","src":"ガイド第4章 心不全🩻段落（補遺1）","figure":"b_lines"},{"id":"hf_us_bline_dist","label":"B-line の分布","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（②⑫）","figure":"b_lines"},{"id":"hf_us_ivc","label":"IVC の変動","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑮）"},{"id":"hf_us_pleural_line","label":"胸膜線の性状","note":"","src":"別冊表3「むくみ、体重増加、心不全を疑う」行（⑬⑭）","figure":"pleura_smooth"}],"xray_items":[{"id":"hf_xr_flow","label":"肺血流の分布","note":"心原性・非心原性を分ける主要3所見の一つ（何をどう読むかの詳細は原著参照）","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_edema_dist","label":"肺水腫の分布","note":"主要3所見の一つ","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_pedicle","label":"血管茎（vascular pedicle）の幅","note":"主要3所見の一つ","src":"Milne 1985（PMID 3872571）抄録・主要3所見"},{"id":"hf_xr_septal","label":"小葉間隔壁の線（septal lines）","note":"外側胸膜面に直角に接する細い線。間質の液体貯留を映す。「Kerley線」は旧称（現用語集では非推奨）","src":"Fleischner用語集2024（PMID 38411514）septal thickening 項／Milne 1985（PMID 3872571）補助所見"},{"id":"hf_xr_cuff_eff","label":"気管支周囲の cuffing・胸水・心拡大","note":"補助所見。胸水は肋骨横隔膜角の鈍化から","src":"Milne 1985（PMID 3872571）補助所見／Fleischner用語集2024（PMID 38411514）pleural effusion 項"}],"ct_items":[{"id":"hf_ct_septal","label":"小葉間隔壁の肥厚","note":"間質への液体貯留・リンパ路のうっ滞などで肥厚する","src":"Fleischner用語集2024（PMID 38411514）septal thickening 項"},{"id":"hf_ct_ggo","label":"すりガラス影","note":"肺胞の部分的な液体貯留などで生じる。CT でだけ使う用語","src":"Fleischner用語集2024（PMID 38411514）ground-glass 項"},{"id":"hf_ct_effusion","label":"胸水（重力側の液体貯留）","note":"濃度はさまざま","src":"Fleischner用語集2024（PMID 38411514）pleural effusion 項"}],"integration_note":"うっ血セット：起座呼吸、JVD、S3、両側下肺野crackles、浮腫。S3とJVDは陽性なら強力（数値はガイド第6章／bedside-bayes 参照）。","next_step_note":"crackles単独は非特異的で、BNP/NT-proBNP、心エコー、LUS B-linesで統合し、治療反応は定点で追う。"},{"id":"other","label":"その他（自由枠）","exam_items":[],"pocus_items":[]}],"modalities":[{"id":"pocus","label":"POCUS"},{"id":"cxr","label":"胸部X線"},{"id":"ct","label":"胸部CT"},{"id":"other","label":"その他"}],"site_options":{"sides":["右","左","両側"],"aspects":["前面","側面","背面"],"ics_chips":["第2肋間","第3肋間","第4肋間","第5肋間","第6肋間","第7肋間","第8肋間","第9肋間","第10肋間","肩甲骨下角の高さ"],"lines_by_aspect":{"前面":["胸骨外縁","鎖骨中線"],"側面":["前腋窩線","中腋窩線","後腋窩線"],"背面":["脊柱寄り","中央","後腋窩線寄り"]},"cm_landmarks_by_aspect":{"前面":["鎖骨","胸骨角"],"側面":["腋窩","最下肋骨"],"背面":["肩甲骨下角","脊柱","最下肋骨"]},"cm_directions":["頭側","尾側","内側","外側"],"pocus_presets":[{"id":"upper_blue","label":"upper BLUE点","desc":"上の手の中央。第2肋間・鎖骨中線あたり"},{"id":"lower_blue","label":"lower BLUE点","desc":"下の手掌の中央。第4〜5肋間、やや外側"},{"id":"plaps","label":"PLAPS点","desc":"lower BLUE と同じ高さで、後腋窩線との交点。体を起こすか側臥位にして背側へ回り込む"}],"lobe_chips":["右上葉","右中葉","右下葉","左上葉","舌区","左下葉"],"segments_by_lobe":{"右上葉":["S1","S2","S3"],"右中葉":["S4","S5"],"右下葉":["S6","S7","S8","S9","S10"],"左上葉":["S1+2","S3"],"舌区":["S4","S5"],"左下葉":["S6","S8","S9","S10"]}},"export_template":{"items":[{"no":0,"heading":"症例番号 / 主な臨床問題"},{"no":1,"heading":"1. 検証する問い（一つだけ）","example":"例：右下肺の濁音は胸水か、実質化か"},{"no":2,"heading":"2. 画像前の予測","subfields":["第一候補","確信度（%）","代替診断","予測する部位・左右・広がり","その根拠となった所見"]},{"no":3,"heading":"3. 身体診察","subfields":["仮説を支持する所見","あるはずなのに無かった所見","所見の解剖学的位置（肋間・線・体表図）","診察を制限した条件"]},{"no":4,"heading":"4. 画像後の更新","subfields":["所見","確かめられたこと","否定的になったこと","確信度の動き（→上・→下）","新たに疑ったこと"]},{"no":5,"heading":"5. 画像・検査・経過","subfields":["CT などの画像所見（解剖）","その他の検査","最終診断（菌・病理・治療反応・経過を含む）","診察から検査までの時間差"]},{"no":6,"heading":"6. 振り返り","subfields":["当たった部分","外れた部分","外れ方の分類（第10章 06.5 の8区分）","次の症例で実行する行動（一つだけ）"]},{"no":7,"heading":"7. 暫定 Teaching point","subfields":["次の類似症例で確かめることを一文で（一例から法則を作らない）"]}]},"miss_classification":{"categories":[{"id":"observation","label":"観察の誤り","desc":"出ていた所見を拾えなかった。左右を比べていない、聴く場所が足りない"},{"id":"technique","label":"手技の誤り","desc":"取り方が違った。打診が強すぎる、体位が合っていない、声を止めさせて比べた"},{"id":"interpretation","label":"解釈の誤り","desc":"所見は取れたが、意味を取り違えた。濁音を胸水と読んで、無気肺を考えなかった"},{"id":"integration","label":"統合の誤り","desc":"個々は合っていたが、束ね方を誤った。相関する所見を独立に数えて確信を上げすぎた"},{"id":"anatomy","label":"解剖の理解不足","desc":"所見の場所と肺葉の対応がずれた。後胸部だけで中葉・舌区を探した"},{"id":"conditions","label":"診察条件の制約","desc":"肥満・胸壁の厚み・体位・騒音・小さく深い病変。腕ではなく条件の問題"},{"id":"timecourse","label":"病態の時間的変化","desc":"診察と画像のあいだに病態が動いた。所見が正しく、画像も正しいことがある"},{"id":"reference","label":"比較基準の不確実性","desc":"画像や最終診断のほうが確定していない。読影者間でも判定が割れる領域がある"}],"tree":{"root":"q0","nodes":[{"id":"q0","text":"その前にひとつ外す ── どちらかが「測れていなかっただけ」ではないか。その場合は自分のずれではない。","options":[{"label":"測れていなかっただけ","next":"q0b"},{"label":"測れていた（自分のずれを分ける）","next":"qa"}]},{"id":"q0b","text":"「測れていなかった」の中身はどれか（表の下3行がこれにあたる）。","options":[{"label":"肥満・胸壁の厚み・体位・騒音・小さく深い病変","result":"conditions"},{"label":"診察と画像のあいだに病態が動いた","result":"timecourse"},{"label":"画像や最終診断のほうが確定していない","result":"reference"}]},{"id":"qa","text":"所見の場所と肺葉の対応はずれていなかったか（解剖の理解不足は、取る側にも読む側にも根として現れる）。","options":[{"label":"対応がずれていた","result":"anatomy"},{"label":"ずれていない","next":"q1"}]},{"id":"q1","text":"問い1 ── 答えに照らして、所見そのものは合っていたか。","options":[{"label":"違っていた（「取るとき」のずれ）","next":"q2take"},{"label":"合っていた（「読むとき」のずれ）","next":"q2read"}]},{"id":"q2take","text":"体位や当て方を変えれば取れたか、ただ拾い損ねたか。","options":[{"label":"体位や当て方を変えれば取れた","result":"technique"},{"label":"ただ拾い損ねた","result":"observation"}]},{"id":"q2read","text":"一つの所見の意味を取り違えたか、組み合わせか。","options":[{"label":"一つの所見の意味を取り違えた","result":"interpretation"},{"label":"組み合わせ（束ね方）","result":"integration"}]}]},"next_hints":[{"category":"observation","hint":"次はそこを意識して取りにいく"},{"category":"technique","hint":"体位を変える。座位か側臥位へ"},{"category":"interpretation","hint":"その所見が本当は何を見ているか調べ直す"},{"category":"integration","hint":"文脈を一つ足して読み直す（分布・体位・重力）"}]},"quick_note":{"zure_label":"ずれ：どれ（何と読んだ → 実際は）","next_label":"次：一手","oya_button":"おや？","oya_saved":"「おや」を記録しました。中身は後から書けます","oya_pending_label":"おや（未記入）","oya_hint":"予想と違ったその瞬間に押す。日時だけ残るので、中身は後から書けばよい。教科書に無いことは、たいてい驚いたところにある","oya_zure_label":"何が予想と違ったか"},"track":{"entry_button":"経過","title":"経過を追う","intro":"追う所見を3〜5個だけ決めて、1日1回タップする。画像があった日は参照も入れる。貯まると「どの所見が病気と一緒に動いたか」が出る。","new_button":"＋ 追う患者を足す","label_label":"呼び名（匿名で）","label_ph":"70代・器質化肺炎","items_label":"追う所見（3〜5個）","items_hint":"再現性の高い所見を選ぶ。日ごとの差を見るので、取るたびにぶれる所見では経過を追えない。","levels":["なし","わずか","明らか","強い"],"def_title":"この所見の定義（あとから動かさない）","def_hint":"coarse か fine か、吸気か呼気か、どの葉か ── 経過中に変わらないものは、ここに書いて固定する。細かく書くほど、明日測るのが「同じ測定」になる。","site_label":"部位","quality_label":"性状（あれば）","quality_presets":{"クラックル":["fine","coarse","吸気早期","吸気終末","呼気"],"打診":["石様","濁","鼓音"],"呼吸音":["減弱","消失","気管支呼吸音"]},"axis_label":"毎日、何を追うか","axis_hint":"既定は「強さ」1つ。軸を増やすと入力も雑音も増える。強さと範囲は互いに相関するので、両方取っても得るものは少ない。","axis_options":["強さ","範囲","性状"],"quality_axis_label":"性状","qlevels_label":"性状の段階（軽い順に、改行で）","qlevels_ph":"fine\ncoarse","qlevels_hint":"coarse から fine へ、のように経過中に動く性状はここへ。軽いほうを上に書く。動かない性状（部位・相など）は上の定義に置く。","dir_note":"区域は「数が減るほど軽い」として数えます。","extent_label":"範囲","extent_levels":["なし","限局","1領域","複数領域"],"extent_mode_label":"範囲の測り方","extent_modes":["区域","段階"],"extent_seg_label":"範囲（区域）","extent_seg_hint":"その日に及んでいる区域を選ぶ。数が減れば改善。区域は、上で選んだ葉のものだけ出る。","place_label":"当てた場所（自分で決める）","place_hint":"明日も同じ点に当てるための覚え書き。★区域の体表対応には確立した根拠が無い ── Takahashi 2004（Chest, PMID 15006952）は体位ドレナージの区域別体位を「解剖学的根拠がほとんど無い」とし、亜区域気管支の走行は個体差が大きいと報告している。だから教科書の対応表ではなく、あなたがこの患者で当てた場所を書く。","place_memo_ph":"肩甲骨下角の2横指下・後腋窩線","seg_place_label":"区域ごとの当て場所（任意）","seg_place_hint":"書いておくと、毎日その区域を押したときに下に出る。空でもよい。","seg_none":"なし","ref_label":"画像・参照（撮った日だけ）","ref_hint":"所見を全部入れるまで押せない。見てから書くと、見たとおりに聴こえるため。","ref_levels":["消失","軽度","中等度","高度"],"today_label":"今日の所見","save_button":"この日を保存","saved_toast":"保存しました","concord_title":"どの所見が経過を追えたか","concord_none":"参照（画像）が2回以上入ると、ここに一致率が出ます。","concord_note":"参照が動いた区間だけを数えています。両方が動かなかった区間は数に入れません。","small_n":"まだ区間が少なく、偶然と区別できません。","never_moved":"⚠ 一度も動かなかった所見 ── この経過では追跡に使えていません（外れたのではなく、動く機会が無かった）","best_label":"いちばん追えた所見","fail_label":"追えていない所見","close_button":"追跡を終える","blind_note":"★その日の画像や採血を見る前に入れる。これが崩れると、良くなっているはずだと思って聴いた音を測ることになる。"},"quick_templates":{"side_slot":"◯","questions":{"pneumonia":[{"text":"◯下肺に実質化があるか","qtype":"qual"},{"text":"◯下肺の crackles は fine か coarse か","qtype":"qual","reading_axis":"crackle_quality"},{"text":"◯下肺の実質化は、腋窩中線で何肋間ぶんの高さか","qtype":"quant"}],"effusion":[{"text":"◯下肺の濁音・呼吸音減弱は胸水か、実質化か","qtype":"qual"},{"text":"◯胸水の上縁は、腋窩中線で第何肋間の高さか","qtype":"quant"}],"pneumothorax":[{"text":"◯肺の呼吸音低下・過共鳴は気胸か","qtype":"qual"},{"text":"◯肺の虚脱は、鎖骨中線で第何肋間まで及ぶか","qtype":"quant"}],"copd":[{"text":"気流閉塞の増悪が主か、ほかの原因が混ざっているか","qtype":"qual"}],"asthma":[{"text":"呼気気流制限はいま重症か","qtype":"qual"}],"hf":[{"text":"両側下肺の crackles はうっ血か","qtype":"qual"},{"text":"頸静脈の拍動上縁は、胸骨角の上何cmか","qtype":"quant","howto":"① 背上げ角度を決めて記録する（例：背上げ45度）。同じ患者は毎回同じ角度で\n② 頭を枕で支えて胸鎖乳突筋を脱力させる。顔はわずかに反対側へ（回旋・伸展はさせない）\n③ 右の頸部で行う（右内頸静脈は腕頭静脈を介してほぼ直線的に右房へ通じる）\n④ リニアプローブを短軸で当て、内頸静脈と総頸動脈を出す（静脈は非拍動性で、軽く押すとつぶれる）\n⑤ プローブは皮膚に触れるだけ。ゼリーを多めに。押すと虚脱点が実際より低く出る\n⑥ 短軸のまま頭側へゆっくり滑らせ、断面が消える高さ＝虚脱点を、呼気終末で決める\n⑦ プローブ中央の皮膚に印をつける\n⑧ 定規を2本。1本を胸骨角に当てて鉛直に立て、もう1本を印から水平に渡し、交わる目盛りを読む\n　 皮膚の上をなぞらない（斜めに測ると必ず高く出る）\n⑨ 読んだ値がそのまま「胸骨角の上 N cm」。+5 は足さない\nずれる向き … 押した→低く出る／回旋・伸展→動く／斜めに測った→高く出る／吸気で読んだ→低く出る\n測れないときは「評価できず」と記録する（高度うっ血で下顎角より上、脱水で鎖骨の下に隠れる）\n"}]},"first_dx_patterns":["{side} {label}","{label}"]},"pocus_figures":[{"id":"a_pattern","title":"A-pattern","caption":"胸膜線と平行な線（A-line）が等間隔でくり返す。含気が保たれているという意味で、それ以上のことは言わない。cracklesがあるのにA-patternなら、肺の中よりも気道側を先に考える手がかりになる。"},{"id":"b_lines","title":"B-line","caption":"胸膜線から画面の下端まで減衰せずに伸びるレーザー状の線。1肋間に3本以上で異常。本数は疾患を決めない ── 分けるのは胸膜線の性状と分布（正常域が残っているか）。"},{"id":"consolidation","title":"実質化","caption":"肺が肝臓のような均一な組織に見える（hepatization）。白い点は残った気管支（air bronchogram）。肺炎で見え、coarseが主だが、早期と治癒期にはfineが混じる。"},{"id":"air_bronchogram","title":"air bronchogram ── 動くか","caption":"実質化の中の気管支像が呼吸で動けば、気道が通じている＝肺炎の側。動かなければ無気肺の側。実質化を見たら、次はこの一点を確かめる。"},{"id":"pleura_smooth","title":"胸膜線 ── 平滑・連続","caption":"胸膜線が平滑・連続で、B-lineが均一に立ち、正常域を欠く。心原性肺水腫の側。エコーだけで心不全と確定はしない ── JVP・S3と束にする。"},{"id":"pleura_irregular","title":"胸膜線 ── 肥厚・不整","caption":"胸膜線が肥厚・不整・断裂し、B-lineが不均一で、正常域（spared area）が混じる。間質性肺疾患の側。Velcro様のfine cracklesと対で読む。"},{"id":"effusion","title":"胸水","caption":"横隔膜の上に無エコーの帯。四辺形（quad sign）に囲まれ、呼吸で肺の縁が出入りする。量の推移は打診濁音の上縁と併走させて追える。"}],"ui_copy":{"lock_button":"ここまでを画像の前に書いた","lock_confirm":"ここまでの記録を固定します。腕の採点は、画像の前に書いた記録だけで行います。固定後に手を入れた項目には「画像後修正あり」が付きます。","edited_after_lock_badge":"画像後修正あり","anon_placeholder":"氏名・患者ID・病室番号・生年月日など、個人を特定できる情報は書かない（症例は「70代男性」のように匿名化する）","small_n_note":"同じずれ方の症例はまだ5例未満。一例から法則を作らず、次の類似症例で確かめる仮説として扱う","teaching_point_label":"次の類似症例で確かめることを一文で（一例から法則を作らない）","quick_hint":"診察中はタップだけで進めます。文章はあとから詳細画面の『補記』で足せます","reading_label":"耳の読み（画像の前に決める）","reading_note":"読みはロックで固定され、「読みの軸」の集計に入る。迷ったら判定不能を選んでよい ── 判定できなかったことも記録である","readingref_label":"エコーは、どちらの側だったか","readingref_note":"間質側＝B-lineや胸膜線の不整が主。気道側＝A-patternが保たれる。音とエコーは同じものを測っていないので、一致しないこと自体は誤りではない ── ずれの向きを溜めて、自分の耳の癖を知るための記録","reading_axis_title":"読みの軸 ── fine/coarse と、エコーの側","reading_axis_intro":"実測LRは出さない。音とエコーは同じものを測っていないから、一致率を尤度比に変換しない（ガイド3.4）。ここで見るのは、一致のおおまかな程度と、外れるときの向き ── どちらへ外れやすいかが、次に耳を磨く場所を教える","reading_axis_empty":"読みの記録はまだ足りない。「◯下肺の crackles は fine か coarse か」の問いで記録し、後日追記で「エコーの側」を入れると、ここに溜まっていく","reading_axis_progress":"あと {n} 例で表示（読みとエコーの側が揃った記録 {have} / {need}）","figure_note":"予測を書き終えてから開く。図は模式図で、実際の画面はプローブ・体格・深度で変わる","figure_toggle_label":"図で確かめる","addendum_note":"補記は画像のあとに書いた文章として記録されます。腕の採点には使いません","no_miss_label":"外れなし（予測どおり）","qtype_label":"問いの型","qtype_qual":"定性（病態の有無を当てる）","qtype_quant":"定量（数値で予測する）","quant_pred_label":"予測値（画像の前に書く数値）","quant_unit_label":"単位","quant_howto_label":"測り方（タップで開く）","quant_actual_label":"実測値（画像・検査で確定した数値）","disease_present_label":"S1の病態は、実際にあったか","disease_present_note":"「自分の尤度比（実測）」の答えの正本。予測との一致判定とは別に、病態そのものが有ったか無かったかを記録する。「はい／いいえ」を選ぶと実測の集計対象になる","plr_title":"自分の尤度比（実測）","plr_intro":"文献の値ではなく、自分の記録から出した値。ロック時点の所見（あり／なし）と、後日追記の「S1の病態は、実際にあったか」を突き合わせて、所見ごとの感度・特異度・尤度比を計算する","plr_empty":"まだ集計できる記録がありません。後日追記で「S1の病態は、実際にあったか」を はい／いいえ にした記録が対象になります","plr_bias_note":"「なし」側は、その病態を疑って記録したが実際には無かった症例だけから来ている。疑わなかった患者は数に入っていないため、値は偏りうる（verification bias）","plr_privacy_note":"この計算は、すべてこの端末の中で行われます。記録も、計算した数値も、外部には送信されません。","plr_progress":"病態あり{present}/10・なし{absent}/10","plr_group_fmt":"病態あり{present}・なし{absent}","plr_corrected_badge":"補正あり","plr_corrected_note":"「補正あり」＝2×2の表にゼロのマスがあるため、全マスに0.5を足して計算した（Haldane補正）","plr_export_button":"自分パネルを書き出す（ベイズ診察エンジンへ）","plr_clipboard_note":"書き出しはクリップボードへのコピーです。どこに貼るかは、あなたが決めます。","plr_no_bridge_note":"この病態は、ベイズ診察エンジン側に対応するタブがないため、書き出しの対象外","plr_sens":"感度","plr_spec":"特異度","plr_lrp":"LR+","plr_lrn":"LR−","plr_ci":"95%CI","quant_title":"定量の癖と床","quant_intro":"定量の問いで、予測値と実測値が揃った記録から、ずれの癖（平均ずれ・SD）と、変化と読んでよい床（RCV）を出す","quant_empty":"定量の記録（予測値と実測値が揃ったもの）はまだありません","quant_small_n":"この病態・単位の組はまだ5例未満。数値を出さず、揃うまで蓄積する","quant_mean_label":"平均ずれ（＋＝予測が高い）","quant_sd_label":"ずれのSD","quant_rcv_label":"RCV（変化と読む床）","quant_rcv_note":"RCV＝√2×1.96×SD。次の測定でこの幅を超えて動いたときに、はじめて「変化した」と読む","modality_label":"答え合わせに使った画像（主たる一つ）","modality_note":"画像の種類で答えの細かさは変わる。粗い画像で外れたときは、外れ方8分類の「比較基準の不確実性」も候補に入れる","modality_other_label":"その他の画像（何で答え合わせしたか）","modality_switch_confirm":"答え合わせの画像を切り替えます。いま入力済みの所見チェック・位置は切り替え先では表示・書き出しに出ません（データは残り、戻せば復活します）。切り替えますか？","imaging_site_label":"位置（画像上の場所・複数可）","imaging_sites_empty":"肺葉チップか「＋ 位置を追加」で、答えの場所を記録できます","imaging_conf_label":"画像後の確信度（%）","outcome_ct_note":"答え合わせに使った画像は S5 に記録済み。ここは、その後の追加画像・確定情報のみ","export_modality_label":"画像の種類"},"links":{"bedside_bayes":"https://torukubota2023.github.io/bedside-bayes/","bedside_bayes_note":"尤度比・情報量の数値はこちら","guide_ref":"呼吸器身体診察実践ガイド 2026（第4章・第10章06.5・巻末テンプレート）","nejm_ref":"Garibaldi BT, Russell SW. N Engl J Med 2025;393:2142-2150 (PMID 41223363)"}};
 /* ==== CONTENT:END ==== */
 /* ==== APPVER:BEGIN ==== */
-const APP_VERSION = "v1.8.0";
+const APP_VERSION = "v1.9.0";
 /* ==== APPVER:END ==== */
 
 /* ---------------------------------------------------------------- guard */
@@ -355,6 +375,10 @@ const QUANT_UNITS = ["肋間", "cm", "その他"];   // pre.quantPred.unit の�
 
 /* ---------------------------------------------------------------- storage */
 const K_META = "awn.meta", K_QUICK = "awn.quick", K_DRAFT = "awn.draft", K_SETTINGS = "awn.settings", K_CASE = "awn.case.";
+/* 経過モード（v1.9.0）。1件＝1人の追跡で、中に観察の行が並ぶ。
+   ★答え合わせ（K_CASE）とは別の入れ物にする ── 単位が違うため。
+     答え合わせは「1回の予測 vs 1枚の画像」、経過は「1本の軌跡 vs 参照の軌跡」。 */
+const K_TRACK = "awn.tracks";
 function lsGet(k, fb) { try { const s = localStorage.getItem(k); return s == null ? fb : JSON.parse(s); } catch (e) { return fb; } }
 function lsSet(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
 /* 8分類カードの説明文を既定で開くか（設定の「説明を常に表示」。既定=オフ＝ラベルのみ） */
@@ -1064,6 +1088,124 @@ function openTreeModal(onPick) {
   draw();
 }
 
+/* ================================================================ 経過モード（v1.9.0）
+
+   何を測るか: 選んだ所見の軌跡が、参照（画像）の軌跡と歩調を合わせたか。
+   なぜ軌跡か: 同じ人が同じ手技で追うと、その人の癖（取りやすい／取りにくい）は
+   引き算で消える。残るのはばらつきだけで、それは回数で減らせる。
+   ⚠ ただし盲検ではない。だから「所見を全部入れるまで参照は押せない」を作りで守る。 */
+function allTracks() {
+  const a = lsGet(K_TRACK, []);
+  return Array.isArray(a) ? a : [];
+}
+function saveTracks(a) { try { lsSet(K_TRACK, a); return true; } catch (e) { toast("保存に失敗しました"); return false; } }
+function newTrack(label, disease, items) {
+  return { id: "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    label: label || "", disease: disease || "", items: items || [], obs: [],
+    closed: false, createdAt: nowISO(), updatedAt: nowISO() };
+}
+/* 所見ごとの一致（参照が動いた区間だけを数える）。
+   ★両方とも動かなかった区間は「一致」に数えない ── 何も起きていない期間を
+     一致として積むと、動かない所見ほど成績が良くなってしまう。 */
+/* 1つの所見が毎日入れる軸。旧データ（axis なし）は「強さ」だけ ── 後方互換 */
+function axesOf(it) {
+  const T = CONTENT.track;
+  /* dir = +1 なら「値が大きいほど重い」、-1 なら「値が大きいほど軽い」。
+     ★軸ごとに向きが違う。打診濁音の上縁が第4肋間→第10肋間へ下がるのは改善だが、
+       肋間の番号は増える。向きを持たずに符号で比べると、完璧に追えている所見が
+       0/3 一致と出る（2026-08-29、器質化肺炎の1例目で実測）。 */
+  const axs = Array.isArray(it.axes) ? it.axes : (it.axis ? [it.axis] : ["強さ"]);
+  const out = [];
+  if (axs.indexOf("強さ") >= 0 || it.axis === "両方")
+    out.push({ k: "s", nm: "強さ", levels: T.levels, dir: 1 });
+  if (axs.indexOf("範囲") >= 0 || it.axis === "両方") {
+    /* 区域は順序尺度ではなく集合。比べるのは「いくつの区域に及んでいるか」。
+       どの区域かは履歴にそのまま残す（S9・S10 が S10 だけになった、が見える）。 */
+    out.push((it.emode === "段階")
+      ? { k: "e", nm: T.extent_label, levels: T.extent_levels, dir: 1 }
+      : { k: "e", nm: T.extent_seg_label, segs: segsOf(it), dir: 1, multi: true });
+  }
+  /* 性状 ── coarse から fine へ、のように経過中に動く。段階の並びは利用者が
+     「軽い順」に決める（2026-08-29 副院長の指摘。coarse↔fine は肺炎で普通に動く）。 */
+  if (axs.indexOf("性状") >= 0 && (it.qlevels || []).length > 1)
+    out.push({ k: "q", nm: T.quality_axis_label, levels: it.qlevels, dir: 1 });
+  return out.length ? out : [{ k: "s", nm: "強さ", levels: T.levels, dir: 1 }];
+}
+/* その所見で出す区域の候補。定義で葉を選んでいれば、その葉のものだけ。
+   選んでいなければ全部（左S7は通常欠如するので語彙に無い）。 */
+function segsOf(it) {
+  const M = CONTENT.site_options.segments_by_lobe || {};
+  const lobes = (it.site || []).filter(x => M[x]);
+  const src = lobes.length ? lobes : Object.keys(M);
+  const out = [];
+  src.forEach(lb => (M[lb] || []).forEach(sg => {
+    const nm = (lobes.length === 1 ? "" : lb) + sg;
+    if (out.indexOf(nm) < 0) out.push(nm);
+  }));
+  return out;
+}
+/* 軸の値を「比べられる数」にする。区域は個数、それ以外は段階の添字。 */
+function numOf(ax, v) {
+  if (v === undefined || v === null) return undefined;
+  return ax.multi ? (Array.isArray(v) ? v.length : 0) : v;
+}
+/* 定義（動かない属性）を1行で表す。毎日の画面では名前の下に薄く出す */
+function itemDefLine(it) {
+  const a = (it.site || []).concat(it.aspect || [], it.qual || []);
+  if (it.place) a.push(it.place);
+  return a.join("・");
+}
+/* 保存キー。軸ごとに別の値を持つ（旧データは所見IDそのものが強さの値） */
+function vkey(it, ax) { return ax.k === "s" ? it.id : it.id + "#" + ax.k; }
+function readVK(o, k) { return ((o && o.v) || {})[k]; }
+/* 軸の値を画面に出す文字列にする */
+/* 選んでいる区域について、登録時に書いた「当て場所」を1行にする */
+function segPlaceLine(it, sel) {
+  const m = it.segPlace || {};
+  if (!Array.isArray(sel) || !sel.length) return "";
+  const a = sel.filter(sg => m[sg]).map(sg => sg + "：" + m[sg]);
+  return a.join("　／　");
+}
+function showV(ax, v) {
+  if (v === undefined || v === null) return "―";
+  if (ax.multi) return (Array.isArray(v) && v.length) ? v.join("・") : CONTENT.track.seg_none;
+  return (ax.levels && ax.levels[v]) || String(v);
+}
+function readV(o, it, ax) {
+  const v = (o && o.v) || {};
+  if (ax.k === "s" && v[it.id] !== undefined) return v[it.id];
+  return v[vkey(it, ax)];
+}
+
+function concordance(tr) {
+  const obs = (tr.obs || []).filter(o => o.ref !== null && o.ref !== undefined)
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  const res = {};
+  (tr.items || []).forEach(it => axesOf(it).forEach(ax => {
+    /* ★ずっと同じ値だった所見は「不一致」ではなく「動く機会が無かった」。
+       0/3 一致と書くと、外していたように読めるが、実際には一度も動いていない
+       （2026-08-29、器質化肺炎の1例目で実測 ── クラックルは一度も鳴らなかった）。 */
+    const vals = (tr.obs || []).map(o => readV(o, it, ax)).filter(v => v !== undefined)
+      .map(v => JSON.stringify(v));
+    res[vkey(it, ax)] = { ok: 0, ng: 0, flat: 0, nm: it.nm, axnm: ax.nm, levels: ax.levels, ax,
+      never: vals.length > 1 && vals.every(v => v === vals[0]),
+      level: vals.length ? JSON.parse(vals[0]) : undefined };
+  }));
+  for (let i = 1; i < obs.length; i++) {
+    const dr = Math.sign(obs[i].ref - obs[i - 1].ref);
+    (tr.items || []).forEach(it => axesOf(it).forEach(ax => {
+      const key = vkey(it, ax);
+      const a = numOf(ax, readV(obs[i - 1], it, ax)), b = numOf(ax, readV(obs[i], it, ax));
+      if (a === undefined || b === undefined) return;
+      const df = Math.sign((b - a) * (ax.dir || 1));
+      if (dr === 0 && df === 0) { res[key].flat++; return; }   // どちらも動いていない区間は数えない
+      if (dr === 0) return;                                    // 参照が動いていない区間も数えない
+      if (df === dr) res[key].ok++; else res[key].ng++;
+    }));
+  }
+  return res;
+}
+
 /* ---------------------------------------------------------------- router */
 let prevRoute = null;
 let wizCase = null;      // ウィザードが現在編集している case（メモリ上の正）
@@ -1086,6 +1228,8 @@ function route() {
   else if (m) renderDetail(m[1]);
   else if (h === "#stats") renderStats();
   else if (h === "#settings") renderSettings();
+  else if (h.indexOf("#track/") === 0) renderTrackOne(h.slice(7));
+  else if (h === "#track") renderTrackList();
   else renderList();
   updateBottomNav(h);
   prevRoute = h;
@@ -1301,6 +1445,7 @@ function renderList() {
       " 件あります。データはこの端末の中にしかありません。</span>" +
       '<button type="button" class="btn small line" id="goBackup">設定でバックアップ</button></div>';
   }
+  const hasTrack = allTracks().length > 0;
   const entries = [];
   cases.forEach(c => entries.push({ k: c.createdAt || "", type: "case", o: c }));
   quick.forEach(q => entries.push({ k: (q.date || "") + "T12:00:00_" + (q.createdAt || ""), type: "quick", o: q }));
@@ -1310,12 +1455,14 @@ function renderList() {
      （副作用として、まっさらから始める第11話の画面収録にも映らない）
      ★3つを1行に並べると主動線の「＋新しい記録」が2行へ折り返すので、記録がある間は2段にする。
        記録0件のときの並びは従来と1文字も変えない。 */
-  if (entries.length) {
+  if (entries.length || hasTrack) {
     html += '<div class="btnrow"><button type="button" class="btn" id="newBtn" style="flex:1">＋ 新しい記録（画像の前に）</button></div>' +
       '<div class="btnrow" style="margin-top:8px">' +
       '<button type="button" class="btn ghost" id="quickBtn" style="flex:1">一行記録</button>' +
       '<button type="button" class="btn oya" id="oyaBtn" style="flex:1">' +
-      esc(CONTENT.quick_note.oya_button) + "</button></div>" +
+      esc(CONTENT.quick_note.oya_button) + "</button>" +
+      '<button type="button" class="btn ghost" id="trkBtn" style="flex:1">' +
+      esc(CONTENT.track.entry_button) + "</button></div>" +
       '<p class="note oyahint">' + esc(CONTENT.quick_note.oya_hint) + "</p>";
   } else {
     html += '<div class="btnrow"><button type="button" class="btn" id="newBtn" style="flex:1">＋ 新しい記録（画像の前に）</button>' +
@@ -1366,6 +1513,8 @@ function renderList() {
   const gb = $("#goBackup"); if (gb) gb.addEventListener("click", () => nav("#settings"));
   $("#newBtn").addEventListener("click", () => { wizardIntent = { fresh: true }; nav("#new"); });
   $("#quickBtn").addEventListener("click", openQuickModal);
+  const trkB = $("#trkBtn");
+  if (trkB) trkB.addEventListener("click", () => nav("#track"));
   const oyaB = $("#oyaBtn");
   if (oyaB) oyaB.addEventListener("click", () => {
     /* ★押した瞬間に保存する。確認も入力も挟まない ── 驚いた瞬間は数秒しかないため。 */
@@ -2594,6 +2743,293 @@ function renderStats() {
   }));
 }
 
+/* ================================================================ #track（経過モード） */
+function renderTrackList() {
+  const T = CONTENT.track, tracks = allTracks();
+  let html = pageHeader(T.intro);
+  html += '<div class="btnrow"><button type="button" class="btn" id="trkNew" style="flex:1">' +
+    esc(T.new_button) + "</button></div>";
+  const open = tracks.filter(x => !x.closed), done = tracks.filter(x => x.closed);
+  if (!tracks.length) {
+    html += '<div class="panel"><p class="note">' + esc(T.intro) + "</p></div>";
+  } else {
+    html += '<div style="margin-top:12px">' + open.concat(done).map(tr => {
+      const n = (tr.obs || []).length, r = (tr.obs || []).filter(o => o.ref !== null && o.ref !== undefined).length;
+      return '<button type="button" class="card" data-trk="' + esc(tr.id) + '">' +
+        '<div class="d">' + esc(fmtD(tr.createdAt)) + (tr.closed ? "　終了" : "") + "</div>" +
+        '<div class="t">' + esc(tr.label || "（呼び名なし）") + "</div>" +
+        '<div class="note">観察 ' + n + " 回・参照 " + r + " 回／追う所見 " +
+        ((tr.items || []).map(i => esc(i.nm)).join("・") || "未設定") + "</div></button>";
+    }).join("") + "</div>";
+  }
+  html += footerHTML();
+  $("#app").innerHTML = html;
+  $("#trkNew").addEventListener("click", openTrackNewModal);
+  $$("[data-trk]").forEach(b => b.addEventListener("click", () => nav("#track/" + b.getAttribute("data-trk"))));
+}
+
+function openTrackNewModal() {
+  const T = CONTENT.track, SO = CONTENT.site_options;
+  const dz = Object.keys(CONTENT.diseases || {});
+  const root = openModal('<div class="sheet-h">' + esc(T.new_button) + "</div>" +
+    fieldText({ id: "tkLabel", label: T.label_label, ph: T.label_ph }) +
+    '<div class="field"><label for="tkDis">病態（任意）</label><input id="tkDis" list="tkDisL" placeholder="器質化肺炎 など">' +
+    '<datalist id="tkDisL">' + dz.map(k => '<option value="' + esc(diseaseLabel(k) || k) + '">').join("") + "</datalist></div>" +
+    '<p class="note">' + esc(T.items_hint) + "</p>" +
+    '<div id="tkItemList"></div>' +
+    '<div class="btnrow"><button type="button" class="btn ghost small" id="tkAdd" style="flex:1">＋ 追う所見を足す</button></div>' +
+    '<div class="btnrow split"><button type="button" class="btn ghost" data-close>閉じる</button>' +
+    '<button type="button" class="btn" id="tkSave">作る</button></div>');
+
+  /* 追う所見の1行ぶん。★動かない属性（性状・部位）は定義としてここで固定し、
+     毎日入れるのは「軸」だけにする。細かさを毎日の入力へ持ち込むと、軸ごとの
+     ばらつきが差に乗って微分原理が壊れる（2026-08-29 副院長と合意）。 */
+  let n = 0;
+  function itemBlock() {
+    const i = n++;
+    const q = T.quality_presets || {};
+    const tags = Object.keys(q).map(k => q[k]).reduce((a2, b2) => a2.concat(b2), []);
+    return '<div class="tkitem" data-i="' + i + '">' +
+      '<div class="field"><label>所見の名前</label><input class="tkNm" placeholder="呼吸音の減弱"></div>' +
+      '<div class="field"><label>' + esc(T.site_label) + "</label>" +
+      '<div class="chips tkSite">' + (SO.lobe_chips || []).map(v =>
+        '<button type="button" class="chip" data-v="' + esc(v) + '">' + esc(v) + "</button>").join("") + "</div>" +
+      '<div class="chips tkIcs" style="margin-top:5px">' + (SO.ics_chips || []).map(v =>
+        '<button type="button" class="chip small" data-v="' + esc(v) + '">' + esc(v) + "</button>").join("") + "</div></div>" +
+      '<div class="field"><label>' + esc(T.place_label) + "</label>" +
+      '<div class="chips tkAspect">' + (SO.aspects || []).map(v =>
+        '<button type="button" class="chip small" data-v="' + esc(v) + '">' + esc(v) + "</button>").join("") + "</div>" +
+      '<input class="tkPlace" placeholder="' + esc(T.place_memo_ph) + '" style="margin-top:5px">' +
+      '<p class="note">' + esc(T.place_hint) + "</p></div>" +
+      '<div class="tkSegPlace" style="display:none"></div>' +
+      '<div class="field"><label>' + esc(T.quality_label) + "</label>" +
+      '<div class="chips tkQual">' + tags.map(v =>
+        '<button type="button" class="chip small" data-v="' + esc(v) + '">' + esc(v) + "</button>").join("") + "</div></div>" +
+      '<div class="field"><label>' + esc(T.axis_label) + "</label>" +
+      '<div class="chips tkAxis">' + T.axis_options.map((v, j) =>
+        '<button type="button" class="chip' + (j === 0 ? " on" : "") + '" data-v="' + esc(v) + '">' + esc(v) + "</button>").join("") + "</div>" +
+      '<div class="chips tkEMode" style="margin-top:5px;display:none">' + T.extent_modes.map((v, j) =>
+        '<button type="button" class="chip small' + (j === 0 ? " on" : "") + '" data-v="' + esc(v) + '">' +
+        esc(T.extent_mode_label) + "：" + esc(v) + "</button>").join("") + "</div>" +
+      '<div class="tkQL" style="display:none;margin-top:6px"><label>' + esc(T.qlevels_label) + "</label>" +
+      '<textarea class="tkQLv" rows="2" placeholder="' + esc(T.qlevels_ph) + '"></textarea>' +
+      '<p class="note">' + esc(T.qlevels_hint) + "</p></div>" +
+      '<p class="note">' + esc(T.axis_hint) + "<br>" + esc(T.dir_note) + "</p></div>" +
+      '<button type="button" class="btn ghost small tkDel">この所見を消す</button></div>';
+  }
+  function addItem() {
+    if ($$(".tkitem", root).length >= 5) { toast("5個までにしてください"); return; }
+    $("#tkItemList", root).insertAdjacentHTML("beforeend", itemBlock());
+    wire();
+  }
+  function wire() {
+    /* 複数選べるチップ（部位・性状）と、1つだけのチップ（軸・範囲の測り方）を分ける */
+    $$(".tkitem", root).forEach(bl => {
+      $$(".tkSite .chip, .tkIcs .chip, .tkQual .chip", bl).forEach(c => { c.onclick = () => c.classList.toggle("on"); });
+      $$(".tkAxis .chip", bl).forEach(c => {
+        c.onclick = () => {
+          c.classList.toggle("on");   // ★複数選べる（強さ・範囲・性状）
+          const on2 = $$(".tkAxis .chip.on", bl).map(x => x.getAttribute("data-v"));
+          $(".tkEMode", bl).style.display = on2.indexOf("範囲") >= 0 ? "flex" : "none";
+          $(".tkQL", bl).style.display = on2.indexOf("性状") >= 0 ? "block" : "none";
+          drawSegPlace(bl);
+        };
+      });
+      $$(".tkEMode .chip", bl).forEach(c => {
+        c.onclick = () => { $$(".tkEMode .chip", bl).forEach(x => x.classList.remove("on")); c.classList.add("on"); };
+      });
+      $$(".tkAspect .chip", bl).forEach(c => { c.onclick = () => c.classList.toggle("on"); });
+      $$(".tkSite .chip", bl).forEach(c => c.addEventListener("click", () => drawSegPlace(bl)));
+      $$(".tkEMode .chip", bl).forEach(c => c.addEventListener("click", () => drawSegPlace(bl)));
+      const d = $(".tkDel", bl); if (d) d.onclick = () => { bl.remove(); };
+    });
+  }
+  /* 区域を追うと決めたときだけ、区域ごとの覚え書き欄を出す。
+     ★教科書の対応表を出すのではなく、本人が当てた場所を書く（根拠が無いため）。 */
+  function drawSegPlace(bl) {
+    const box = $(".tkSegPlace", bl);
+    const axes = $$(".tkAxis .chip.on", bl).map(c => c.getAttribute("data-v"));
+    const emode = ($(".tkEMode .chip.on", bl) || {}).getAttribute
+      ? $(".tkEMode .chip.on", bl).getAttribute("data-v") : "区域";
+    if (axes.indexOf("範囲") < 0 || emode !== "区域") { box.style.display = "none"; box.innerHTML = ""; return; }
+    const lobes = $$(".tkSite .chip.on", bl).map(c => c.getAttribute("data-v"));
+    const segs = segsOf({ site: lobes });
+    const keep = {};
+    $$(".tkSP", box).forEach(inp => { keep[inp.getAttribute("data-sg")] = inp.value; });
+    box.style.display = "block";
+    box.innerHTML = '<div class="field"><label>' + esc(T.seg_place_label) + "</label>" +
+      segs.map(sg => '<div class="sprow"><span class="spnm">' + esc(sg) + "</span>" +
+        '<input class="tkSP" data-sg="' + esc(sg) + '" value="' + esc(keep[sg] || "") + '"></div>').join("") +
+      '<p class="note">' + esc(T.seg_place_hint) + "</p></div>";
+  }
+  $("#tkAdd", root).addEventListener("click", addItem);
+  addItem();
+  $("#tkSave", root).addEventListener("click", () => {
+    const items = [];
+    try {
+    $$(".tkitem", root).forEach((bl, i) => {
+      const nm = $(".tkNm", bl).value.trim();
+      if (!nm) return;
+      const on = sel => $$(sel + " .chip.on", bl).map(c => c.getAttribute("data-v"));
+      const axes = $$(".tkAxis .chip.on", bl).map(c => c.getAttribute("data-v"));
+      const emode = ($(".tkEMode .chip.on", bl) || {}).getAttribute ? $(".tkEMode .chip.on", bl).getAttribute("data-v") : "区域";
+      const qlevels = ($(".tkQLv", bl).value || "").split("\n").map(x => x.trim()).filter(Boolean);
+      if (axes.indexOf("性状") >= 0 && qlevels.length < 2) { toast(nm + "：性状の段階を2つ以上"); throw new Error("stop"); }
+      const segPlace = {};
+      $$(".tkSP", bl).forEach(inp => { const v = inp.value.trim(); if (v) segPlace[inp.getAttribute("data-sg")] = v; });
+      items.push({ id: "i" + i + Date.now().toString(36), nm,
+        site: on(".tkSite").concat(on(".tkIcs")), qual: on(".tkQual"),
+        aspect: on(".tkAspect"), place: $(".tkPlace", bl).value.trim(), segPlace,
+        axes: axes.length ? axes : ["強さ"], emode, qlevels });
+    });
+    } catch (e) { return; }   // 段階が足りないときは上の toast で止める
+    if (!items.length) { toast("追う所見を1つ以上"); return; }
+    const a2 = allTracks();
+    const tr = newTrack($("#tkLabel").value.trim(), $("#tkDis").value.trim(), items);
+    a2.push(tr);
+    if (!saveTracks(a2)) return;
+    closeModal(); nav("#track/" + tr.id);
+  });
+}
+
+function renderTrackOne(id) {
+  const T = CONTENT.track, tracks = allTracks(), tr = tracks.find(x => x.id === id);
+  if (!tr) { nav("#track"); return; }
+  const today = todayStr();
+  const cur = (tr.obs || []).find(o => o.date === today) || { date: today, v: {}, ref: null };
+  let html = pageHeader(esc(tr.label || "（呼び名なし）") + (tr.disease ? "　" + esc(tr.disease) : ""));
+
+  /* 今日の入力 */
+  html += '<div class="panel"><h3 class="sec">' + esc(T.today_label) + "　" + esc(today) + "</h3>";
+  (tr.items || []).forEach(it => {
+    const def = itemDefLine(it);
+    html += '<div class="trow"><div class="tnm">' + esc(it.nm) +
+      (def ? '<span class="tdef">' + esc(def) + "</span>" : "") + "</div>";
+    axesOf(it).forEach(ax => {
+      const v = readV(cur, it, ax);
+      const head = (axesOf(it).length > 1 ? '<div class="taxnm">' + esc(ax.nm) + "</div>" : "");
+      if (ax.multi) {
+        const sel = Array.isArray(v) ? v : null;
+        html += head + '<div class="chips segs" data-vk="' + esc(vkey(it, ax)) + '">' +
+          '<button type="button" class="chip small' + (sel && !sel.length ? " on" : "") +
+          '" data-seg="">' + esc(T.seg_none) + "</button>" +
+          ax.segs.map(sg => '<button type="button" class="chip small' +
+            (sel && sel.indexOf(sg) >= 0 ? " on" : "") + '" data-seg="' + esc(sg) + '">' +
+            esc(sg) + "</button>").join("") + "</div>" +
+          /* ★押している区域の「当て場所」を、その場で出す。明日も同じ点に当てるため。
+             出すのは教科書の対応表ではなく、登録時に本人が書いた覚え書き。 */
+          '<div class="segplace" data-for="' + esc(vkey(it, ax)) + '">' +
+          esc(segPlaceLine(it, sel)) + "</div>";
+      } else {
+        html += head + '<div class="chips" data-vk="' + esc(vkey(it, ax)) + '">' +
+          ax.levels.map((lb, i) => '<button type="button" class="chip' +
+            (ax.levels.length > 5 ? " small" : "") + (v === i ? " on" : "") +
+            '" data-lv="' + i + '">' + esc(lb) + "</button>").join("") + "</div>";
+      }
+    });
+    html += "</div>";
+  });
+  const allKeys = [];
+  (tr.items || []).forEach(it => axesOf(it).forEach(ax => allKeys.push(vkey(it, ax))));
+  const filled = allKeys.every(k => readVK(cur, k) !== undefined);
+  html += '<h3 class="sec" style="margin-top:14px">' + esc(T.ref_label) + "</h3>" +
+    '<div class="chips" id="trkRef">' +
+    T.ref_levels.map((lb, i) => '<button type="button" class="chip' +
+      (cur.ref === i ? " on" : "") + '" data-ref="' + i + '"' + (filled ? "" : " disabled") + ">" +
+      esc(lb) + "</button>").join("") + "</div>" +
+    '<p class="note">' + esc(T.ref_hint) + "</p>" +
+    '<p class="note blind">' + esc(T.blind_note) + "</p>" +
+    '<div class="btnrow"><button type="button" class="btn" id="trkSave" style="flex:1">' +
+    esc(T.save_button) + "</button></div></div>";
+
+  /* 一致の集計 */
+  const con = concordance(tr);
+  const all2 = Object.keys(con).map(k => {
+    const c = con[k];
+    return { nm: c.nm + (c.axnm && c.axnm !== "強さ" ? "（" + c.axnm + "）" : ""),
+      ok: c.ok, n: c.ok + c.ng, never: c.never, level: c.level, levels: c.levels, ax: c.ax };
+  });
+  const rows = all2.filter(r => r.n > 0 && !r.never).sort((a2, b2) => (b2.ok / b2.n) - (a2.ok / a2.n));
+  const nevers = all2.filter(r => r.never);
+  html += '<div class="panel"><h3 class="sec">' + esc(T.concord_title) + "</h3>";
+  if (!rows.length) {
+    html += '<p class="note">' + esc(T.concord_none) + "</p>";
+  } else {
+    html += "<ul class=\"trkres\">" + rows.map(r =>
+      "<li" + (r.ok * 2 < r.n ? ' class="ng"' : "") + "><b>" + esc(r.nm) + "</b>　" +
+      r.ok + " / " + r.n + " 一致</li>").join("") + "</ul>";
+    const tot = rows.reduce((s2, r) => s2 + r.n, 0);
+    html += '<p class="note">' + esc(T.concord_note) + "</p>" +
+      (tot < 6 ? '<p class="note ng">' + esc(T.small_n) + "</p>" : "");
+  }
+  if (nevers.length) {
+    html += '<p class="note ng" style="margin-top:8px">' + esc(T.never_moved) + "<br>" +
+      nevers.map(r => "・<b>" + esc(r.nm) + "</b>（" + esc(showV(r.ax, r.level)) + "のまま）").join("<br>") + "</p>";
+  }
+  html += "</div>";
+
+  /* 履歴 */
+  const obs = (tr.obs || []).slice().sort((a2, b2) => (b2.date || "").localeCompare(a2.date || ""));
+  if (obs.length) {
+    const cols = [];
+    (tr.items || []).forEach(it => axesOf(it).forEach(ax => cols.push({ it, ax })));
+    html += '<div class="panel"><h3 class="sec">これまで</h3><div class="tbl"><table><tr><th>日</th>' +
+      cols.map(c => "<th>" + esc(c.it.nm.slice(0, 6)) +
+        (axesOf(c.it).length > 1 ? "<br>" + esc(c.ax.nm) : "") + "</th>").join("") + "<th>参照</th></tr>" +
+      obs.map(o => "<tr><td>" + esc((o.date || "").slice(5)) + "</td>" +
+        cols.map(c => "<td>" + esc(showV(c.ax, readV(o, c.it, c.ax))) + "</td>").join("") +
+        "<td>" + (o.ref !== null && o.ref !== undefined ? T.ref_levels[o.ref] : "―") + "</td></tr>").join("") +
+      "</table></div></div>";
+  }
+  html += '<div class="btnrow"><button type="button" class="btn ghost" id="trkBack" style="flex:1">追跡一覧へ</button>' +
+    (tr.closed ? "" : '<button type="button" class="btn ghost" id="trkClose">' + esc(T.close_button) + "</button>") + "</div>";
+  html += footerHTML();
+  $("#app").innerHTML = html;
+
+  const draft = { v: Object.assign({}, cur.v || {}), ref: cur.ref };
+  $$("[data-vk] .chip").forEach(b => b.addEventListener("click", () => {
+    const wrap = b.closest("[data-vk]"), k = wrap.getAttribute("data-vk");
+    if (wrap.classList.contains("segs")) {
+      /* 区域は複数選べる。「なし」だけは排他（0区域＝消えた、を明示的に入れられる） */
+      const isNone = b.getAttribute("data-seg") === "";
+      if (isNone) { $$(".chip", wrap).forEach(x => x.classList.remove("on")); b.classList.add("on"); }
+      else { $(".chip[data-seg='']", wrap).classList.remove("on"); b.classList.toggle("on"); }
+      draft.v[k] = $$(".chip.on", wrap).map(x => x.getAttribute("data-seg")).filter(Boolean);
+      const sp = $(".segplace[data-for='" + k + "']");
+      if (sp) {
+        const it2 = (tr.items || []).find(x => k.indexOf(x.id) === 0);
+        sp.textContent = it2 ? segPlaceLine(it2, draft.v[k]) : "";
+      }
+    } else {
+      $$(".chip", wrap).forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      draft.v[k] = Number(b.getAttribute("data-lv"));
+    }
+    /* 全部そろったら参照を押せるようにする（見てから書かないための作りの規律） */
+    const ok = allKeys.every(kk => draft.v[kk] !== undefined ||
+      (kk.indexOf("#") < 0 && draft.v[kk] !== undefined));
+    $$("#trkRef .chip").forEach(x => { x.disabled = !ok; });
+  }));
+  $$("#trkRef .chip").forEach(b => b.addEventListener("click", () => {
+    $$("#trkRef .chip").forEach(x => x.classList.remove("on"));
+    b.classList.add("on"); draft.ref = Number(b.getAttribute("data-ref"));
+  }));
+  $("#trkSave").addEventListener("click", () => {
+    if (!allKeys.every(k => draft.v[k] !== undefined)) { toast("所見を全部入れてください"); return; }
+    tr.obs = (tr.obs || []).filter(o => o.date !== today);
+    tr.obs.push({ date: today, v: draft.v, ref: draft.ref === undefined ? null : draft.ref });
+    tr.updatedAt = nowISO();
+    if (!saveTracks(tracks)) return;
+    toast(CONTENT.track.saved_toast); renderTrackOne(id);
+  });
+  $("#trkBack").addEventListener("click", () => nav("#track"));
+  const cb = $("#trkClose");
+  if (cb) cb.addEventListener("click", () => {
+    tr.closed = true; tr.updatedAt = nowISO();
+    if (saveTracks(tracks)) { toast("追跡を終えました"); nav("#track"); }
+  });
+}
+
 /* ================================================================ #settings */
 function usageEstimate() {
   let chars = 0, cases = 0;
@@ -2688,7 +3124,11 @@ async function refreshPersistState() {
    ★ 共有をキャンセルした場合は保存されていないので lastBackupAt を更新しない
      （保存していないのに「バックアップ済み」と表示する事故の防止） */
 function backupBlob() {
-  const data = { app: "kotaeawase-note", schemaVersion: 1, exportedAt: nowISO(), cases: allCases(), quick: lsGet(K_QUICK, []) };
+  /* ★保管庫を足したら、必ずここにも足す。書き出しは awn.* を総なめするのではなく
+     明示列挙なので、足し忘れると症状が出ないまま端末を替えたときに消える
+     （2026-08-29、経過モードを足した直後に実測で発覚）。 */
+  const data = { app: "kotaeawase-note", schemaVersion: 1, exportedAt: nowISO(),
+    cases: allCases(), quick: lsGet(K_QUICK, []), tracks: allTracks() };
   return { json: JSON.stringify(data, null, 2), name: "kotaeawase-backup-" + todayStr().replace(/-/g, "") + ".json" };
 }
 function markBackedUp() {
@@ -2745,10 +3185,13 @@ function handleRestore(text) {
   }
   const cases = data.cases.map(migrateCase).filter(Boolean);
   const quick = Array.isArray(data.quick) ? data.quick.filter(q => q && q.id) : [];
+  const tracks = Array.isArray(data.tracks) ? data.tracks.filter(x => x && x.id) : [];
   const cur = allCases();
   const root = openModal('<div class="sheet-h">復元の確認</div>' +
-    '<p class="note">読み込み：症例 ' + cases.length + " 件・一行記録 " + quick.length + " 件<br>" +
-    "現在：症例 " + cur.length + " 件・一行記録 " + lsGet(K_QUICK, []).length + " 件</p>" +
+    '<p class="note">読み込み：症例 ' + cases.length + " 件・一行記録 " + quick.length +
+    " 件・経過 " + tracks.length + " 件<br>" +
+    "現在：症例 " + cur.length + " 件・一行記録 " + lsGet(K_QUICK, []).length +
+    " 件・経過 " + allTracks().length + " 件</p>" +
     '<div class="btnrow"><button type="button" class="btn danger" id="rsReplace">全置換（現在を消して読み込む）</button>' +
     '<button type="button" class="btn" id="rsMerge">マージ（同IDは新しい方）</button>' +
     '<button type="button" class="btn ghost" data-close>キャンセル</button></div>');
@@ -2757,6 +3200,7 @@ function handleRestore(text) {
     wipeAll();
     cases.forEach(c => { try { lsSet(K_CASE + c.id, c); } catch (e) {} });
     try { lsSet(K_QUICK, quick); } catch (e) {}
+    try { lsSet(K_TRACK, tracks); } catch (e) {}
     finishRestore();
   });
   $("#rsMerge", root).addEventListener("click", () => {
@@ -2771,6 +3215,14 @@ function handleRestore(text) {
     const qIds = {}; qCur.forEach(q => { qIds[q.id] = true; });
     quick.forEach(q => { if (!qIds[q.id]) qCur.push(q); });
     try { lsSet(K_QUICK, qCur); } catch (e) {}
+    /* 経過は同IDなら updatedAt の新しい方を採る（症例と同じ規則） */
+    const tCur = allTracks(), tById = {};
+    tCur.forEach(x => { tById[x.id] = x; });
+    tracks.forEach(x => {
+      const ex = tById[x.id];
+      if (!ex || (x.updatedAt || "") > (ex.updatedAt || "")) tById[x.id] = x;
+    });
+    try { lsSet(K_TRACK, Object.keys(tById).map(k => tById[k])); } catch (e) {}
     finishRestore();
   });
   function finishRestore() {
