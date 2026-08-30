@@ -19,7 +19,7 @@ BG = "0xEEF4FA"
 W, H, X, Y = 390, 844, 555, 9
 
 CLIP_NAMES = ["rec_addhome", "rec_s1", "rec_s2", "rec_s3s4", "rec_s5", "rec_followup",
-              "rec_stats", "rec_quick", "rec_oya", "rec_track", "rec_recordline", "rec_backup", "rec_dark", "rec_bigtype", "rec_fix"]
+              "rec_stats", "rec_quick", "rec_oya", "rec_track", "rec_trackday", "rec_recordline", "rec_backup", "rec_dark", "rec_bigtype", "rec_fix"]
 
 
 def main() -> None:
