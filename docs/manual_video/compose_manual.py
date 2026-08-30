@@ -30,7 +30,7 @@ OUTRO_S = 5.0
 FADE_S = 1.0
 
 CLIP_NAMES = ["rec_addhome", "rec_s1", "rec_s2", "rec_s3s4", "rec_s5", "rec_followup",
-              "rec_stats", "rec_quick", "rec_oya", "rec_track", "rec_recordline", "rec_backup", "rec_dark", "rec_bigtype", "rec_fix"]
+              "rec_stats", "rec_quick", "rec_oya", "rec_track", "rec_trackday", "rec_recordline", "rec_backup", "rec_dark", "rec_bigtype", "rec_fix"]
 CLIP_OF = {f"_repframe_{n}.png": f"{n}.mp4" for n in CLIP_NAMES}
 THANKS = "ここまでご視聴いただきありがとうございました。"
 HOSPITAL = "おもろまちメディカルセンター 呼吸器内科"

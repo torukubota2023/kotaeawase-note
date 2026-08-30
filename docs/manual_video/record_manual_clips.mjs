@@ -403,6 +403,51 @@ const JOBS = {
     await rec.save();
   },
 
+  // 三つの入り口 c-2: 経過の毎日の入力（v1.17.0 同一検者チップ・二度取り）
+  async rec_trackday() {
+    const rec = await newRec('rec_trackday');
+    await freshPage(rec);
+    /* 追跡を1本仕込む。所見1つ・強さのみ・目盛りは書いてある状態（画面を単純に保つ）。
+       過去に2日ぶん入っているので、保存すると集計も動く。すべて架空データ */
+    await rec.page.evaluate(`(() => {
+      const tr = { id: 'tDemo', label: '70代・器質化肺炎', disease: '肺炎', closed: false,
+        createdAt: '2026-08-20T09:00:00Z', updatedAt: '2026-08-20T09:00:00Z',
+        items: [{ id: 'iA', nm: '呼吸音の減弱', site: [], qual: [], aspect: [], place: '',
+                  segPlace: {}, axes: ['強さ'], emode: '区域', qlevels: [], binary: false,
+                  anchors: ['対側と同じに聴こえる', '対側よりわずかに小さい',
+                            '対側より明らかに小さい', 'ほとんど聴こえない'] }],
+        obs: [{ date: '2026-08-28', v: { iA: 3 }, ref: 3 },
+              { date: '2026-08-29', v: { iA: 2 }, ref: 2 }] };
+      lsSet(K_TRACK, [tr]);
+      nav('#track/tDemo');
+    })()`);
+    await sleep(500);
+    await installCursor(rec.page);
+    const at = clock('rec_trackday');
+    await at('chips');
+    await tap(rec.page, '[data-vk="iA"] .chip[data-lv="1"]');   // 「わずか」＝改善方向
+    await at('ref');
+    await tap(rec.page, '#trkRef .chip[data-ref="1"]');          // 軽度
+    await at('other_scroll');
+    await smoothTo(rec.page, '#otherChip', 'center');
+    await at('other_tap');
+    await tap(rec.page, '#otherChip');                           // 説明文が現れる
+    await at('note_hold');
+    await smoothTo(rec.page, '#otherNote', 'center');
+    await at('save');
+    await tap(rec.page, '#otherChip');                           // 実演なので戻して保存（自分が取った日に）
+    await tap(rec.page, '#trkSave');
+    await sleep(600);
+    await at('twice_open');
+    await tap(rec.page, '#trkTwice');                            // 値を伏せたモーダル
+    await at('twice_fill');
+    await tap(rec.page, '#modal-root .twchips[data-vk="iA"] .chip[data-lv="1"]');
+    await sleep(900);
+    await tap(rec.page, '#twSave');
+    await at('end');
+    await rec.save();
+  },
+
   // 7章: S2 の実績行
   async rec_recordline() {
     const rec = await newRec('rec_recordline');

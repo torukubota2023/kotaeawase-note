@@ -105,14 +105,29 @@
  "rec_track": {
   "_window": [
    451.365,
-   509.365
+   500.859
   ],
   "go_track": 1.0,
   "new_btn": 13.35,
   "label": 15.65,
   "items": 18.41,
   "anchor_scroll": 30.46,
-  "end": 57.5
+  "end": 48.99
+ },
+ "rec_trackday": {
+  "_window": [
+   500.859,
+   582.859
+  ],
+  "chips": 3.48,
+  "ref": 10.04,
+  "other_scroll": 12.91,
+  "other_tap": 16.74,
+  "note_hold": 18.58,
+  "save": 48.19,
+  "twice_open": 58.32,
+  "twice_fill": 61.89,
+  "end": 81.5
  },
  "rec_recordline": {
   "_window": [
@@ -124,8 +139,8 @@
  },
  "rec_backup": {
   "_window": [
-   522.919,
-   545.641
+   606.119,
+   628.841
   ],
   "bk_scroll": 3.73,
   "bk_tap": 7.43,
@@ -134,16 +149,16 @@
  },
  "rec_dark": {
   "_window": [
-   545.641,
-   555.361
+   628.841,
+   638.561
   ],
   "stats_go": 4.87,
   "end": 9.22
  },
  "rec_bigtype": {
   "_window": [
-   555.361,
-   563.105
+   638.561,
+   646.305
   ],
   "toggle_scroll": 0.2,
   "toggle_tap": 2.8,
@@ -152,15 +167,15 @@
  },
  "rec_fix": {
   "_window": [
-   563.105,
-   604.795
+   646.305,
+   687.995
   ],
   "fix_scroll": 0.3,
   "fix_tap": 2.6,
   "back_detail": 4.99,
   "badge_scroll": 5.99,
-  "draft_seed": 19.65,
-  "resume_scroll": 21.65,
+  "draft_seed": 19.66,
+  "resume_scroll": 21.66,
   "end": 41.19
  }
 }
