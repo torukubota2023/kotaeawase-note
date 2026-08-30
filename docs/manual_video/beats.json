@@ -1,0 +1,132 @@
+{
+ "rec_addhome": {
+  "_window": [
+   40.487,
+   86.487
+  ],
+  "tap_howto": 5.16,
+  "show_sheet": 7.76,
+  "end": 45.5
+ },
+ "rec_s1": {
+  "_window": [
+   123.862,
+   145.519
+  ],
+  "new": 0.6,
+  "disease": 6.38,
+  "side": 8.6,
+  "tpl": 11.86,
+  "age": 14.54,
+  "sex": 16.34,
+  "next": 19.88,
+  "end": 21.36
+ },
+ "rec_s2": {
+  "_window": [
+   145.519,
+   187.583
+  ],
+  "dx": 8.86,
+  "conf70": 16.96,
+  "freq": 19.04,
+  "site_scroll": 35.15,
+  "aspect": 37.74,
+  "end": 41.56
+ },
+ "rec_s3s4": {
+  "_window": [
+   187.583,
+   217.993
+  ],
+  "f1": 3.06,
+  "f2": 4.86,
+  "next": 11.88,
+  "lock_scroll": 13.92,
+  "lock": 15.12,
+  "end": 30.01
+ },
+ "rec_s5": {
+  "_window": [
+   217.993,
+   263.423
+  ],
+  "modality": 9.15,
+  "finding": 14.92,
+  "conf90": 17.42,
+  "def_scroll": 19.27,
+  "def_yes": 26.45,
+  "note_scroll": 36.33,
+  "end": 44.93
+ },
+ "rec_followup": {
+  "_window": [
+   263.423,
+   301.706
+  ],
+  "outcome_scroll": 6.82,
+  "match_scroll": 17.18,
+  "match_yes": 21.56,
+  "jf_scroll": 24.08,
+  "end": 37.78
+ },
+ "rec_stats": {
+  "_window": [
+   301.706,
+   348.043
+  ],
+  "open_details": 16.44,
+  "details_scroll": 19.08,
+  "table_scroll": 21.68,
+  "end": 45.84
+ },
+ "rec_recordline": {
+  "_window": [
+   348.043,
+   366.657
+  ],
+  "line_scroll": 5.24,
+  "end": 18.11
+ },
+ "rec_backup": {
+  "_window": [
+   366.657,
+   389.379
+  ],
+  "bk_scroll": 3.73,
+  "bk_tap": 7.43,
+  "restore_scroll": 15.58,
+  "end": 22.22
+ },
+ "rec_dark": {
+  "_window": [
+   389.379,
+   399.099
+  ],
+  "stats_go": 4.87,
+  "end": 9.22
+ },
+ "rec_bigtype": {
+  "_window": [
+   399.099,
+   406.843
+  ],
+  "toggle_scroll": 0.2,
+  "toggle_tap": 2.8,
+  "grown": 4.6,
+  "end": 7.24
+ },
+ "rec_fix": {
+  "_window": [
+   406.843,
+   448.533
+  ],
+  "fix_scroll": 0.3,
+  "fix_tap": 2.6,
+  "back_detail": 4.99,
+  "badge_scroll": 5.99,
+  "draft_seed": 19.65,
+  "resume_scroll": 21.65,
+  "end": 41.19
+ }
+}
