@@ -328,6 +328,81 @@ const JOBS = {
     await rec.save();
   },
 
+  // 三つの入り口 a: 一行記録
+  async rec_quick() {
+    const rec = await newRec('rec_quick');
+    await freshPage(rec);
+    const baseId = await rec.page.evaluate(`(() => { const id = ${SEED_JS.baseCase}; return id; })()`);
+    await rec.page.evaluate(SEED_JS.judged(baseId, 3));
+    await rec.page.evaluate(`nav('#list')`);
+    await sleep(400);
+    await installCursor(rec.page);
+    const at = clock('rec_quick');
+    await at('open');
+    await tap(rec.page, '#quickBtn');
+    await at('zure');
+    await rec.page.fill('#qnZure', '右下の濁音を胸水と読んだ → 実際は無気肺');
+    await at('next');
+    await rec.page.fill('#qnNext', '呼吸音の減弱と一緒に、気管の位置も見る');
+    await at('save');
+    await tap(rec.page, '#qnSave');
+    await at('end');
+    await rec.save();
+  },
+
+  // 三つの入り口 b: おや？（1タップ → あとから中身を書く）
+  async rec_oya() {
+    const rec = await newRec('rec_oya');
+    await freshPage(rec);
+    const baseId = await rec.page.evaluate(`(() => { const id = ${SEED_JS.baseCase}; return id; })()`);
+    await rec.page.evaluate(SEED_JS.judged(baseId, 3));
+    await rec.page.evaluate(`nav('#list')`);
+    await sleep(400);
+    await installCursor(rec.page);
+    const at = clock('rec_oya');
+    await at('tap');
+    await tap(rec.page, '#oyaBtn');            // 日付だけの「おや（未記入）」が積まれる
+    await at('card');
+    await smoothTo(rec.page, '.oyacard.pending', 'center');
+    await at('open_card');
+    await tap(rec.page, '.oyacard.pending');   // あとから中身を書くモーダル
+    await at('write');
+    await rec.page.fill('#oyZure', '減弱していたのに、振盪は保たれていた');
+    await sleep(900);
+    await rec.page.fill('#oyNext', '次は胸膜の厚さをエコーで見る');
+    await at('end');
+    await rec.save();
+  },
+
+  // 三つの入り口 c: 経過（追う患者・所見3〜5個・段階の目盛り）
+  async rec_track() {
+    const rec = await newRec('rec_track');
+    await freshPage(rec);
+    // 「経過」ボタンは記録が1件以上あるときだけ一覧に出る（空状態は2ボタンのみ）
+    const baseId = await rec.page.evaluate(`(() => { const id = ${SEED_JS.baseCase}; return id; })()`);
+    await rec.page.evaluate(SEED_JS.judged(baseId, 3));
+    await rec.page.evaluate(`nav('#list')`);
+    await sleep(400);
+    await installCursor(rec.page);
+    const at = clock('rec_track');
+    await at('go_track');
+    await tap(rec.page, '#trkBtn');
+    await at('new_btn');
+    await tap(rec.page, '#trkNew');
+    await at('label');
+    await rec.page.fill('#tkLabel', '70代・器質化肺炎');
+    await sleep(700);
+    await rec.page.fill('#tkDis', '肺炎');
+    await at('items');
+    await tap(rec.page, '#tkAdd');
+    await sleep(800);
+    await tap(rec.page, '#tkAdd');
+    await at('anchor_scroll');
+    await smoothTo(rec.page, '#tkItemList', 'center');
+    await at('end');
+    await rec.save();
+  },
+
   // 7章: S2 の実績行
   async rec_recordline() {
     const rec = await newRec('rec_recordline');
