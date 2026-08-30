@@ -1108,6 +1108,51 @@ ui_copy:
   outcome_ct_note: "答え合わせに使った画像は S5 に記録済み。ここは、その後の追加画像・確定情報のみ"
   export_modality_label: "画像の種類"
 
+  # ── v1.13.0 端末からデータが消えないようにする（2026-08-30 副院長指示）
+  #    ★7日ルールは Safari（ITP）の話で、Chrome・Edge・Firefox には無い。
+  #      ブラウザを見ずに同じ文を出すと、PC の利用者に嘘を言うことになる（検証役の指摘）。
+  #    ★「消えません」と言い切らない ── ホーム画面から起動していても、
+  #      アイコンを消す・サイトデータを消去する で消える。信号を見てバックアップをやめさせない。
+  home_safe: >-
+    ホーム画面から起動しています ── ブラウザの都合で勝手に消されることはありません。
+    ただしアイコンを消したり、サイトデータを消去すると消えます。バックアップは続けてください。
+  home_risk_safari: >-
+    Safari のタブで開いています ── 7日間このサイトを使わないと、
+    Safari がこの記録を消すことがあります。
+  home_risk_other: >-
+    ブラウザのタブで開いています ── 端末の空きが減ったときなどに、
+    ブラウザがこの記録を消すことがあります。
+  home_unknown: >-
+    起動のしかたを判定できませんでした。念のため、ホーム画面に追加しておくと確実です。
+  home_howto_ios: >-
+    iPhone・iPad：画面下の共有ボタン（□に↑）→「ホーム画面に追加」→ 右上の「追加」。
+    以後は、そのアイコンから開いてください。
+  home_howto_android: >-
+    Android・PC：アドレスバーの「インストール」、または右上の「⋮」→「ホーム画面に追加」
+    「アプリをインストール」。
+  home_banner: >-
+    このままだと、記録が消えることがあります。ホーム画面に追加してください。
+  home_banner_action: 追加のしかた
+  home_banner_dismiss: 閉じる
+  home_panel_title: この端末で消えないか
+  home_panel_checking: 確認中…
+  home_modal_title: ホーム画面に追加する
+  home_modal_fallback: >-
+    追加できないときは、設定画面から JSON を書き出して手元に置いてください。
+    書き出したファイルさえあれば、端末が変わっても戻せます。
+  persist_checking: >-
+    端末へのデータ保持（persist）：確認中…
+  persist_granted: >-
+    端末へのデータ保持（persist）：有効
+  persist_denied_tab: >-
+    端末へのデータ保持（persist）：ブラウザが許可しませんでした。
+    ホーム画面に追加すると、この要求は通りやすくなります。
+  persist_denied_home: >-
+    端末へのデータ保持（persist）：この端末では許可されていません。
+    ホーム画面から起動しているので当面は消えませんが、バックアップは続けてください。
+  backup_stale: >-
+    最後のバックアップから {days} 日たっています。書き出しておくと安心です。
+
 links:
   bedside_bayes: "https://torukubota2023.github.io/bedside-bayes/"
   bedside_bayes_note: "尤度比・情報量の数値はこちら"
