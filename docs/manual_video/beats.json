@@ -80,18 +80,52 @@
   "table_scroll": 21.68,
   "end": 45.84
  },
+ "rec_quick": {
+  "_window": [
+   379.025,
+   407.445
+  ],
+  "open": 1.2,
+  "zure": 6.94,
+  "next": 16.02,
+  "save": 20.46,
+  "end": 27.92
+ },
+ "rec_oya": {
+  "_window": [
+   407.445,
+   451.365
+  ],
+  "tap": 6.57,
+  "card": 9.16,
+  "open_card": 13.16,
+  "write": 18.04,
+  "end": 43.42
+ },
+ "rec_track": {
+  "_window": [
+   451.365,
+   509.365
+  ],
+  "go_track": 1.0,
+  "new_btn": 13.35,
+  "label": 15.65,
+  "items": 18.41,
+  "anchor_scroll": 30.46,
+  "end": 57.5
+ },
  "rec_recordline": {
   "_window": [
    348.043,
-   366.657
+   379.025
   ],
   "line_scroll": 5.24,
-  "end": 18.11
+  "end": 30.48
  },
  "rec_backup": {
   "_window": [
-   366.657,
-   389.379
+   522.919,
+   545.641
   ],
   "bk_scroll": 3.73,
   "bk_tap": 7.43,
@@ -100,16 +134,16 @@
  },
  "rec_dark": {
   "_window": [
-   389.379,
-   399.099
+   545.641,
+   555.361
   ],
   "stats_go": 4.87,
   "end": 9.22
  },
  "rec_bigtype": {
   "_window": [
-   399.099,
-   406.843
+   555.361,
+   563.105
   ],
   "toggle_scroll": 0.2,
   "toggle_tap": 2.8,
@@ -118,8 +152,8 @@
  },
  "rec_fix": {
   "_window": [
-   406.843,
-   448.533
+   563.105,
+   604.795
   ],
   "fix_scroll": 0.3,
   "fix_tap": 2.6,
