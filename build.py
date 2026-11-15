@@ -243,6 +243,79 @@ def validate(content: dict) -> list[str]:
         s = ui.get(k) or ""
         need("{present}" in s and "{absent}" in s,
              f"ui_copy.{k} は {{present}} と {{absent}} の両方を含むはず")
+    # --- 2026-11-15 試作: 判定・固定前の確かめ・記録者・見るだけ・一か月の一枚 ---
+    # JS 側がキー名で参照するので、欠けたら画面に undefined が出る前にここで止める。
+    NEW_KEYS = {
+        "judge": ["block_label", "block_note", "s5_prompt", "parts_title", "parts_note",
+                  "part_what", "part_where", "part_howmuch",
+                  "part_short_what", "part_short_where", "part_short_howmuch",
+                  "v_hit", "v_miss", "v_na", "derived_note", "parts_pending_badge",
+                  "changed_badge", "history_title", "history_first", "history_change", "history_legacy", "history_ext",
+                  "contradict_no", "contradict_nomiss", "export_changes", "export_parts",
+                  "score_rule"],
+        "lock_check": ["no_firstdx", "no_quant", "conf_default", "tail", "stale_locked", "no_mark_style"],
+        "recorder": ["panel_title", "label", "ph", "note", "list_banner", "list_banner_action",
+                     "export_label", "unnamed", "restore_names", "restore_other_warn", "mix_confirm",
+                     "restore_unnamed_note"],
+        "viewer": ["open_button", "banner", "exit_button", "blocked", "list_intro",
+                   "draft_note", "settings_note", "restore_hint", "list_counts"],
+        "sheet": ["title", "subtitle", "page_sub", "detail_target", "strip_caption", "strip_caption_one", "period_label", "period_all", "period_last30",
+                  "period_this_month", "period_last_month", "period_custom",
+                  "from_label", "to_label", "done_predicted", "done_reviewed",
+                  "judged_line", "unjudged_hint", "parts_title", "parts_row", "parts_row_none",
+                  "parts_pending", "reassure_options", "reassure_pick",
+                  "strip_title", "strip_legend", "bands_title", "band_low", "band_mid",
+                  "band_high", "band_row", "band_expect", "band_none", "misses_title",
+                  "group_hand", "group_reach", "group_unclassified", "misses_none",
+                  "next_label", "next_empty", "more_fmt", "halves_title", "halves_row",
+                  "halves_note", "changed_line", "detail_title"],
+    }
+    NEW_KEYS["effusion_gap"] = [
+        "s2_title", "s2_note", "posture_label", "postures", "line_label", "style_label", "styles",
+        "std_posture", "std_line", "s5_title", "s5_note", "dir_label", "dir_above", "dir_below",
+        "dir_same", "cm_label", "value_above", "value_below", "value_same", "export_label",
+        "export_cond", "cond_none", "history_short", "sheet_title", "sheet_sub", "axis_up",
+        "axis_down", "legend", "count_line", "std_desc", "median_row", "spread_row",
+        "few_row", "bias_note", "cm_max", "cm_range", "no_style_row"]
+    for sec, keys in NEW_KEYS.items():
+        blk = content.get(sec) or {}
+        for k in keys:
+            need(bool(blk.get(k)), f"{sec}.{k} が無い")
+    sh = content.get("sheet") or {}
+    ro = sh.get("reassure_options") or []
+    need(isinstance(ro, list) and len(ro) == 3, "sheet.reassure_options は 3 案のはず")
+    need(sh.get("reassure_pick") in (1, 2, 3), "sheet.reassure_pick は 1〜3")
+    # 胸水のずれ: 既定の体位・線は、選択肢に実在する語であること（無い語を既定にすると、全例が「既定と違う」になる）
+    gp = content.get("effusion_gap") or {}
+    lba = (content.get("site_options") or {}).get("lines_by_aspect") or {}
+    gap_lines = ["背面・" + x for x in (lba.get("背面") or [])] + ["側面・" + x for x in (lba.get("側面") or [])]
+    need(gp.get("std_posture") in (gp.get("postures") or []), "effusion_gap.std_posture が postures に無い")
+    need(gp.get("std_line") in gap_lines, f"effusion_gap.std_line が位置の語彙（背面・側面の線）に無い: {gp.get('std_line')}")
+    # 既定の条件（体位ごとに一つ）。先頭は std_posture／std_line と同じ組であること
+    std = gp.get("std_conditions") or []
+    need(isinstance(std, list) and len(std) >= 1 and all(isinstance(s, dict) for s in std), "effusion_gap.std_conditions が空・形が違う")
+    for s in std:
+        need(s.get("posture") in (gp.get("postures") or []), f"effusion_gap.std_conditions の体位が postures に無い: {s.get('posture')}")
+        need(s.get("line") in gap_lines, f"effusion_gap.std_conditions の線が位置の語彙に無い: {s.get('line')}")
+    need(len({s.get("posture") for s in std}) == len(std), "effusion_gap.std_conditions: 同じ体位に既定が二つある")
+    need(bool(std) and std[0].get("posture") == gp.get("std_posture") and std[0].get("line") == gp.get("std_line"),
+         "effusion_gap.std_conditions の先頭が std_posture／std_line と違う")
+    # 過去の語の読み替え: 読み替え先は語彙に実在し、過去の語は語彙に残っていないこと
+    all_lines = {x for vals in lba.values() for x in (vals or [])}
+    for old, new in ((content.get("site_options") or {}).get("line_aliases") or {}).items():
+        need(new in all_lines, f"site_options.line_aliases の読み替え先が語彙に無い: {new}")
+        need(old not in all_lines, f"site_options.line_aliases の過去の語が、まだ選択肢に残っている: {old}")
+    need(len(gp.get("styles") or []) == 2, "effusion_gap.styles は 2 つ（通常より弱い打診／閾値打診）のはず")
+    cmx = gp.get("cm_max")
+    need(isinstance(cmx, (int, float)) and not isinstance(cmx, bool) and cmx > 0, "effusion_gap.cm_max は正の数")
+    ok = gp.get("ok_within_cm")
+    need(ok is None or (isinstance(ok, (int, float)) and ok >= 0), "effusion_gap.ok_within_cm は空か、0以上の数")
+    # 8分類の二分け【案】: 8件を過不足なく1回ずつ
+    grp = (content.get("miss_classification") or {}).get("groups") or {}
+    g_all = list(grp.get("hand") or []) + list(grp.get("reach") or [])
+    cat_ids = [c.get("id") for c in ((content.get("miss_classification") or {}).get("categories") or [])]
+    need(sorted(g_all) == sorted(cat_ids),
+         f"miss_classification.groups は 8分類を1回ずつ含むはず（実際 {sorted(g_all)}）")
     links = content.get("links") or {}
     for k in ("bedside_bayes", "bedside_bayes_note", "guide_ref", "nejm_ref"):
         need(bool(links.get(k)), f"links.{k} が無い")
